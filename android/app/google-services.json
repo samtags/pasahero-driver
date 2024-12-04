@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "93954675246",
+    "project_id": "pasahero-5c989",
+    "storage_bucket": "pasahero-5c989.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93954675246:android:300826d82b50931f2cc5bf",
+        "android_client_info": {
+          "package_name": "com.pasahero.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC23VRe_c6XW8lrqqB3l6C_vqjGAjddQ-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93954675246:android:a29b8e6206f5d5ed2cc5bf",
+        "android_client_info": {
+          "package_name": "com.pasahero.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC23VRe_c6XW8lrqqB3l6C_vqjGAjddQ-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

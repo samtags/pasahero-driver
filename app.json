@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "PasaHero Driver",
+    "slug": "pasahero",
+    "scheme": "com.pasahero.driver",
+    "version": "7",
+    "orientation": "portrait",
+    "icon": "./assets/icon-ph.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-ph.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "bundleIdentifier": "com.pasahero.driver",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.pasahero.driver",
+      "googleServicesFile": "./android/app/google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    }
+  }
+}

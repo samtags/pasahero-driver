@@ -1,0 +1,16 @@
+import axios from "axios";
+import log from "@/src/services/log";
+
+export default async function completeTrip(id) {
+  log.debug("Initiating complete trip.", { id });
+  try {
+    const res = await axios.post(
+      `https://passenger.pasahero.app/trip-complete`,
+      { id }
+    );
+    log.debug("Trip completed.", { id });
+    return res?.data;
+  } catch (error) {
+    return null;
+  }
+}
