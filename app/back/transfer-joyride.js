@@ -1,9 +1,9 @@
 import { Stack } from "expo-router";
 import { WebView } from "react-native-webview";
 import { StyleSheet, View } from "react-native";
-import Text from "../src/components/text";
+import Text from "@/src/components/text";
 import { useState } from "react";
-import Optional from "../src/components/optional";
+import Optional from "@/src/components/optional";
 import LottieView from "lottie-react-native";
 
 export default function Entry() {
@@ -35,7 +35,7 @@ export default function Entry() {
                 marginTop: -64,
                 marginBottom: -88,
               }}
-              source={require("../src/assets/json/autocomplete-preloader.json")}
+              source={require("@/src/assets/json/autocomplete-preloader.json")}
             />
           </View>
         </Optional>

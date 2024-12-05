@@ -69,7 +69,12 @@ export default function Layout() {
               </ClerkLoading>
 
               <ClerkLoaded>
-                <Stack />
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                </Stack>
               </ClerkLoaded>
             </ClerkProvider>
           </GestureHandlerRootView>

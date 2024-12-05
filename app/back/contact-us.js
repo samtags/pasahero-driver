@@ -1,12 +1,12 @@
 import { Stack } from "expo-router";
 import { WebView } from "react-native-webview";
 import { StyleSheet, View } from "react-native";
-import Text from "../src/components/text";
+import Text from "@/src/components/text";
 import { useState } from "react";
-import Optional from "../src/components/optional";
+import Optional from "@/src/components/optional";
 import LottieView from "lottie-react-native";
 
-export default function Entry() {
+export default function Entry(props) {
   const [showWebview, setShowWebView] = useState(false);
 
   return (
@@ -15,7 +15,7 @@ export default function Entry() {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Transfer to Move It
+              Contact Us
             </Text>
           ),
           headerTitleAlign: "center",
@@ -35,7 +35,7 @@ export default function Entry() {
                 marginTop: -64,
                 marginBottom: -88,
               }}
-              source={require("../src/assets/json/autocomplete-preloader.json")}
+              source={require("@/src/assets/json/autocomplete-preloader.json")}
             />
           </View>
         </Optional>
@@ -47,7 +47,7 @@ export default function Entry() {
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://pasahero.notion.site/Transfer-trip-to-Move-It-3d099aa41b414670a6ad7613b812d6d3?pvs=74`,
+            uri: `https://pasahero.notion.site/Contact-us-cb3ddbe6b42f445b85e01a88fa0edefb`,
           }}
         />
       </View>

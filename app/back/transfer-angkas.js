@@ -1,15 +1,13 @@
 import { Stack } from "expo-router";
 import { WebView } from "react-native-webview";
 import { StyleSheet, View } from "react-native";
-import Text from "../src/components/text";
+import Text from "@/src/components/text";
 import { useState } from "react";
-import Optional from "../src/components/optional";
+import Optional from "@/src/components/optional";
 import LottieView from "lottie-react-native";
-import { useUser } from "@clerk/clerk-expo";
 
-export default function Entry(props) {
+export default function Entry() {
   const [showWebview, setShowWebView] = useState(false);
-  const { user } = useUser();
 
   return (
     <>
@@ -17,7 +15,7 @@ export default function Entry(props) {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Feedback
+              Transfer to Angkas
             </Text>
           ),
           headerTitleAlign: "center",
@@ -37,19 +35,19 @@ export default function Entry(props) {
                 marginTop: -64,
                 marginBottom: -88,
               }}
-              source={require("../src/assets/json/autocomplete-preloader.json")}
+              source={require("@/src/assets/json/autocomplete-preloader.json")}
             />
           </View>
         </Optional>
         <WebView
           onLoadEnd={() => {
-            setShowWebView(true);
+            setTimeout(() => {
+              setShowWebView(true);
+            }, 4000);
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://airtable.com/appXQd7rSsw0l222y/shrL4mayOt6R1EdKp?prefill_Email=${
-              user?.primaryEmailAddress?.emailAddress ?? ""
-            }`,
+            uri: `https://pasahero.notion.site/Transfer-trip-to-Angkas-7e46bd53fece48589422e8888d3fca26`,
           }}
         />
       </View>
@@ -60,5 +58,6 @@ export default function Entry(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: -60,
   },
 });

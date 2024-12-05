@@ -1,13 +1,15 @@
 import { Stack } from "expo-router";
 import { WebView } from "react-native-webview";
 import { StyleSheet, View } from "react-native";
-import Text from "../src/components/text";
+import Text from "@/src/components/text";
 import { useState } from "react";
-import Optional from "../src/components/optional";
+import Optional from "@/src/components/optional";
 import LottieView from "lottie-react-native";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function Entry(props) {
   const [showWebview, setShowWebView] = useState(false);
+  const { user } = useUser();
 
   return (
     <>
@@ -15,7 +17,7 @@ export default function Entry(props) {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Contact Us
+              Feedback
             </Text>
           ),
           headerTitleAlign: "center",
@@ -35,19 +37,19 @@ export default function Entry(props) {
                 marginTop: -64,
                 marginBottom: -88,
               }}
-              source={require("../src/assets/json/autocomplete-preloader.json")}
+              source={require("@/src/assets/json/autocomplete-preloader.json")}
             />
           </View>
         </Optional>
         <WebView
           onLoadEnd={() => {
-            setTimeout(() => {
-              setShowWebView(true);
-            }, 4000);
+            setShowWebView(true);
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://pasahero.notion.site/Contact-us-cb3ddbe6b42f445b85e01a88fa0edefb`,
+            uri: `https://airtable.com/appXQd7rSsw0l222y/shrL4mayOt6R1EdKp?prefill_Email=${
+              user?.primaryEmailAddress?.emailAddress ?? ""
+            }`,
           }}
         />
       </View>
@@ -58,6 +60,5 @@ export default function Entry(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: -60,
   },
 });
