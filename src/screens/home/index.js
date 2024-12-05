@@ -2,11 +2,17 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import Text from "@/src/components/text";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Optional from "@/src/components/optional";
+import useController from "@/src/services/controller";
 
 const defaultCenterCoordinate = [120.9763782, 14.5869407];
 
 export default function Home() {
   const isMapInitialized = true;
+  const controller = useController();
+
+  const status = controller.status;
+  const error = controller.error;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F4F4F4", position: "relative" }}>
@@ -28,92 +34,80 @@ export default function Home() {
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
         <View style={{ padding: 24, gap: 8 }}>
-          <TouchableOpacity>
-            <View style={{ backgroundColor: "white", padding: 16 }}>
-              <Text>
-                Paumanhin pero mayroon kapang ongoing na trip. I-complete muna
-                ang trip upang makapag patuloy.
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <Optional condition={error === "ONGOING_TRIP"}>
+            <TouchableOpacity>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  Sorry pero mayroon kapang ongoing na trip. I-complete muna ang
+                  trip upang makapag patuloy.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
 
-          <TouchableOpacity>
-            <View style={{ backgroundColor: "white", padding: 16 }}>
-              <Text>
-                Hindi na sapat ang iyong wallet. Mag top-up na upang makatanggap
-                ng bagong trips.
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <Optional condition={error === "NO_BALANCE"}>
+            <TouchableOpacity>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  Hindi na sapat ang iyong wallet. Mag top-up na upang
+                  makatanggap ng bagong trips.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
 
-          <TouchableOpacity>
-            <View style={{ backgroundColor: "white", padding: 16 }}>
-              <Text>
-                Ni-rerequire namin ang location permission. Mangyaring i-set ito
-                "Allow all the time" upang makapag patuloy.
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <Optional condition={error === "BACKGROUND_LOCATION_DENIED"}>
+            <TouchableOpacity>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  Inirerequire namin ang location permission. Mangyaring i-set
+                  ito "Allow all the time" upang makapag patuloy.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
+
+          <Optional condition={error === "LOCATION_DENIED"}>
+            <TouchableOpacity>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  Inirerequire namin ang location permission. Mangyaring i-allow
+                  ito upang makapag patuloy.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
         </View>
       </View>
 
       <View style={{ position: "absolute", bottom: "0", width: "100%" }}>
-        <View
-          style={{
-            padding: 16,
-            paddingVertical: 8,
-            flexDirection: "row",
-            justifyContent: "flex-end",
-          }}
-        >
+        <View style={styles.iconContainers}>
           <TouchableOpacity>
-            <View
-              style={{
-                backgroundColor: "white",
-                height: 50,
-                width: 50,
-                borderRadius: 50,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            <View style={styles.iconCircle}>
               <Ionicons name="locate-sharp" size={32} color="#6366F1" />
             </View>
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            backgroundColor: "white",
-            padding: 24,
-            paddingTop: 0,
-            position: "relative",
-            gap: 16,
-          }}
-        >
+        <View style={styles.statusContainer}>
           <View style={{ alignItems: "center" }}>
             <TouchableOpacity
-              style={{
-                marginTop: -37.5,
-              }}
+              onPress={controller.handlePress}
+              style={{ marginTop: -37.5 }}
             >
-              <View
-                style={{
-                  backgroundColor: "#6366F1",
-                  height: 75,
-                  width: 75,
-                  borderRadius: 75,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {/* <Ionicons name="power-outline" size={32} color="white" /> */}
-                <Ionicons name="stop" size={32} color="white" />
+              <View style={styles.callToAction}>
+                <Ionicons
+                  name={status === "ACTIVE" ? "stop" : "power-outline"}
+                  size={32}
+                  color="white"
+                />
               </View>
             </TouchableOpacity>
           </View>
-          <Text textAlign="center" size={18}>
-            You are offline
-          </Text>
+          <View style={styles.statusRow}>
+            <Text weight="bold" size={18}>
+              {status === "ACTIVE" ? "You are now online" : "You are offline"}
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -126,4 +120,45 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
   },
+  iconContainers: {
+    padding: 16,
+    paddingVertical: 8,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
+  iconCircle: {
+    backgroundColor: "white",
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  statusContainer: {
+    backgroundColor: "white",
+    padding: 24,
+    paddingTop: 0,
+    position: "relative",
+    gap: 16,
+  },
+  statusRow: {
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  callToAction: {
+    backgroundColor: "#6366F1",
+    height: 75,
+    width: 75,
+    borderRadius: 75,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  indicator: (color) => ({
+    width: 8,
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: color,
+  }),
 });

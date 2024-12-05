@@ -17,6 +17,7 @@ import ImagePreRenderer from "../src/services/images/PreRenderer";
 import GrowthBook from "../src/services/growthbook";
 import tokenCache from "../src/services/auth/tokenCache";
 import SplashScreen from "../src/components/splash";
+import OAuthProvider from "@/src/services/auth/useOAuth";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -64,18 +65,20 @@ export default function Layout() {
               tokenCache={tokenCache}
               publishableKey={publishableKey}
             >
-              <ClerkLoading>
-                <SplashScreen />
-              </ClerkLoading>
+              <OAuthProvider>
+                <ClerkLoading>
+                  <SplashScreen />
+                </ClerkLoading>
 
-              <ClerkLoaded>
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                </Stack>
-              </ClerkLoaded>
+                <ClerkLoaded>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                  </Stack>
+                </ClerkLoaded>
+              </OAuthProvider>
             </ClerkProvider>
           </GestureHandlerRootView>
         </GrowthBook>
