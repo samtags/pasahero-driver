@@ -20,8 +20,10 @@ module.exports = ({ config }) => {
       [
         "expo-location",
         {
-          locationWhenInUsePermission:
+          locationAlwaysAndWhenInUsePermission:
             "Allow $(PRODUCT_NAME) to use your location",
+          isIosBackgroundLocationEnabled: true,
+          isAndroidBackgroundLocationEnabled: true,
         },
       ],
       "@config-plugins/react-native-webrtc",

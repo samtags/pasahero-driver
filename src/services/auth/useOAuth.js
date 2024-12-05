@@ -7,6 +7,7 @@ import {
 import log from "@/src/services/log";
 import storage from "@/src/services/storage";
 import useOnUpdate from "@/src/services/hooks/useOnUpdate";
+import updateUser from "../api/updateUser";
 
 export const startOAuthFlow = async () => {
   const oAuth = UNSAFE_retrieveProperty("startOAuthFlow");
@@ -22,6 +23,9 @@ export default function OAuthProvider({ children }) {
 
 function UserProvider({ children }) {
   const user = useUser();
+  if (process.env.NODE_ENV === "development") {
+    global.user = user?.user;
+  }
 
   useOnUpdate(() => {
     if (user?.user) {
@@ -101,6 +105,6 @@ function handleInitializeUser(userInfo) {
     if (imageUrl) storage.set("user.imageUrl", imageUrl);
     if (email) storage.set("user.email", email);
 
-    // updateUser({ id, image_url: imageUrl, name });
+    updateUser({ id, email, name });
   }
 }

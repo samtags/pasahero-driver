@@ -4,13 +4,13 @@ import { MMKV } from "react-native-mmkv";
 const storage = new MMKV();
 
 if (process.env.NODE_ENV === "development") {
-  global.__STORAGE__ = storage;
+  global.storage = storage;
 }
 
 // prevents cyclic require.
 const log = {
   debug: function (message, payload = {}) {
-    import("../log").then((log) => {
+    import("@/src/services/log").then(({ default: log }) => {
       log.default.debug(message, payload);
     });
   },

@@ -1,9 +1,16 @@
 import axios from "axios";
+import storage from "@/src/services/storage";
 
-/** @param {string} id  */
-export default async function getWallet(id) {
+export default async function getWallet() {
+  console.log("Received request to get wallet.");
+
+  const id = storage.getString("user.id");
+
   const response = await axios.get(
-    `https://pasahero.passenger.app/wallet?passenger_id=${id}`
+    `https://driver.pasahero.app/wallet?driver_id=${id}`
   );
-  return response.data;
+
+  console.log("Wallet request response.", response);
+
+  return response.data || {};
 }

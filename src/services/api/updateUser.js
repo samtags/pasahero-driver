@@ -1,17 +1,16 @@
 import axios from "axios";
 import log from "../log";
 
-export default async function updateUser({ id, image_url, name }) {
-  log.debug("Update user request", { id });
+export default async function updateUser({ id, email, name }) {
+  log.debug("Received request to update user.", { id, email, name });
 
-  const response = await axios.put(
-    "https://passenger.pasahero.app/passengers",
-    {
-      id,
-      image_url,
-      name,
-    }
-  );
+  const response = await axios.put("https://driver.pasahero.app/drivers", {
+    id,
+    email,
+    name,
+  });
+
+  console.log("Update user request response.", response);
 
   return response.data;
 }

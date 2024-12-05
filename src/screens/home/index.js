@@ -4,6 +4,7 @@ import Text from "@/src/components/text";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
+import * as Linking from "expo-linking";
 
 const defaultCenterCoordinate = [120.9763782, 14.5869407];
 
@@ -13,6 +14,18 @@ export default function Home() {
 
   const status = controller.status;
   const error = controller.error;
+
+  function handleRedirectToSettings() {
+    controller.clearError();
+
+    const canAsk = storage.getBoolean(
+      "settings.location.foreground.canAskAgain"
+    );
+
+    if (canAsk === false) {
+      Linking.openSettings();
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F4F4F4", position: "relative" }}>
@@ -34,8 +47,16 @@ export default function Home() {
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
         <View style={{ padding: 24, gap: 8 }}>
+          <Optional condition={error === "NO_USER"}>
+            <TouchableOpacity onPress={() => controller.clearError()}>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>Mag sign-in upang makapag patuloy.</Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
+
           <Optional condition={error === "ONGOING_TRIP"}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => controller.clearError()}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
                   Sorry pero mayroon kapang ongoing na trip. I-complete muna ang
@@ -46,18 +67,18 @@ export default function Home() {
           </Optional>
 
           <Optional condition={error === "NO_BALANCE"}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => controller.clearError()}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
-                  Hindi na sapat ang iyong wallet. Mag top-up na upang
-                  makatanggap ng bagong trips.
+                  Kulang na ang iyong wallet. Mag top-up para makakuha ng bagong
+                  trips.
                 </Text>
               </View>
             </TouchableOpacity>
           </Optional>
 
           <Optional condition={error === "BACKGROUND_LOCATION_DENIED"}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => controller.clearError()}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
                   Inirerequire namin ang location permission. Mangyaring i-set
@@ -68,7 +89,7 @@ export default function Home() {
           </Optional>
 
           <Optional condition={error === "LOCATION_DENIED"}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleRedirectToSettings}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
                   Inirerequire namin ang location permission. Mangyaring i-allow
