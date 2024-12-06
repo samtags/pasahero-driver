@@ -3,9 +3,13 @@ import Mapbox from "@rnmapbox/maps";
 import Text from "@/src/components/text";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
+import * as controller from "@/src/services/controller";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
 import WheelPicker from "@quidone/react-native-wheel-picker";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import createProfile from "@/src/services/api/createProfile";
 
 const defaultCenterCoordinate = [120.9763782, 14.5869407];
 
@@ -26,6 +30,10 @@ export default function Home() {
     if (canAsk === false) {
       Linking.openSettings();
     }
+  }
+
+  function handleCloseRegistrationPicker() {
+    controller.clearError();
   }
 
   return (
@@ -140,60 +148,90 @@ export default function Home() {
       </View>
 
       <Optional condition={error === "NO_PROFILE"}>
+        <Registration onClose={handleCloseRegistrationPicker} />
+      </Optional>
+    </View>
+  );
+}
+
+const options = [
+  { label: "Angkas", value: "angkas" },
+  { label: "JoyRide", value: "mc-taxi" },
+  { label: "Move It", value: "moto-taxi" },
+];
+
+function Registration({ onClose = () => {} }) {
+  const [selected, setSelected] = useState({
+    label: "Angkas",
+    value: "angkas",
+  });
+
+  const { isPending, mutateAsync, mutate } = useMutation({
+    mutationFn: () => createProfile(selected.value),
+  });
+
+  async function handleSelect() {
+    const response = await mutateAsync();
+    console.log("🚀 ~ handleSelect ~ response:", response);
+
+    if (response.id) {
+      onClose();
+      controller.handlePress();
+    }
+  }
+
+  return (
+    <View
+      style={{
+        position: "absolute",
+        bottom: "0",
+        width: "100%",
+        zIndex: 1,
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: "white",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          padding: 16,
+          position: "relative",
+        }}
+      >
+        <TouchableOpacity disabled={isPending} onPress={onClose}>
+          <Text size={18} color="#707070">
+            Isara
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity disabled={isPending} onPress={handleSelect}>
+          <Text size={18} weight="bold">
+            Piliin
+          </Text>
+        </TouchableOpacity>
         <View
           style={{
             position: "absolute",
-            bottom: "0",
-            width: "100%",
-            zIndex: 1,
+            bottom: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <View
-            style={{
-              backgroundColor: "white",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              padding: 16,
-              position: "relative",
-            }}
-          >
-            <TouchableOpacity>
-              <Text size={18} color="#707070">
-                Isara
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text size={18} color="#353579" weight="bold">
-                Piliin
-              </Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                position: "absolute",
-                bottom: 0,
-                top: 0,
-                left: 0,
-                right: 0,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text color="#707070" size={18}>
-                Platform
-              </Text>
-            </View>
-          </View>
-          <WheelPicker
-            data={[
-              { label: "Angkas", value: "angkas" },
-              { label: "JoyRide", value: "mc-taxi" },
-              { label: "Move It", value: "moto-taxi" },
-            ]}
-            itemTextStyle={styles.itemTextStyle}
-            style={styles.profileWheel}
-          />
+          <Text color="#707070" size={18}>
+            Platform
+          </Text>
         </View>
-      </Optional>
+      </View>
+      <WheelPicker
+        data={options}
+        onValueChanging={(option) => {
+          setSelected(option?.item);
+        }}
+        itemTextStyle={styles.itemTextStyle}
+        style={styles.profileWheel}
+      />
     </View>
   );
 }

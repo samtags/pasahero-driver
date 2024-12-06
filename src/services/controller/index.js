@@ -6,13 +6,13 @@ import getOngoingTrips from "@/src/services/api/getOngoingTrips";
 import getWallet from "@/src/services/api/getWallet";
 import * as Location from "expo-location";
 import { Alert } from "react-native";
-import getProfiles from "../api/getProfiles";
+import getProfiles from "@/src/services/api/getProfiles";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
   const [error, setError] = useState(""); // NO_BALANCE, ONGOING_TRIP, LOCATION_DENIED, BACKGROUND_LOCATION_DENIED, NO_USER, NO_PROFILE
 
-  const handlePress = async () => {
+  const handlePressButton = async () => {
     console.log("Controller button pressed.");
 
     const userId = storage.getString("user.id");
@@ -102,13 +102,17 @@ export default function useController() {
     }
   };
 
+  handlePress = handlePressButton;
+
   return {
     error,
     status,
-    handlePress,
+    handlePress: handlePressButton,
     clearError: setError,
   };
 }
+
+export var handlePress = () => {};
 
 export function handleSetStatus(status) {
   storage.set("controller.status", status);
