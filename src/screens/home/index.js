@@ -6,15 +6,25 @@ import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
 import Registration from "@/src/screens/home/components/registration";
+import Tooltip from "rn-tooltip";
+import { useEffect, useRef } from "react";
+import storage from "@/src/services/storage";
 
 const defaultCenterCoordinate = [120.9763782, 14.5869407];
 
 export default function Home() {
+  const tooltipRef = useRef(null);
+
   const isMapInitialized = true;
   const controller = useController();
 
   const status = controller.status;
   const error = controller.error;
+
+  useEffect(() => {
+    const firstTime = storage.getBoolean("settings.app.firstTime");
+    if (firstTime === undefined) tooltipRef.current?.toggleTooltip();
+  }, []);
 
   function handleRedirectToSettings() {
     controller.clearError();
@@ -30,6 +40,15 @@ export default function Home() {
 
   function handleCloseRegistrationPicker() {
     controller.clearError();
+  }
+
+  function handlePressCallToAction() {
+    if (tooltipRef?.current?.state?.isVisible) {
+      storage.set("settings.app.firstTime", false);
+      tooltipRef?.current?.toggleTooltip();
+    }
+
+    controller.handlePress();
   }
 
   return (
@@ -92,8 +111,9 @@ export default function Home() {
             <TouchableOpacity onPress={() => controller.clearError()}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
-                  Inirerequire namin ang location permission. Mangyaring i-set
-                  ito "Allow all the time" upang makapag patuloy.
+                  Kailangan namin ang iyong pahintulot sa pag access ng
+                  location. Piliin ang "Allow all the time" para makapag
+                  patuloy.
                 </Text>
               </View>
             </TouchableOpacity>
@@ -122,22 +142,32 @@ export default function Home() {
         </View>
         <View style={styles.statusContainer}>
           <View style={{ alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={controller.handlePress}
-              style={{ marginTop: -37.5 }}
+            <Tooltip
+              ref={tooltipRef}
+              backgroundColor="#363F59"
+              height={50}
+              width={220}
+              pointerStyle={{ marginTop: -44 }}
+              containerStyle={{ marginLeft: 90, marginTop: -44 }}
+              popover={<Text color="white">Pindutin para mag simula</Text>}
             >
-              <View style={styles.callToAction}>
-                <Ionicons
-                  name={status === "ACTIVE" ? "stop" : "power-outline"}
-                  size={32}
-                  color="white"
-                />
-              </View>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handlePressCallToAction}
+                style={{ marginTop: -37.5 }}
+              >
+                <View style={styles.callToAction}>
+                  <Ionicons
+                    name={status === "ACTIVE" ? "stop" : "power-outline"}
+                    size={32}
+                    color="white"
+                  />
+                </View>
+              </TouchableOpacity>
+            </Tooltip>
           </View>
           <View style={styles.statusRow}>
             <Text weight="bold" size={18}>
-              {status === "ACTIVE" ? "You are now online" : "You are offline"}
+              {status === "ACTIVE" ? "Online ka na!" : "Ikaw ay offline"}
             </Text>
           </View>
         </View>

@@ -149,7 +149,7 @@ async function handleShowBackgroundLocationPermissionPrompt() {
     new Promise((resolve) => {
       Alert.alert(
         "I-set ang location permission",
-        'I-set sa "Allow all the time" para makita ng pasahero ang iyong eksaktong lokasyon.',
+        'Piliin ang "Allow all the time" para makita ng pasahero ang iyong lokasyon.',
         [
           {
             text: "Close",

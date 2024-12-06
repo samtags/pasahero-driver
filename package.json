@@ -63,7 +63,8 @@
     "react-native-web": "^0.19.13",
     "react-native-webrtc": "^124.0.4",
     "react-native-webview": "13.12.2",
-    "rn-eventsource": "^1.0.0"
+    "rn-eventsource": "^1.0.0",
+    "rn-tooltip": "^3.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
