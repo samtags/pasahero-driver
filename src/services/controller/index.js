@@ -6,10 +6,11 @@ import getOngoingTrips from "@/src/services/api/getOngoingTrips";
 import getWallet from "@/src/services/api/getWallet";
 import * as Location from "expo-location";
 import { Alert } from "react-native";
+import getProfiles from "../api/getProfiles";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
-  const [error, setError] = useState(""); // NO_BALANCE, ONGOING_TRIP, NO_VERIFIED_PROFILE, LOCATION_DENIED, BACKGROUND_LOCATION_DENIED, NO_USER
+  const [error, setError] = useState(""); // NO_BALANCE, ONGOING_TRIP, LOCATION_DENIED, BACKGROUND_LOCATION_DENIED, NO_USER, NO_PROFILE
 
   const handlePress = async () => {
     console.log("Controller button pressed.");
@@ -89,6 +90,13 @@ export default function useController() {
         if (wallet.balance <= -50) {
           setError("NO_BALANCE");
           handleSetStatus("INACTIVE");
+        }
+      });
+
+      getProfiles().then((profiles) => {
+        if (profiles.length === 0) {
+          handleSetStatus("INACTIVE");
+          setError("NO_PROFILE");
         }
       });
     }

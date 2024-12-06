@@ -2213,6 +2213,13 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
+"@quidone/react-native-wheel-picker@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@quidone/react-native-wheel-picker/-/react-native-wheel-picker-1.3.2.tgz#660423feebadf6c8f253a8c0b8ee914be767f4d6"
+  integrity sha512-xkVuRMRWCFn3xRF+BXfSokCHoH4urQY2K7IfcCCz/Yx4hQYCUAn2+uYb2Dks3QqxlZMqSeas+WQvSCZeqmxlcQ==
+  dependencies:
+    "@rozhkov/react-useful-hooks" "^1.0.9"
+
 "@radix-ui/react-compose-refs@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@radix-ui/react-compose-refs/-/react-compose-refs-1.0.0.tgz#37595b1f16ec7f228d698590e78eeed18ff218ae"
@@ -2547,6 +2554,13 @@
     "@turf/nearest-point-on-line" "6.5.0"
     "@types/geojson" "^7946.0.7"
     debounce "^1.2.0"
+
+"@rozhkov/react-useful-hooks@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@rozhkov/react-useful-hooks/-/react-useful-hooks-1.0.9.tgz#13eef9eca0e46d26a64c3a5727c7de2e9a5e4a2f"
+  integrity sha512-RffdvTrJI7RIvQOYM8/JrDZguNLpKCGjh7UyOjepiJRDtjM10ef+QX0xa6vOLReQ+8kzubBjQ42YM6aj1GotDg==
+  dependencies:
+    default-values "^1.0.1"
 
 "@segment/loosely-validate-event@^2.0.0":
   version "2.0.0"
@@ -5362,6 +5376,11 @@ default-gateway@^4.2.0:
   dependencies:
     execa "^1.0.0"
     ip-regex "^2.1.0"
+
+default-values@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/default-values/-/default-values-1.0.2.tgz#cf104c52185c0e60a691113ba0a3880ed4d4d2ed"
+  integrity sha512-OaZEvojjexigvv1IT6N0rKUD5Af7fG11a0jg87jySv5xzjc2+IEW9oWNvqxWLHGhShRRZ0QopCGzGjJv/aY+mw==
 
 defaults@^1.0.3:
   version "1.0.4"

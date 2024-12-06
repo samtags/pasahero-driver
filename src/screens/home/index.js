@@ -5,6 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
+import WheelPicker from "@quidone/react-native-wheel-picker";
 
 const defaultCenterCoordinate = [120.9763782, 14.5869407];
 
@@ -47,6 +48,12 @@ export default function Home() {
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
         <View style={{ padding: 24, gap: 8 }}>
+          <Optional condition={error === "NO_PROFILE"}>
+            <View style={{ backgroundColor: "white", padding: 16 }}>
+              <Text>Piliin ang platform na iyong gamit.</Text>
+            </View>
+          </Optional>
+
           <Optional condition={error === "NO_USER"}>
             <TouchableOpacity onPress={() => controller.clearError()}>
               <View style={{ backgroundColor: "white", padding: 16 }}>
@@ -131,6 +138,62 @@ export default function Home() {
           </View>
         </View>
       </View>
+
+      <Optional condition={error === "NO_PROFILE"}>
+        <View
+          style={{
+            position: "absolute",
+            bottom: "0",
+            width: "100%",
+            zIndex: 1,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              padding: 16,
+              position: "relative",
+            }}
+          >
+            <TouchableOpacity>
+              <Text size={18} color="#707070">
+                Isara
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text size={18} color="#353579" weight="bold">
+                Piliin
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{
+                position: "absolute",
+                bottom: 0,
+                top: 0,
+                left: 0,
+                right: 0,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text color="#707070" size={18}>
+                Platform
+              </Text>
+            </View>
+          </View>
+          <WheelPicker
+            data={[
+              { label: "Angkas", value: "angkas" },
+              { label: "JoyRide", value: "mc-taxi" },
+              { label: "Move It", value: "moto-taxi" },
+            ]}
+            itemTextStyle={styles.itemTextStyle}
+            style={styles.profileWheel}
+          />
+        </View>
+      </Optional>
     </View>
   );
 }
@@ -182,4 +245,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: color,
   }),
+  profileWheel: {
+    backgroundColor: "white",
+    width: "100%",
+    height: 280,
+  },
+  itemTextStyle: {
+    fontFamily: "Lato-Regular",
+  },
 });
