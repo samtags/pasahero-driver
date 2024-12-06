@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import Text from "@/src/components/text";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -166,17 +166,24 @@ function Registration({ onClose = () => {} }) {
     value: "angkas",
   });
 
-  const { isPending, mutateAsync, mutate } = useMutation({
+  const { isPending, mutateAsync } = useMutation({
     mutationFn: () => createProfile(selected.value),
   });
 
   async function handleSelect() {
     const response = await mutateAsync();
-    console.log("🚀 ~ handleSelect ~ response:", response);
 
     if (response.id) {
       onClose();
       controller.handlePress();
+    } else {
+      Alert.alert("Unable to create profile.", "Please try again later.", [
+        {
+          text: "Close",
+          style: "default",
+          onPress: () => onClose(),
+        },
+      ]);
     }
   }
 
