@@ -29,6 +29,7 @@ export default function useController() {
     }
 
     const isForegroundLocationGranted = storage.getBoolean("settings.location.foreground.granted"); // prettier-ignore
+    const isBackgroundLocationGranted = storage.getBoolean("settings.location.background.granted"); // prettier-ignore
 
     if (Boolean(isForegroundLocationGranted) === false) {
       const agreeToAskPermission = await handleShowLocationPermissionPrompt();
@@ -44,6 +45,27 @@ export default function useController() {
       if (foregroundPermissionStatus === false) {
         // if not, show location denied prompt to the user
         setError("LOCATION_DENIED");
+        return;
+      }
+    }
+
+    if (Boolean(isBackgroundLocationGranted) === false) {
+      const agreeToAskPermission =
+        await handleShowBackgroundLocationPermissionPrompt();
+
+      if (agreeToAskPermission === false) {
+        setError("BACKGROUND_LOCATION_DENIED");
+        setIsLoading(false);
+        return;
+      }
+
+      // ask for background location permission
+      const backgroundPermissionStatus =
+        await handleRequestBackgroundLocationPermission();
+
+      if (backgroundPermissionStatus === false) {
+        setError("BACKGROUND_LOCATION_DENIED");
+        setIsLoading(false);
         return;
       }
     }
@@ -110,6 +132,30 @@ async function handleShowLocationPermissionPrompt() {
   return agreeToAskPermission;
 }
 
+async function handleShowBackgroundLocationPermissionPrompt() {
+  const agreeToAskPermission = await (() =>
+    new Promise((resolve) => {
+      Alert.alert(
+        "I-set ang location permission",
+        'I-set sa "Allow all the time" para makita ng pasahero ang iyong eksaktong lokasyon.',
+        [
+          {
+            text: "Close",
+            style: "default",
+            onPress: () => resolve(false),
+          },
+          {
+            text: "Allow",
+            style: "destructive",
+            onPress: () => resolve(true),
+          },
+        ]
+      );
+    }))();
+
+  return agreeToAskPermission;
+}
+
 export async function handleRequestForegroundLocationPermission() {
   const request = await Location.requestForegroundPermissionsAsync();
 
@@ -117,6 +163,17 @@ export async function handleRequestForegroundLocationPermission() {
   storage.set("settings.location.foreground.canAskAgain", request.canAskAgain);
   storage.set("settings.location.foreground.granted", request.granted);
   storage.set("settings.location.foreground.status", request.status);
+
+  return request.granted;
+}
+
+export async function handleRequestBackgroundLocationPermission() {
+  const request = await Location.requestBackgroundPermissionsAsync();
+
+  storage.set("settings.location.background.expires", request.expires);
+  storage.set("settings.location.background.canAskAgain", request.canAskAgain);
+  storage.set("settings.location.background.granted", request.granted);
+  storage.set("settings.location.background.status", request.status);
 
   return request.granted;
 }
