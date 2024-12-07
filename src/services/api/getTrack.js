@@ -14,7 +14,7 @@ export default async function getTrack(origin, destination) {
       coordinate[0],
     ]);
   } catch (error) {
-    console.log("Unable to decode polyline", error);
+    console.debug("Unable to decode polyline", error);
   }
 
   const data = response?.data || {};

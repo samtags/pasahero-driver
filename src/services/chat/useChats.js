@@ -25,13 +25,13 @@ export default function useChats(tripId, driverId) {
   function addChat(chat) {
     // check if already in chat list
     if (chatsMap?.current?.get(chat.id)) {
-      console.log("Chat already in the list.", chat);
+      console.debug("Chat already in the list.", chat);
       return;
     }
 
     // otherwise add it
     chatsMap?.current?.addToEnd?.(chat.id, chat);
-    console.log("Added chat to the list.", chat, chatsMap?.current?.size?.());
+    console.debug("Added chat to the list.", chat, chatsMap?.current?.size?.());
 
     // if added rerender the list
     handleRerender();
@@ -42,7 +42,7 @@ export default function useChats(tripId, driverId) {
 
   useEffect(() => {
     // get chats from cache
-    console.log("Getting chats from cache.");
+    console.debug("Getting chats from cache.");
     storage
       .getAllKeys()
       // filter the cache keys
@@ -59,7 +59,7 @@ export default function useChats(tripId, driverId) {
       .forEach((chat) => addChat(chat));
 
     // get chats
-    console.log("Getting chats from server.");
+    console.debug("Getting chats from server.");
     getChats(tripId)
       .then((chats) => {
         if (chats?.length > 0) {
@@ -67,11 +67,11 @@ export default function useChats(tripId, driverId) {
         }
       })
       .catch((err) => {
-        console.log("Unable to get chats", err);
+        console.debug("Unable to get chats", err);
       });
 
     // subscribe to incoming chats
-    console.log("Subscribing to incoming chats.");
+    console.debug("Subscribing to incoming chats.");
     const unsubscribe = subscribe(`messages.${tripId}`, addChat);
     return () => unsubscribe?.();
   }, []);

@@ -9,7 +9,7 @@ export default function useGetDrivers(latitude, longitude) {
   const [keys] = useMMKVString("__tmp_drivers");
 
   useEffect(() => {
-    console.log("Detected a change in the location. Getting nearby drivers.", { latitude, longitude }); // prettier-ignore
+    console.debug("Detected a change in the location. Getting nearby drivers.", { latitude, longitude }); // prettier-ignore
 
     // check if the drivers id in the store is already configured.
     const drivers = storage.getString("__tmp_drivers");
@@ -37,7 +37,7 @@ export default function useGetDrivers(latitude, longitude) {
           storage.set(key, JSON.stringify(driver)); // __tmp_location.1 = "{"\latitude\": 12.9722, ... }"
 
           function handleRemoveToStore() {
-            console.log("Removing to store", key);
+            console.debug("Removing to store", key);
 
             // remove subscription key
             let subscriptionKeys = storage.getString("__tmp_drivers");
@@ -45,26 +45,26 @@ export default function useGetDrivers(latitude, longitude) {
             function removeKey(k) {
               subscriptionKeys = subscriptionKeys.replace(k, ""); // prettier-ignore
               storage.set("__tmp_drivers", subscriptionKeys);
-              console.log(k, "removed from subscription keys in storage");
+              console.debug(k, "removed from subscription keys in storage");
             }
 
             if (subscriptionKeys.includes(`${key},`)) {
-              console.log("Detected key with comma", key);
+              console.debug("Detected key with comma", key);
               removeKey(`${key},`);
             }
 
             if (subscriptionKeys.includes(key)) {
-              console.log("Detected key without comma", key);
+              console.debug("Detected key without comma", key);
               removeKey(key);
             }
 
             // remove storage data
             storage.delete(key);
-            console.log(key, "was data removed from storage");
+            console.debug(key, "was data removed from storage");
           }
 
           let timeout = setTimeout(handleRemoveToStore, 15 * 1000);
-          console.log("Subscribe to", `locations.${driver.driver_id}`);
+          console.debug("Subscribe to", `locations.${driver.driver_id}`);
           subscribe(`locations.${driver.driver_id}`, (incomingData) => {
             // remove the previous timeout
             clearTimeout(timeout);

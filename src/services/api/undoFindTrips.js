@@ -2,7 +2,7 @@ import axios from "axios";
 import storage from "@/src/services/storage";
 
 export default async function undoFindTrips() {
-  console.log("Received undo find trip request.");
+  console.debug("Received undo find trip request.");
   const driver_id = storage.getString("user.id");
 
   const response = await axios.delete(
@@ -15,10 +15,10 @@ export default async function undoFindTrips() {
   );
 
   if (response.status === 200) {
-    console.log("Undo find trip request success.");
+    console.debug("Undo find trip request success.");
     return true;
   }
 
-  console.log("Unable to send undo find trip request.");
+  console.debug("Unable to send undo find trip request.");
   return false;
 }

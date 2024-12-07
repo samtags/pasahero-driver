@@ -11,12 +11,12 @@ class SocketManager {
 
   constructor(topic) {
     this.topic = topic;
-    console.log("Topic registered", this.topic);
+    console.debug("Topic registered", this.topic);
   }
 
   connect(callback) {
     if (this.closed) {
-      console.log("Socket is already closed.");
+      console.debug("Socket is already closed.");
       return;
     }
 
@@ -29,7 +29,7 @@ class SocketManager {
 
     // Handle open event
     this.ws.onopen = () => {
-      console.log("Socket opened");
+      console.debug("Socket opened");
       this.connected = true;
       this.retryInterval = 1000; // Reset retry interval on successful connection
     };
@@ -42,7 +42,7 @@ class SocketManager {
 
     // Handle error event
     this.ws.onerror = (error) => {
-      console.log(
+      console.debug(
         "Socket encountered error:",
         error.message,
         "Closing socket for topic",
@@ -53,7 +53,7 @@ class SocketManager {
 
     // Handle close event and trigger reconnection logic
     this.ws.onclose = (e) => {
-      console.log("Socket closed", e.code, e.reason);
+      console.debug("Socket closed", e.code, e.reason);
       this.connected = false;
 
       // Clean up event listeners
@@ -63,7 +63,7 @@ class SocketManager {
       this.ws.onclose = undefined;
 
       if (this.closed) {
-        console.log(
+        console.debug(
           "Socket is closed by user, no reconnection will be attempted."
         );
         return;
@@ -71,7 +71,7 @@ class SocketManager {
 
       // Schedule reconnection with exponential backoff
       setTimeout(() => {
-        console.log("Attempting to reconnect...");
+        console.debug("Attempting to reconnect...");
         this.connect();
       }, this.retryInterval);
 
@@ -83,7 +83,7 @@ class SocketManager {
 
     // Return the unsubscribe function
     return () => {
-      console.log("Closing socket connection");
+      console.debug("Closing socket connection");
       this.closed = true;
       this.ws.close();
     };

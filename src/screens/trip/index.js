@@ -136,7 +136,7 @@ export default function Trip() {
 
   function handleSubmitFeedback(feedback) {
     // todo: do something with the feedback
-    console.log(feedback);
+    console.debug(feedback);
     setShowFeedback(false);
 
     router.replace({ pathname: "/" });
@@ -422,7 +422,7 @@ export default function Trip() {
             <Optional condition={trip?.status === "FOUND"}>
               <FoundPreview
                 onChangeHeight={(h) => {
-                  console.log("🚀 ~ h:", h);
+                  console.debug("🚀 ~ h:", h);
                   setPreviewHeight(h);
                 }}
                 onMessage={handleGoToMessages}

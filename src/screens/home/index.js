@@ -9,14 +9,15 @@ import Registration from "@/src/screens/home/components/registration";
 import Tooltip from "rn-tooltip";
 import { useEffect, useRef } from "react";
 import storage from "@/src/services/storage";
-
-const defaultCenterCoordinate = [120.9763782, 14.5869407];
+import useLocation from "@/src/services/hooks/useLocation";
 
 export default function Home() {
+  const cameraRef = useRef();
   const tooltipRef = useRef(null);
 
   const isMapInitialized = true;
   const controller = useController();
+  const location = useLocation();
 
   const status = controller.status;
   const error = controller.error;
@@ -51,6 +52,22 @@ export default function Home() {
     controller.handlePress();
   }
 
+  function handleCenterMap() {
+    if (cameraRef?.current) {
+      const location = JSON.parse(storage.getString("user.location"));
+
+      if (location.longitude && location.latitude) {
+        cameraRef.current.setCamera({
+          centerCoordinate: [location?.longitude, location?.latitude],
+          zoomLevel: 16.5,
+          animationMode: "flyTo",
+          animationDuration: 1500,
+          heading: location?.heading,
+        });
+      }
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: "#F4F4F4", position: "relative" }}>
       <Mapbox.MapView
@@ -61,11 +78,14 @@ export default function Home() {
         styleURL="mapbox://styles/mapbox/streets-v12"
       >
         <Mapbox.Camera
-          key="static-camera"
-          zoomLevel={15}
           animationMode="none"
-          centerCoordinate={defaultCenterCoordinate}
+          centerCoordinate={[location.longitude, location.latitude]}
+          followHeading={location.heading}
+          heading={location.heading}
+          key="static-camera"
           pitch={40}
+          ref={cameraRef}
+          zoomLevel={15}
         />
       </Mapbox.MapView>
 
@@ -134,7 +154,7 @@ export default function Home() {
 
       <View style={{ position: "absolute", bottom: "0", width: "100%" }}>
         <View style={styles.iconContainers}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleCenterMap}>
             <View style={styles.iconCircle}>
               <Ionicons name="locate-sharp" size={32} color="#6366F1" />
             </View>

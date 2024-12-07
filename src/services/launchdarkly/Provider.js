@@ -22,7 +22,7 @@ const client = new ReactNativeLDClient(
 
 const LaunchdarklyProvider = ({ children }) => {
   useEffect(() => {
-    client.identify(ctx).catch((e) => console.log(e));
+    client.identify(ctx).catch((e) => console.debug(e));
   }, []);
 
   return <LDProvider client={client}>{children}</LDProvider>;

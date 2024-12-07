@@ -31,12 +31,12 @@ export default class Track {
   }
 
   async initialize() {
-    console.log("Initializing track.", this);
+    console.debug("Initializing track.", this);
 
     // get the user coordinates
     const origin = await getLocation(this.id);
     this.location = origin;
-    console.log("Driver location:", origin);
+    console.debug("Driver location:", origin);
 
     const trackRequest = await getTrack(
       `${origin.latitude},${origin.longitude}`,
@@ -49,7 +49,7 @@ export default class Track {
     }
 
     const track = trackRequest.coordinates || [];
-    console.log("getTrack:", track);
+    console.debug("getTrack:", track);
 
     // get directions
     if (track) this.coordinates = track;
@@ -59,9 +59,9 @@ export default class Track {
     this.snapshots = [];
 
     // create a snapshot
-    console.log("Creating snapshots");
+    console.debug("Creating snapshots");
     const snapshot = this.createSnapshot(track);
-    console.log("Created snapshot", snapshot);
+    console.debug("Created snapshot", snapshot);
 
     this.snapshots.push(snapshot);
 
@@ -110,7 +110,7 @@ export default class Track {
 
       createdBufferZone = turf.union(fc);
     } else {
-      console.log("No buffer zone created.");
+      console.debug("No buffer zone created.");
     }
 
     return createdBufferZone;
@@ -130,23 +130,23 @@ export default class Track {
 
   commit() {
     const current = this.snapshots.at(-1);
-    console.log("Received commit event.");
+    console.debug("Received commit event.");
 
     if (!current) {
-      console.log("No current snapshot found.");
+      console.debug("No current snapshot found.");
       return;
     }
 
     if (current.coordinates) {
       // update the coordinates
       this.coordinates = current.coordinates;
-      console.log("Coordinates updated.", this.coordinates);
+      console.debug("Coordinates updated.", this.coordinates);
     }
 
     if (current.bufferZone) {
       // update the bufferZone
       this.bufferZone = current.bufferZone;
-      console.log("Buffer zone updated.", this.bufferZone);
+      console.debug("Buffer zone updated.", this.bufferZone);
     }
 
     // triggers all the listeners and pass the coordinates of last snapshot snapshot
@@ -165,7 +165,7 @@ export default class Track {
 
   onUpdate(location) {
     this.location = location;
-    console.log("Location received.", location);
+    console.debug("Location received.", location);
 
     // triggers commit
     this.commit();
@@ -179,7 +179,10 @@ export default class Track {
     });
 
     const isWithinBufferZone = turf.booleanPointInPolygon(point, this.bufferZone); // prettier-ignore
-    console.log("Incoming location is within buffer zone?", isWithinBufferZone);
+    console.debug(
+      "Incoming location is within buffer zone?",
+      isWithinBufferZone
+    );
 
     let nextCoordinates = [...this.coordinates];
 
@@ -189,7 +192,7 @@ export default class Track {
       point,
       { units: "meters" }
     );
-    console.log("Nearest point:", nearestPoint.properties.index);
+    console.debug("Nearest point:", nearestPoint.properties.index);
 
     // add incoming location to the coordinates
     nextCoordinates = nextCoordinates.slice(nearestPoint.properties.index);
@@ -209,7 +212,7 @@ export default class Track {
 
   createSnapshot(coordinates) {
     if (coordinates.length < 2) {
-      console.log(
+      console.debug(
         "Unable to create snapshot. Coordinates length is less than 2."
       );
       return;

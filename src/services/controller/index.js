@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import storage from "@/src/services/storage";
 import { handleSignInViaGoogle } from "@/src/services/auth/useOAuth";
@@ -8,25 +8,43 @@ import * as Location from "expo-location";
 import { Alert } from "react-native";
 import getProfiles from "@/src/services/api/getProfiles";
 import * as supply from "@/src/services/background/supply";
-import useOnUpdate from "../hooks/useOnUpdate";
-import undoFindTrips from "../api/undoFindTrips";
+import useOnUpdate from "@/src/services/hooks/useOnUpdate";
+import undoFindTrips from "@/src/services/api/undoFindTrips";
+import useWillEffect from "../hooks/useWillEffect";
+import { transform } from "../background/location";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
   const [error, setError] = useState(""); // NO_BALANCE, ONGOING_TRIP, LOCATION_DENIED, BACKGROUND_LOCATION_DENIED, NO_USER, NO_PROFILE
 
+  // trigger the supply interval & get location on app start and status is cached as ACTIVE
+  useWillEffect(() => {
+    const status = storage.getString("controller.status");
+    if (status === "ACTIVE") {
+      console.debug("Controller is Active");
+
+      console.debug("Triggering supply interval.");
+      clearInterval(createSupplyInterval);
+      createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
+
+      // update user location
+      console.debug("Updating user location.");
+      handleSetUserLocation();
+    }
+  });
+
   const handlePressButton = async () => {
-    console.log("Controller button pressed.");
+    console.debug("Controller button pressed.");
 
     const userId = storage.getString("user.id");
     setError("");
 
     if (!userId) {
-      console.log("No user found. Signing user via Google.");
+      console.debug("No user found. Signing user via Google.");
 
       const isSignedIn = await handleSignInViaGoogle();
       if (!isSignedIn) {
-        console.log("User not signed in.");
+        console.debug("User not signed in.");
         setError("NO_USER");
         return;
       }
@@ -35,7 +53,9 @@ export default function useController() {
     const isForegroundLocationGranted = storage.getBoolean("settings.location.foreground.granted"); // prettier-ignore
     const isBackgroundLocationGranted = storage.getBoolean("settings.location.background.granted"); // prettier-ignore
 
-    if (Boolean(isForegroundLocationGranted) === false) {
+    if (Boolean(isForegroundLocationGranted)) {
+      // get location data
+    } else {
       const agreeToAskPermission = await handleShowLocationPermissionPrompt();
 
       if (agreeToAskPermission === false) {
@@ -108,6 +128,8 @@ export default function useController() {
           storage.set("user.service", profiles[0].service);
         }
       });
+
+      handleSetUserLocation();
     }
   };
 
@@ -135,7 +157,7 @@ var createSupplyInterval = null;
 export function handleSetStatus(status) {
   storage.set("controller.status", status);
 
-  console.log("Status changed to", status);
+  console.debug("Status changed to", status);
 }
 
 async function handleShowLocationPermissionPrompt() {
@@ -194,6 +216,8 @@ export async function handleRequestForegroundLocationPermission() {
   storage.set("settings.location.foreground.granted", request.granted);
   storage.set("settings.location.foreground.status", request.status);
 
+  if (request.granted) handleSetUserLocation();
+
   return request.granted;
 }
 
@@ -206,4 +230,16 @@ export async function handleRequestBackgroundLocationPermission() {
   storage.set("settings.location.background.status", request.status);
 
   return request.granted;
+}
+
+function handleSetUserLocation() {
+  console.debug("Setting user location.");
+
+  // prettier-ignore
+  Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation }) 
+    .then((data) => {
+      console.debug("Received location", transform(data));
+      storage.set("user.location", JSON.stringify(transform(data)));
+    })
+    .catch(err => console.debug("Error getting location", err));
 }

@@ -3,7 +3,7 @@ import axios from "axios";
 
 export default async function createProfile(service) {
   const driver_id = storage.getString("user.id");
-  console.log("Received create profile request", { driver_id, service });
+  console.debug("Received create profile request", { driver_id, service });
 
   const response = await axios.post("https://driver.pasahero.app/profiles", {
     driver_id,

@@ -10,7 +10,7 @@ export default async function updateUser({ id, email, name }) {
     name,
   });
 
-  console.log("Update user request response.", response);
+  console.debug("Update user request response.", response);
 
   return response.data;
 }

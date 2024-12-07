@@ -22,6 +22,6 @@ export default async function onFetchUpdateAsync() {
     }
   } catch (error) {
     // You can also add an alert() here if needed for your purposes
-    console.log(`Error fetching latest Expo update: ${error}`);
+    console.debug(`Error fetching latest Expo update: ${error}`);
   }
 }

@@ -7,7 +7,7 @@ export default function useTrip(id, defaultValue) {
   const [trip, setTrip] = useState(defaultValue || {});
 
   function handleUpdateTrip(tripData) {
-    console.log("Updating trip state.");
+    console.debug("Updating trip state.");
     setTrip((prev) => ({
       ...(prev || {}),
       ...tripData,
@@ -15,34 +15,34 @@ export default function useTrip(id, defaultValue) {
   }
 
   async function handleGetTrip() {
-    console.log("Getting trip details");
+    console.debug("Getting trip details");
     const response = await getTrip(id);
 
     if (response?.id) {
-      console.log("Trip details successfully retrieved.");
+      console.debug("Trip details successfully retrieved.");
       return handleUpdateTrip(response);
     }
 
-    console.log("Unable to get trip details", response);
+    console.debug("Unable to get trip details", response);
   }
 
   useOnAppFocus(() => {
-    console.log("Trip refocused.");
+    console.debug("Trip refocused.");
     handleGetTrip();
   });
 
   useEffect(() => {
     handleGetTrip();
 
-    console.log(`Subscribing to to trip.${id}`);
+    console.debug(`Subscribing to to trip.${id}`);
 
     const unsubscribe = subscribe(`trips.${id}`, (incomingData) => {
-      console.log("Received trip update", incomingData);
+      console.debug("Received trip update", incomingData);
       handleUpdateTrip(incomingData);
     });
 
     return () => {
-      console.log("Unsubscribing trip");
+      console.debug("Unsubscribing trip");
       unsubscribe();
     };
   }, []);

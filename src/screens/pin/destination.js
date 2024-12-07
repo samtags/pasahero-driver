@@ -29,13 +29,13 @@ export default function PinDestination() {
 
     handleSetDestination(payload);
 
-    console.log("called", payload);
+    console.debug("called", payload);
     if (isFromMatchRequest) {
       router.navigate({
         pathname: "/request",
       });
     } else {
-      console.log("Redirecting to origin screen");
+      console.debug("Redirecting to origin screen");
       router.navigate({
         pathname: "/origin",
         params: JSON.parse(storage.getString("location.current"), {}),

@@ -18,8 +18,8 @@ import GrowthBook from "@/src/services/growthbook";
 import tokenCache from "@/src/services/auth/tokenCache";
 import SplashScreen from "@/src/components/splash";
 import OAuthProvider from "@/src/services/auth/useOAuth";
-import * as TaskManager from "expo-task-manager";
-import * as supply from "@/src/services/background/supply";
+import useSupply from "@/src/services/background/supply";
+import useLocation from "@/src/services/background/location";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -41,19 +41,14 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({});
 UNSAFE_registerProperty("__queryClient__", queryClient);
 
-TaskManager.defineTask("background-supply", supply.create);
-
 export default function Layout() {
   useWillEffect(() => {
     // check for codepush updates
     onFetchUpdateAsync();
-    supply.register();
-
-    return () => {
-      supply.unregister();
-    };
   }, []);
 
+  useSupply();
+  useLocation();
   useWarmUpBrowser();
   useStorageLifecycle();
   useFonts({

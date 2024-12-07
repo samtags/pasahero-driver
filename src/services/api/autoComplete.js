@@ -5,7 +5,7 @@ import axios from "axios";
  * @param {string} input
  */
 export default async function autoComplete(input) {
-  console.log("Using passenger.pasahero.app");
+  console.debug("Using passenger.pasahero.app");
   return await axios.get(
     "https://passenger.pasahero.app/locations/autocomplete",
     {

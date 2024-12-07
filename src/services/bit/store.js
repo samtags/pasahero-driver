@@ -128,7 +128,7 @@ export default class Store {
 
       this.ws?.send(data);
     } catch (err) {
-      console.log("Error sending store state:", err);
+      console.debug("Error sending store state:", err);
     }
   }
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import storage from "@/src/services/storage";
 
 export default async function getWallet() {
-  console.log("Received request to get wallet.");
+  console.debug("Received request to get wallet.");
 
   const id = storage.getString("user.id");
 
@@ -10,7 +10,7 @@ export default async function getWallet() {
     `https://driver.pasahero.app/wallet?driver_id=${id}`
   );
 
-  console.log("Wallet request response.", response);
+  console.debug("Wallet request response.", response);
 
   return response.data || {};
 }

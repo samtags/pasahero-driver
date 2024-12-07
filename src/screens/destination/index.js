@@ -79,7 +79,7 @@ export default function DestinationScreen() {
         latitude = res?.Geometry?.Point[1];
         longitude = res?.Geometry?.Point[0];
 
-        console.log("Got coordinates by place id.", res, latitude, longitude);
+        console.debug("Got coordinates by place id.", res, latitude, longitude);
 
         handleSetDestination({ latitude, longitude });
         router.setParams("/destination", { longitude, latitude });

@@ -16,7 +16,7 @@ export default async function sendChat({
     trip_id,
   };
 
-  console.log("Send chat request received.", payload);
+  console.debug("Send chat request received.", payload);
 
   const req = await axios.post(
     "https://passenger.pasahero.app/notifications/chat",
