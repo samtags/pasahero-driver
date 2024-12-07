@@ -21,9 +21,10 @@ export const phoneIconEnd = require("../../assets/png/end-call.png");
 export const phoneIconAnswer = require("../../assets/png/answer-call.png");
 export const muteIcon = require("../../assets/png/mute.png");
 export const speakerIcon = require("../../assets/png/speaker.png");
-export const motorAngkasIcon = require("../../assets/png/motor-angkas.png");
-export const motorJoyRideIcon = require("../../assets/png/motor-joyride.png");
-export const motorMoveItIcon = require("../../assets/png/motor-moveit.png");
+export const motorAngkasIcon = require("../../assets/png/angkas-icon.png");
+export const motorJoyRideIcon = require("../../assets/png/joyride-icon.png");
+export const motorMoveItIcon = require("../../assets/png/moveit-icon.png");
+export const defaultIcon = require("../../assets/png/default-icon.png");
 export const currentLocationIndicator = require("../../assets/png/location-indicator.png");
 export const checkBoxChecked = "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.passenger%2FChecked.png?alt=media&token=37eb6137-cea4-4e8d-bfbf-47c72141c546"; // prettier-ignore
 export const checkBoxUnchecked = "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.passenger%2FUnchecked.png?alt=media&token=0d879712-7900-4de4-9ec8-02720b88cf71"; // prettier-ignore

@@ -8,6 +8,7 @@ export default function useLocation() {
   const [location, setLocation] = useState({
     latitude: defaultCenterCoordinate[1],
     longitude: defaultCenterCoordinate[0],
+    fallback: true,
   });
 
   const [userLocation] = useMMKVString("user.location");

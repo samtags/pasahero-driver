@@ -5,11 +5,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
-import Registration from "@/src/screens/home/components/registration";
 import Tooltip from "rn-tooltip";
 import { useEffect, useRef } from "react";
 import storage from "@/src/services/storage";
 import useLocation from "@/src/services/hooks/useLocation";
+import useDriverIcon from "@/src/services/hooks/useDriverIcon";
+import getColorByService from "@/src/services/util/colors/getColorByService";
+import Registration from "@/src/screens/home/components/registration";
+import Center from "@/src/screens/home/components/center";
 
 export default function Home() {
   const cameraRef = useRef();
@@ -19,8 +22,15 @@ export default function Home() {
   const controller = useController();
   const location = useLocation();
 
+  const driverIcon = useDriverIcon();
+
   const status = controller.status;
   const error = controller.error;
+
+  const featureCollection = {
+    type: "FeatureCollection",
+    features: [],
+  };
 
   useEffect(() => {
     const firstTime = storage.getBoolean("settings.app.firstTime");
@@ -59,13 +69,27 @@ export default function Home() {
       if (location.longitude && location.latitude) {
         cameraRef.current.setCamera({
           centerCoordinate: [location?.longitude, location?.latitude],
-          zoomLevel: 16.5,
+          zoomLevel: 15,
           animationMode: "flyTo",
           animationDuration: 1500,
           heading: location?.heading,
         });
       }
     }
+  }
+
+  if (!location.fallback) {
+    featureCollection.features.push({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [location.longitude, location.latitude],
+      },
+      properties: {
+        id: "driver",
+        rotation: location.heading,
+      },
+    });
   }
 
   return (
@@ -78,7 +102,6 @@ export default function Home() {
         styleURL="mapbox://styles/mapbox/streets-v12"
       >
         <Mapbox.Camera
-          animationMode="none"
           centerCoordinate={[location.longitude, location.latitude]}
           followHeading={location.heading}
           heading={location.heading}
@@ -87,6 +110,27 @@ export default function Home() {
           ref={cameraRef}
           zoomLevel={15}
         />
+
+        <Mapbox.Images
+          images={{
+            driverIcon,
+          }}
+        />
+
+        <Mapbox.ShapeSource id="feature-collection" shape={featureCollection}>
+          <Mapbox.SymbolLayer
+            id="driver"
+            style={{
+              iconImage: "driverIcon",
+              iconAllowOverlap: true,
+              iconRotate: ["get", "rotation"],
+              iconRotationAlignment: "map",
+              iconSize: 0.225,
+              iconAnchor: "center",
+            }}
+            filter={["==", ["get", "id"], "driver"]}
+          />
+        </Mapbox.ShapeSource>
       </Mapbox.MapView>
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
@@ -154,11 +198,7 @@ export default function Home() {
 
       <View style={{ position: "absolute", bottom: "0", width: "100%" }}>
         <View style={styles.iconContainers}>
-          <TouchableOpacity onPress={handleCenterMap}>
-            <View style={styles.iconCircle}>
-              <Ionicons name="locate-sharp" size={32} color="#6366F1" />
-            </View>
-          </TouchableOpacity>
+          <Center onPress={handleCenterMap} />
         </View>
         <View style={styles.statusContainer}>
           <View style={{ alignItems: "center" }}>
@@ -175,7 +215,7 @@ export default function Home() {
                 onPress={handlePressCallToAction}
                 style={{ marginTop: -37.5 }}
               >
-                <View style={styles.callToAction}>
+                <View style={styles.callToAction()}>
                   <Ionicons
                     name={status === "ACTIVE" ? "stop" : "power-outline"}
                     size={32}
@@ -233,13 +273,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  callToAction: {
-    backgroundColor: "#6366F1",
-    height: 75,
-    width: 75,
-    borderRadius: 75,
-    justifyContent: "center",
-    alignItems: "center",
+  callToAction: () => {
+    const service = storage.getString("user.service");
+    const status = storage.getString("controller.status");
+
+    let color = "#6366F1";
+
+    if (status === "ACTIVE") color = getColorByService(service);
+
+    return {
+      backgroundColor: color,
+      height: 75,
+      width: 75,
+      borderRadius: 75,
+      justifyContent: "center",
+      alignItems: "center",
+    };
   },
   indicator: (color) => ({
     width: 8,
