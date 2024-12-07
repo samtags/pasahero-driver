@@ -7,6 +7,9 @@ import getWallet from "@/src/services/api/getWallet";
 import * as Location from "expo-location";
 import { Alert } from "react-native";
 import getProfiles from "@/src/services/api/getProfiles";
+import * as supply from "@/src/services/background/supply";
+import useOnUpdate from "../hooks/useOnUpdate";
+import undoFindTrips from "../api/undoFindTrips";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
@@ -77,6 +80,8 @@ export default function useController() {
       handleSetStatus("INACTIVE");
     } else {
       handleSetStatus("ACTIVE");
+      clearInterval(createSupplyInterval);
+      createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
 
       getOngoingTrips().then((trips) => {
         if (trips.length > 0) {
@@ -98,10 +103,22 @@ export default function useController() {
           handleSetStatus("INACTIVE");
           setError("NO_PROFILE");
         }
+
+        if (profiles.length === 1) {
+          storage.set("user.service", profiles[0].service);
+        }
       });
     }
   };
 
+  useOnUpdate(() => {
+    if (status === "INACTIVE") {
+      clearInterval(createSupplyInterval);
+      undoFindTrips();
+    }
+  }, [status]);
+
+  // expose method
   handlePress = handlePressButton;
 
   return {
@@ -113,6 +130,7 @@ export default function useController() {
 }
 
 export var handlePress = () => {};
+var createSupplyInterval = null;
 
 export function handleSetStatus(status) {
   storage.set("controller.status", status);

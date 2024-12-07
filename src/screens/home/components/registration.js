@@ -1,10 +1,11 @@
 import { StyleSheet, View, TouchableOpacity, Alert } from "react-native";
-import Text from "@/src/components/text";
-import * as controller from "@/src/services/controller";
-import WheelPicker from "@quidone/react-native-wheel-picker";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import WheelPicker from "@quidone/react-native-wheel-picker";
+import Text from "@/src/components/text";
+import * as controller from "@/src/services/controller";
 import createProfile from "@/src/services/api/createProfile";
+import storage from "@/src/services/storage";
 
 const options = [
   { label: "Angkas", value: "angkas" },
@@ -28,6 +29,7 @@ export default function Registration({ onClose = () => {} }) {
     if (response.id) {
       onClose();
       controller.handlePress();
+      storage.set("user.service", selected.value);
     } else {
       Alert.alert("Unable to create profile.", "Please try again later.", [
         {

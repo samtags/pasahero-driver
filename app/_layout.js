@@ -8,16 +8,18 @@ import Mapbox from "@rnmapbox/maps";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ClerkProvider, ClerkLoaded, ClerkLoading } from "@clerk/clerk-expo";
-import { UNSAFE_registerProperty } from "../src/services/global";
-import { useWarmUpBrowser } from "../src/services/hooks/useWarmUpBrowser";
-import { useStorageLifecycle } from "../src/services/storage";
-import onFetchUpdateAsync from "../src/services/updates";
-import useWillEffect from "../src/services/hooks/useWillEffect";
-import ImagePreRenderer from "../src/services/images/PreRenderer";
-import GrowthBook from "../src/services/growthbook";
-import tokenCache from "../src/services/auth/tokenCache";
-import SplashScreen from "../src/components/splash";
+import { UNSAFE_registerProperty } from "@/src/services/global";
+import { useWarmUpBrowser } from "@/src/services/hooks/useWarmUpBrowser";
+import { useStorageLifecycle } from "@/src/services/storage";
+import onFetchUpdateAsync from "@/src/services/updates";
+import useWillEffect from "@/src/services/hooks/useWillEffect";
+import ImagePreRenderer from "@/src/services/images/PreRenderer";
+import GrowthBook from "@/src/services/growthbook";
+import tokenCache from "@/src/services/auth/tokenCache";
+import SplashScreen from "@/src/components/splash";
 import OAuthProvider from "@/src/services/auth/useOAuth";
+import * as TaskManager from "expo-task-manager";
+import * as supply from "@/src/services/background/supply";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -39,10 +41,17 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({});
 UNSAFE_registerProperty("__queryClient__", queryClient);
 
+TaskManager.defineTask("background-supply", supply.create);
+
 export default function Layout() {
   useWillEffect(() => {
     // check for codepush updates
     onFetchUpdateAsync();
+    supply.register();
+
+    return () => {
+      supply.unregister();
+    };
   }, []);
 
   useWarmUpBrowser();
