@@ -227,7 +227,10 @@ export default function Home() {
           </View>
           <View style={styles.statusRow}>
             <Text weight="bold" size={18}>
-              {status === "ACTIVE" ? "Online ka na!" : "Ikaw ay offline"}
+              <Optional condition={status === "ACTIVE"}>Online ka na!</Optional>
+              <Optional condition={status === "INACTIVE"}>
+                Ikaw ay offline
+              </Optional>
             </Text>
           </View>
         </View>

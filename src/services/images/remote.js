@@ -48,6 +48,7 @@ export const pinOutlined = "https://firebasestorage.googleapis.com/v0/b/pasahero
 export const call = "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.passenger%2FPhone.png?alt=media&token=f27c1ca8-c601-4f37-905c-61ac9ab0c9e5"; // prettier-ignore
 export const ongoing =
   "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.driver%2FOngoing.png?alt=media&token=d9b9dfa7-2d9d-4bcb-be2c-4a3b4d250b4a"; // prettier-ignore
+export const current = "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.driver%2FTransit%20Current.png?alt=media&token=a10873a2-edc5-4b67-94a2-73b14752a061"; // prettier-ignore
 
 /** * @deprecated - use pin instead */
 export const oldPin = "https://firebasestorage.googleapis.com/v0/b/pasahero-5c989.appspot.com/o/com.pasahero.passenger%2FLocation.png?alt=media&token=c6c91f9e-1ea6-4205-9292-506bfdc25a05"; // prettier-ignore

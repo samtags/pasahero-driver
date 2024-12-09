@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Stack } from "expo-router/stack";
 import { useFonts } from "expo-font";
@@ -20,6 +21,7 @@ import SplashScreen from "@/src/components/splash";
 import OAuthProvider from "@/src/services/auth/useOAuth";
 import useSupply from "@/src/services/background/supply";
 import useLocation from "@/src/services/background/location";
+import useSubscribeToIncomingTrip from "@/src/services/trip/incoming";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -51,6 +53,8 @@ export default function Layout() {
   useLocation();
   useWarmUpBrowser();
   useStorageLifecycle();
+  useSubscribeToIncomingTrip();
+
   useFonts({
     "Lato-Thin": require("../assets/fonts/Lato/Lato-Thin.ttf"),
     "Lato-Light": require("../assets/fonts/Lato/Lato-Light.ttf"),

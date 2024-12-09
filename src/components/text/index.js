@@ -10,7 +10,7 @@ export default function Text({
   style = {},
   size = 16,
   color = "#000",
-  textAlign = "left",
+  textAlign,
   maxWidth,
   numberOfLines,
 }) {
@@ -18,11 +18,14 @@ export default function Text({
     fontSize: size,
     lineHeight: size * 1.1,
     color,
-    textAlign,
   };
 
   if (maxWidth) {
     defaultStyles.maxWidth = maxWidth;
+  }
+
+  if (textAlign) {
+    defaultStyles.textAlign = textAlign;
   }
 
   return (

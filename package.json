@@ -29,6 +29,7 @@
     "expo": "^52.0.14",
     "expo-application": "^6.0.1",
     "expo-auth-session": "~6.0.1",
+    "expo-av": "~15.0.1",
     "expo-background-fetch": "~13.0.3",
     "expo-clipboard": "^7.0.0",
     "expo-constants": "^17.0.3",

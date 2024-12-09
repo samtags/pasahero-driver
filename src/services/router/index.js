@@ -4,24 +4,21 @@ const routerParams = new Map();
 global.routerParams = routerParams;
 
 function navigate({ pathname, params = {} }) {
-  let key = pathname;
-  if (key[0] === "/") key = key.slice(1);
+  const key = pathname.split("/")?.at(-1);
 
   routerParams.set(key, params);
   router.navigate({ pathname: key, params });
 }
 
 function push({ pathname, params = {} }) {
-  let key = pathname;
-  if (key[0] === "/") key = key.slice(1);
+  const key = pathname.split("/")?.at(-1);
 
   routerParams.set(key, params);
   router.push({ pathname: key, params });
 }
 
 function replace({ pathname, params = {} }) {
-  let key = pathname;
-  if (key[0] === "/") key = key.slice(1);
+  const key = pathname.split("/")?.at(-1);
 
   routerParams.set(key, params);
   router.replace({ pathname: key, params });
@@ -55,8 +52,7 @@ export function useRouterParams() {
 }
 
 export function setParams(pathname, params) {
-  let key = pathname;
-  if (key[0] === "/") key = key.slice(1);
+  const key = pathname.split("/")?.at(-1);
 
   const existingParams = routerParams.get(key);
 
@@ -67,8 +63,7 @@ export function setParams(pathname, params) {
 }
 
 export function getState(pathname) {
-  let key = pathname;
-  if (key[0] === "/") key = key.slice(1);
+  const key = pathname.split("/")?.at(-1);
 
   return routerParams.get(key);
 }
