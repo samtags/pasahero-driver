@@ -8,8 +8,13 @@ if (process.env.NODE_ENV === "development") global.routerParams = routerParams;
 function navigate({ pathname, params = {} }) {
   const key = pathname.split("/")?.at(-1);
 
-  set(key, params);
-  router.navigate({ pathname: key, params });
+  // safely update the params
+  const existingParams = routerParams.get(key) || {};
+  const data = { ...existingParams, ...params };
+
+  set(key, data);
+
+  router.navigate({ pathname: key, params: data });
 }
 
 function push({ pathname, params = {} }) {
@@ -51,7 +56,6 @@ export function useRouterParams() {
   const route = state.routes[state.index];
   let routeName = route?.name?.split("/")?.at(-1);
   const [data, setData] = useState(routerParams.get(routeName));
-  console.log(`key: ${routeName}`, { data });
 
   useEffect(() => {
     function onChange(payload) {

@@ -9,12 +9,16 @@ import { useMutation } from "@tanstack/react-query";
 import takeTripRequest from "@/src/services/api/takeTripRequest";
 import rejectTripRequest from "@/src/services/api/rejectTripRequest";
 import subscribe from "@/src/services/realtime";
+import { useMMKVObject } from "react-native-mmkv";
+import storage from "@/src/services/storage";
 
+let timeout;
 export default function Trips() {
   const alreadyPromptedTimeout = useRef(false);
-  const data = useRouterParams();
+  const [data] = useMMKVObject("__tmp_trip.request");
 
   const [trip, setTrip] = useState(null);
+  console.log("🚀 ~ Trips ~ trip:", trip);
   const [isExpiring, setIsExpiring] = useState(false);
   const [activeTab, setActiveTab] = useState("MAIN"); // MAIN, NEARBY, HISTORY
 
@@ -24,11 +28,16 @@ export default function Trips() {
   useOnTripTimeoutWarning(trip?.id, handleOnTripTimeoutWarning);
   useOnTripTimeout(trip?.id, handleOnTripTimeout);
 
+  function reset() {
+    setTrip(null);
+    setIsExpiring(false);
+    storage.delete("__tmp_trip.request");
+    clearTimeout(timeout);
+  }
+
   async function handleRefuse() {
     await refuse?.send();
-    setTrip(null);
-    router.resetParams("/(tabs)/trips");
-    setIsExpiring(false);
+    reset();
     router.navigate({ pathname: "/" });
   }
 
@@ -39,11 +48,8 @@ export default function Trips() {
     }
 
     console.debug("Prompting for trip timeout.");
-    alreadyPromptedTimeout.current = true;
 
-    setTrip(null);
-    router.resetParams("/(tabs)/trips");
-    setIsExpiring(false);
+    reset();
     Alert.alert(
       "Trip Ignored",
       "No action was taken, and the trip request has expired.",
@@ -55,6 +61,8 @@ export default function Trips() {
         },
       ]
     );
+
+    alreadyPromptedTimeout.current = true;
   }
 
   function handleOnTripTimeoutWarning() {
@@ -73,15 +81,18 @@ export default function Trips() {
   }
 
   useEffect(() => {
-    let timeout;
+    console.debug("Detected change from router params", { data, trip });
+    if (data && !trip && data.status === "REQUESTED") {
+      console.debug("Rehydrating trip details by router params update");
 
-    console.debug("Detected change from router params", { data });
-    if (data?.extras && !trip) {
-      console.log("Rehydrating trip details by router params update");
-      setTrip(data.extras);
+      setTrip(data);
+      // set state
+      storage.set("__tmp_trip.request", JSON.stringify(data));
+      alreadyPromptedTimeout.current = false;
+      clearTimeout(timeout);
 
-      console.log("Setting fallback timeout for this trip request.");
-      timeout = setTimeout(handleOnTripTimeoutFallback, 30_000);
+      console.debug("Setting fallback timeout for this trip request.");
+      timeout = setTimeout(handleOnTripTimeoutFallback, 35_000);
     }
 
     return () => clearTimeout(timeout);
@@ -238,6 +249,11 @@ const styles = StyleSheet.create({
     top: -2,
   },
 });
+
+export function useIncomingRequest() {
+  const [trip] = useMMKVObject("__tmp_trip.request");
+  return trip;
+}
 
 function useTakeTrip(id) {
   const { mutate, isPending } = useMutation({

@@ -100,17 +100,12 @@ export default function useController() {
     if (currentStatus === "ACTIVE") {
       handleSetStatus("INACTIVE");
     } else {
-      const tripScreen = router.getState("/(tabs)/trips");
-      if (tripScreen?.extras) {
-        console.debug(
-          "User has trip request. Redirecting to trips instead.",
-          tripScreen?.extras
-        );
+      const tripRequest = storage.getString("__tmp_trip.request");
+      console.debug("🚀 ~ handlePressButton ~ tripRequest:", tripRequest);
 
-        return router.navigate({
-          pathname: "/(tabs)/trips",
-          params: tripScreen,
-        });
+      if (tripRequest) {
+        console.debug("User has trip request. Redirecting to trips instead.");
+        return router.navigate({ pathname: "/(tabs)/trips" });
       }
 
       handleSetStatus("ACTIVE");
@@ -142,6 +137,11 @@ export default function useController() {
           storage.set("user.service", profiles[0].service);
           storage.set("user.profile_id", profiles[0].id);
         }
+      });
+
+      getIncomingTrip().then((trip) => {
+        storage.set("__tmp_trip.request", JSON.stringify(trip));
+        handleSetStatus("INACTIVE");
       });
 
       handleSetUserLocation();

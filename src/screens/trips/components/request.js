@@ -37,7 +37,7 @@ export default function Request({
   );
 
   const isLoading = isTaking || isRefusing;
-  console.log("🚀 ~ isLoading:", isLoading);
+  console.debug("🚀 ~ isLoading:", isLoading);
 
   return (
     <View style={{ flex: 1, justifyContent: "space-between" }}>

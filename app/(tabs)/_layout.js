@@ -1,7 +1,10 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useIncomingRequest } from "@/src/screens/trips";
 
 export default function TabLayout() {
+  const request = useIncomingRequest();
+
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#363F59" }}>
       <Tabs.Screen
@@ -20,6 +23,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={24} name="at-outline" color={color} />
           ),
+          tabBarBadge: request ? 1 : undefined,
+          tabBarBadgeStyle: {
+            fontFamily: "Lato-Bold",
+            fontSize: 10,
+            backgroundColor: "#EF4444",
+          },
         }}
       />
       <Tabs.Screen

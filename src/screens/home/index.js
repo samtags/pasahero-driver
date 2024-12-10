@@ -13,8 +13,13 @@ import useDriverIcon from "@/src/services/hooks/useDriverIcon";
 import getColorByService from "@/src/services/util/colors/getColorByService";
 import Registration from "@/src/screens/home/components/registration";
 import Center from "@/src/screens/home/components/center";
+import { useIncomingRequest } from "@/src/screens/trips";
+import router from "@/src/services/router";
+import getIncomingTrip from "@/src/services/api/getIncomingTrip";
+import useRenderCounter from "@/src/services/hooks/useRenderCounter";
 
 export default function Home() {
+  useRenderCounter("Home");
   const cameraRef = useRef();
   const tooltipRef = useRef(null);
 
@@ -23,6 +28,7 @@ export default function Home() {
   const location = useLocation();
 
   const driverIcon = useDriverIcon();
+  const tripRequest = useIncomingRequest();
 
   const status = controller.status;
   const error = controller.error;
@@ -35,6 +41,13 @@ export default function Home() {
   useEffect(() => {
     const firstTime = storage.getBoolean("settings.app.firstTime");
     if (firstTime === undefined) tooltipRef.current?.toggleTooltip();
+
+    getIncomingTrip().then((trip) => {
+      if (trip) {
+        console.debug("There is incoming trip. Prompting in home screen.");
+        storage.set("__tmp_trip.request", JSON.stringify(trip));
+      }
+    });
   }, []);
 
   function handleRedirectToSettings() {
@@ -135,6 +148,19 @@ export default function Home() {
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
         <View style={{ padding: 24, gap: 8 }}>
+          <Optional condition={Boolean(tripRequest)}>
+            <TouchableOpacity
+              onPress={() => router.navigate({ pathname: "/(tabs)/trips" })}
+            >
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  You have ongoing trip request! Please acknowledge it before it
+                  expires.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
+
           <Optional condition={error === "NO_PROFILE"}>
             <View style={{ backgroundColor: "white", padding: 16 }}>
               <Text>Piliin ang platform na iyong gamit.</Text>
@@ -226,10 +252,10 @@ export default function Home() {
             </Tooltip>
           </View>
           <View style={styles.statusRow}>
-            <Text weight="bold" size={18} color="black">
+            <Text key={status} weight="bold" size={18} color="black">
               <Optional condition={status === "ACTIVE"}>Online ka na!</Optional>
               <Optional condition={status === "INACTIVE"}>
-                Ikaw ay {"offline"}
+                Ikaw ay offline
               </Optional>
             </Text>
           </View>

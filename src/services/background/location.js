@@ -14,7 +14,7 @@ export default function useLocation() {
     let unsubscribe;
 
     if (foregroundPermission && backgroundPermission) {
-      console.info("Starting background location task.");
+      console.debug("Starting background location task.");
 
       Location.startLocationUpdatesAsync("background-location-task", {
         accuracy: Location.Accuracy.Highest,

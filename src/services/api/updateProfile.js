@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default async function updateProfile(id, data) {
-  console.info("Received update profile request.", id, data);
+  console.debug("Received update profile request.", id, data);
 
   const allowedKeys = [
     "first_name",

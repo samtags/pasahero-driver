@@ -4,6 +4,7 @@ import subscribe from "@/src/services/realtime";
 import router from "@/src/services/router";
 import { handleSetStatus } from "@/src/services/controller";
 import handlePlayIncomingTripSound from "@/src/services/notification/handlePlayIncomingTripSound";
+import storage from "../storage";
 
 export default function useSubscribeToIncomingTrip() {
   const [user] = useMMKVString("user.id");
@@ -20,6 +21,8 @@ export default function useSubscribeToIncomingTrip() {
           handlePlayIncomingTripSound();
 
           handleSetStatus("INACTIVE");
+
+          storage.set("__tmp_trip.request", JSON.stringify(data.extras));
 
           router.navigate({
             pathname: "/(tabs)/trips",

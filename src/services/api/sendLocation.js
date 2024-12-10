@@ -2,7 +2,7 @@ import axios from "axios";
 import storage from "@/src/services/storage";
 
 export default async function sendLocation(location) {
-  console.info("Received send location request.", location);
+  console.debug("Received send location request.", location);
 
   location.id = storage.getString("user.id");
   location.service = storage.getString("user.service");
