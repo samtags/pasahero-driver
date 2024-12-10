@@ -10,8 +10,9 @@ import getProfiles from "@/src/services/api/getProfiles";
 import * as supply from "@/src/services/background/supply";
 import useOnUpdate from "@/src/services/hooks/useOnUpdate";
 import undoFindTrips from "@/src/services/api/undoFindTrips";
-import useWillEffect from "../hooks/useWillEffect";
-import { transform } from "../background/location";
+import useWillEffect from "@/src/services/hooks/useWillEffect";
+import { transform } from "@/src/services/background/location";
+import router from "@/src/services/router";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
@@ -99,6 +100,19 @@ export default function useController() {
     if (currentStatus === "ACTIVE") {
       handleSetStatus("INACTIVE");
     } else {
+      const tripScreen = router.getState("/(tabs)/trips");
+      if (tripScreen?.extras) {
+        console.debug(
+          "User has trip request. Redirecting to trips instead.",
+          tripScreen?.extras
+        );
+
+        return router.navigate({
+          pathname: "/(tabs)/trips",
+          params: tripScreen,
+        });
+      }
+
       handleSetStatus("ACTIVE");
       clearInterval(createSupplyInterval);
       createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
@@ -126,6 +140,7 @@ export default function useController() {
 
         if (profiles.length === 1) {
           storage.set("user.service", profiles[0].service);
+          storage.set("user.profile_id", profiles[0].id);
         }
       });
 

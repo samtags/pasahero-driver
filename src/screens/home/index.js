@@ -226,10 +226,10 @@ export default function Home() {
             </Tooltip>
           </View>
           <View style={styles.statusRow}>
-            <Text weight="bold" size={18}>
+            <Text weight="bold" size={18} color="black">
               <Optional condition={status === "ACTIVE"}>Online ka na!</Optional>
               <Optional condition={status === "INACTIVE"}>
-                Ikaw ay offline
+                Ikaw ay {"offline"}
               </Optional>
             </Text>
           </View>

@@ -30,6 +30,7 @@ export default function Registration({ onClose = () => {} }) {
       onClose();
       controller.handlePress();
       storage.set("user.service", selected.value);
+      storage.set("user.profile_id", response.id);
     } else {
       Alert.alert("Unable to create profile.", "Please try again later.", [
         {

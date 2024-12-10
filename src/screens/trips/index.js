@@ -4,23 +4,40 @@ import { MotiView } from "moti";
 import Optional from "@/src/components/optional";
 import Request from "./components/request";
 import Tabs from "./components/tabs";
-import { useRouterParams } from "@/src/services/router";
-import useOnFocus from "@/src/services/hooks/useOnFocus";
+import router, { useRouterParams } from "@/src/services/router";
+import { useMutation } from "@tanstack/react-query";
+import takeTripRequest from "@/src/services/api/takeTripRequest";
+import rejectTripRequest from "@/src/services/api/rejectTripRequest";
 
 export default function Trips() {
-  const [activeTab, setActiveTab] = useState("MAIN"); // MAIN, NEARBY, HISTORY
   const data = useRouterParams();
-  const [trip, setTrip] = useState(data?.extras);
 
-  useOnFocus(() => {
+  const [trip, setTrip] = useState(null);
+  const [activeTab, setActiveTab] = useState("MAIN"); // MAIN, NEARBY, HISTORY
+
+  const take = useTakeTrip(trip?.id);
+  const refuse = useRejectTrip(trip?.id);
+
+  async function handleRefuse() {
+    await refuse?.send();
+    setTrip(null);
+    router.navigate({ pathname: "/" });
+    router.resetParams("/(tabs)/trips");
+  }
+
+  useEffect(() => {
+    console.debug("Detected change from router params", { data });
     if (data?.extras && !trip) {
+      console.log("Rehydrating trip details by router params update");
       setTrip(data.extras);
     }
-  });
+  }, [data]);
 
   return (
     <View style={styles.container}>
-      <Optional condition={activeTab === "MAIN" && trip.status === "REQUESTED"}>
+      <Optional
+        condition={activeTab === "MAIN" && trip?.status === "REQUESTED"}
+      >
         <MotiView
           from={{ width: "60%", height: 4 }}
           // animate={{ width: 0 }}
@@ -32,7 +49,9 @@ export default function Trips() {
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <Optional condition={activeTab === "MAIN" && trip.status === "REQUESTED"}>
+      <Optional
+        condition={activeTab === "MAIN" && trip?.status === "REQUESTED"}
+      >
         <Request
           first_point={trip?.first_point}
           last_point={trip?.last_point}
@@ -43,6 +62,10 @@ export default function Trips() {
             trip?.fare[trip?.service]?.estimate_preview ||
             trip?.fare?.estimate_preview
           }
+          isTaking={take.isPending}
+          isRefusing={refuse.isPending}
+          handleTake={take?.send}
+          handleRefuse={handleRefuse}
         />
       </Optional>
     </View>
@@ -158,3 +181,19 @@ const styles = StyleSheet.create({
     top: -2,
   },
 });
+
+function useTakeTrip(id) {
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => takeTripRequest(id),
+  });
+
+  return { send: mutate, isPending };
+}
+
+function useRejectTrip(id) {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: () => rejectTripRequest(id),
+  });
+
+  return { send: mutateAsync, isPending };
+}

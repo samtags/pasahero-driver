@@ -4,6 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import Text from "@/src/components/text";
 import { Image } from "expo-image";
@@ -21,6 +22,10 @@ export default function Request({
   payment_method,
   estimate_preview,
   will_add_tip,
+  isTaking,
+  isRefusing,
+  handleTake = () => {},
+  handleRefuse = () => {},
 }) {
   const location = JSON.parse(storage.getString("user.location"));
 
@@ -30,6 +35,9 @@ export default function Request({
     first_point?.latitude,
     first_point?.longitude
   );
+
+  const isLoading = isTaking || isRefusing;
+  console.log("🚀 ~ isLoading:", isLoading);
 
   return (
     <View style={{ flex: 1, justifyContent: "space-between" }}>
@@ -173,25 +181,24 @@ export default function Request({
           </Text>
         </View>
 
-        <View>
-          <Cta
-            // disabled={isLoading}
-            // onPress={handleDrop}
-            color="transparent"
-            textColor="#EF4444"
-          >
-            Refuse
-          </Cta>
+        <Optional condition={isLoading}>
+          <ActivityIndicator
+            size="large"
+            color={isTaking ? "#10B981" : "#EF4444"}
+          />
+        </Optional>
 
-          <Cta
-            // disabled={!isTakeButtonEnabled}
-            // onPress={handleTake}
-            // color={isTakeButtonEnabled ? "#10B981" : "#B7EAD9"}
-            color="#10B981"
-          >
-            Take
-          </Cta>
-        </View>
+        <Optional condition={!isLoading}>
+          <View>
+            <Cta onPress={handleRefuse} color="transparent" textColor="#EF4444">
+              Refuse
+            </Cta>
+
+            <Cta onPress={handleTake} color="#10B981">
+              Take
+            </Cta>
+          </View>
+        </Optional>
       </ScrollView>
     </View>
   );

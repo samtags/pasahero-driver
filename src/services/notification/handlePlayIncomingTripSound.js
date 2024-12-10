@@ -5,6 +5,7 @@ let sound;
 let isPlaying = false;
 
 export default async function handlePlayIncomingTripSound() {
+  if (process.env.NODE_ENV === "development") return;
   if (isPlaying) return;
 
   if (!sound) {
