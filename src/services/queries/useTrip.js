@@ -15,7 +15,7 @@ export default function useTrip(id, defaultValue) {
   }
 
   async function handleGetTrip() {
-    console.debug("Getting trip details");
+    console.debug("Getting trip details", { id });
     const response = await getTrip(id);
 
     if (response?.id) {
@@ -45,7 +45,7 @@ export default function useTrip(id, defaultValue) {
       console.debug("Unsubscribing trip");
       unsubscribe();
     };
-  }, []);
+  }, [id]);
 
   return trip;
 }

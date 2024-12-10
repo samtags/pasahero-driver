@@ -43,7 +43,7 @@ export default function Request({
     <View style={{ flex: 1, justifyContent: "space-between" }}>
       <ScrollView contentContainerStyle={{ padding: 24, gap: 24 }}>
         <Optional condition={isExpiring}>
-          <Text color="#F59E0B" size={18} weight="bold">
+          <Text color="#1B1B1B" size={18} weight="bold">
             Expiring Soon
           </Text>
         </Optional>
