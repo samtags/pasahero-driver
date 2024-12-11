@@ -2,21 +2,20 @@ import axios from "axios";
 import storage from "@/src/services/storage";
 
 export default async function takeTripRequest(id) {
-  console.debug("Received take trip request", { id });
-  const service = storage.getString("user.service");
+  const driver_id = storage.getString("user.id");
   const profile_id = storage.getString("user.profile_id");
+  console.debug("Received take trip request", { id, driver_id, profile_id });
 
   try {
-    await axios.post("https://driver.pasahero.app/trips-request", {
+    await axios.post("https://driver.pasahero.app/take-trip", {
       id,
-      service,
+      driver_id,
       profile_id,
     });
 
     console.debug("Taken trip request success!", { id });
-    return true;
-  } catch (err) {
-    console.warn("Unable to take trip request", err);
-    return false;
+  } catch (error) {
+    console.warn("Unable to take trip request", error.response);
+    Promise.reject(error.response);
   }
 }

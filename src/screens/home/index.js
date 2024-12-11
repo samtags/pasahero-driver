@@ -17,6 +17,9 @@ import { useIncomingRequest } from "@/src/screens/trips";
 import router from "@/src/services/router";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 import useRenderCounter from "@/src/services/hooks/useRenderCounter";
+import { point, plate } from "@/src/services/images/remote";
+import useNearby from "@/src/services/hooks/useNearby";
+import TripMarker from "@/src/screens/home/components/marker";
 
 export default function Home() {
   useRenderCounter("Home");
@@ -37,6 +40,9 @@ export default function Home() {
     type: "FeatureCollection",
     features: [],
   };
+
+  const { trips: nearby, onCameraChanged } = useNearby();
+  console.log("🚀 ~ Home ~ nearby:", nearby);
 
   useEffect(() => {
     const firstTime = storage.getBoolean("settings.app.firstTime");
@@ -73,6 +79,7 @@ export default function Home() {
     }
 
     controller.handlePress();
+    handleCenterMap();
   }
 
   function handleCenterMap() {
@@ -108,6 +115,7 @@ export default function Home() {
   return (
     <View style={{ flex: 1, backgroundColor: "#F4F4F4", position: "relative" }}>
       <Mapbox.MapView
+        onCameraChanged={onCameraChanged}
         scaleBarEnabled={false}
         style={[styles.map, { opacity: isMapInitialized ? 1 : 0 }]}
         logoPosition={{ top: -100, left: 0 }}
@@ -127,6 +135,8 @@ export default function Home() {
         <Mapbox.Images
           images={{
             driverIcon,
+            point,
+            plate,
           }}
         />
 
@@ -144,6 +154,16 @@ export default function Home() {
             filter={["==", ["get", "id"], "driver"]}
           />
         </Mapbox.ShapeSource>
+
+        {nearby?.map((trip) => (
+          <TripMarker
+            key={trip.id}
+            id={trip.id}
+            created_at={trip.created_at}
+            latitude={trip.latitude}
+            longitude={trip.longitude}
+          />
+        ))}
       </Mapbox.MapView>
 
       <View style={{ position: "absolute", top: "0", width: "100%" }}>
@@ -176,7 +196,12 @@ export default function Home() {
           </Optional>
 
           <Optional condition={error === "ONGOING_TRIP"}>
-            <TouchableOpacity onPress={() => controller.clearError()}>
+            <TouchableOpacity
+              onPress={() => {
+                router.navigate({ pathname: "/(tabs)/trips" });
+                controller.clearError();
+              }}
+            >
               <View style={{ backgroundColor: "white", padding: 16 }}>
                 <Text>
                   Sorry pero mayroon kapang ongoing na trip. I-complete muna ang

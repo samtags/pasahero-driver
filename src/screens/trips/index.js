@@ -2,23 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { MotiView } from "moti";
 import Optional from "@/src/components/optional";
-import Request from "./components/request";
+import Trip from "./components/trip";
 import Tabs from "./components/tabs";
-import router, { useRouterParams } from "@/src/services/router";
+import router from "@/src/services/router";
 import { useMutation } from "@tanstack/react-query";
 import takeTripRequest from "@/src/services/api/takeTripRequest";
 import rejectTripRequest from "@/src/services/api/rejectTripRequest";
 import subscribe from "@/src/services/realtime";
 import { useMMKVObject } from "react-native-mmkv";
 import storage from "@/src/services/storage";
+import useTrip from "@/src/services/queries/useTrip";
+import useOnUpdate from "@/src/services/hooks/useOnUpdate";
 
 let timeout;
 export default function Trips() {
   const alreadyPromptedTimeout = useRef(false);
-  const [data] = useMMKVObject("__tmp_trip.request");
+  const [tripRequest] = useMMKVObject("__tmp_trip.request");
+  const [activeTrip, setActiveTrip] = useMMKVObject("__tmp_trip.active");
+  const tripSnapshot = useTrip(activeTrip?.id, undefined);
 
   const [trip, setTrip] = useState(null);
-  console.log("🚀 ~ Trips ~ trip:", trip);
   const [isExpiring, setIsExpiring] = useState(false);
   const [activeTab, setActiveTab] = useState("MAIN"); // MAIN, NEARBY, HISTORY
 
@@ -33,12 +36,42 @@ export default function Trips() {
     setIsExpiring(false);
     storage.delete("__tmp_trip.request");
     clearTimeout(timeout);
+    alreadyPromptedTimeout.current = true;
   }
 
   async function handleRefuse() {
     await refuse?.send();
     reset();
     router.navigate({ pathname: "/" });
+  }
+
+  async function handleAccept() {
+    let error;
+
+    try {
+      await take?.send();
+    } catch (err) {
+      error = err;
+      console.debug("Unable to accept trip request.", err);
+
+      // todo: handler error codes
+      if (err.data?.error === "ACCEPT_LIMIT_EXCEEDED") {
+      }
+    }
+
+    if (error) return;
+
+    clearTimeout(timeout);
+    setIsExpiring(false);
+    storage.delete("__tmp_trip.request");
+
+    let _trip;
+    setTrip((prev) => {
+      _trip = { ...prev, status: "FOUND" };
+
+      setActiveTrip(_trip);
+      return _trip;
+    });
   }
 
   function handleOnTripTimeout() {
@@ -81,14 +114,18 @@ export default function Trips() {
   }
 
   useEffect(() => {
-    console.debug("Detected change from router params", { data, trip });
-    if (data && !trip && data.status === "REQUESTED") {
+    console.debug("Detected change from router params", {
+      data: tripRequest,
+      trip,
+    });
+    if (tripRequest && !trip && tripRequest.status === "REQUESTED") {
       console.debug("Rehydrating trip details by router params update");
 
-      setTrip(data);
+      setTrip(tripRequest);
       // set state
-      storage.set("__tmp_trip.request", JSON.stringify(data));
+      storage.set("__tmp_trip.request", JSON.stringify(tripRequest));
       alreadyPromptedTimeout.current = false;
+      setIsExpiring(false);
       clearTimeout(timeout);
 
       console.debug("Setting fallback timeout for this trip request.");
@@ -96,7 +133,24 @@ export default function Trips() {
     }
 
     return () => clearTimeout(timeout);
-  }, [data]);
+  }, [tripRequest]);
+
+  useEffect(() => {
+    if (activeTrip?.id) {
+      setTrip(activeTrip);
+    }
+  }, [activeTrip]);
+
+  useOnUpdate(() => {
+    if (tripSnapshot?.id) {
+      console.debug("Updating trip state from snapshot", {
+        tripSnapshot,
+        trip,
+      });
+
+      setTrip(tripSnapshot);
+    }
+  }, [tripSnapshot]);
 
   return (
     <View style={styles.container}>
@@ -116,22 +170,21 @@ export default function Trips() {
 
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <Optional
-        condition={activeTab === "MAIN" && trip?.status === "REQUESTED"}
-      >
-        <Request
+      <Optional condition={activeTab === "MAIN" && Boolean(trip)}>
+        <Trip
           first_point={trip?.first_point}
           last_point={trip?.last_point}
           notes={trip?.notes}
           payment_method={trip?.payment_method}
           will_add_tip={trip?.will_add_tip}
+          status={trip?.status}
           estimate_preview={
-            trip?.fare[trip?.service]?.estimate_preview ||
+            trip?.fare?.[trip?.service]?.estimate_preview ||
             trip?.fare?.estimate_preview
           }
           isTaking={take.isPending}
           isRefusing={refuse.isPending}
-          handleTake={take?.send}
+          handleTake={handleAccept}
           handleRefuse={handleRefuse}
           isExpiring={isExpiring}
         />
@@ -256,11 +309,11 @@ export function useIncomingRequest() {
 }
 
 function useTakeTrip(id) {
-  const { mutate, isPending } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: () => takeTripRequest(id),
   });
 
-  return { send: mutate, isPending };
+  return { send: mutateAsync, isPending };
 }
 
 function useRejectTrip(id) {

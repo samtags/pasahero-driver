@@ -116,6 +116,9 @@ export default function useController() {
         if (trips.length > 0) {
           setError("ONGOING_TRIP");
           handleSetStatus("INACTIVE");
+
+          const trip = trips[0];
+          storage.set("__tmp_trip.active", JSON.stringify(trip));
         }
       });
 

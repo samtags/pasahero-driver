@@ -14,7 +14,7 @@ import Optional from "@/src/components/optional";
 import getDistance from "@/src/services/util/haversine/getDistance";
 import JSON from "@/src/services/json";
 
-export default function Request({
+export default function Trip({
   isExpiring,
   first_point,
   last_point,
@@ -26,6 +26,7 @@ export default function Request({
   isRefusing,
   handleTake = () => {},
   handleRefuse = () => {},
+  status,
 }) {
   const location = JSON.parse(storage.getString("user.location"));
 
@@ -181,23 +182,31 @@ export default function Request({
           </Text>
         </View>
 
-        <Optional condition={isLoading}>
-          <ActivityIndicator
-            size="large"
-            color={isTaking ? "#10B981" : "#EF4444"}
-          />
-        </Optional>
+        <Optional condition={status === "REQUESTED"}>
+          <>
+            <Optional condition={isLoading}>
+              <ActivityIndicator
+                size="large"
+                color={isTaking ? "#10B981" : "#EF4444"}
+              />
+            </Optional>
 
-        <Optional condition={!isLoading}>
-          <View>
-            <Cta onPress={handleRefuse} color="transparent" textColor="#EF4444">
-              Refuse
-            </Cta>
+            <Optional condition={!isLoading}>
+              <View>
+                <Cta
+                  onPress={handleRefuse}
+                  color="transparent"
+                  textColor="#EF4444"
+                >
+                  Refuse
+                </Cta>
 
-            <Cta onPress={handleTake} color="#10B981">
-              Take
-            </Cta>
-          </View>
+                <Cta onPress={handleTake} color="#10B981">
+                  Take
+                </Cta>
+              </View>
+            </Optional>
+          </>
         </Optional>
       </ScrollView>
     </View>

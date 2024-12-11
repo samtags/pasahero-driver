@@ -1,9 +1,11 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useIncomingRequest } from "@/src/screens/trips";
+import { useMMKVObject } from "react-native-mmkv";
 
 export default function TabLayout() {
   const request = useIncomingRequest();
+  const [activeTrip] = useMMKVObject("__tmp_trip.active");
 
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#363F59" }}>
@@ -23,7 +25,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={24} name="at-outline" color={color} />
           ),
-          tabBarBadge: request ? 1 : undefined,
+          tabBarBadge: activeTrip || request ? 1 : undefined,
           tabBarBadgeStyle: {
             fontFamily: "Lato-Bold",
             fontSize: 10,
