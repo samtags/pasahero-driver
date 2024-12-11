@@ -8,6 +8,14 @@ let ids = [];
 export default function useNearby() {
   const [trips, setTrips] = useState([]);
 
+  function removeFromNearby(id) {
+    tmp = tmp.filter((trip) => trip.id !== id);
+
+    setTrips((prev) => prev.filter((trip) => trip.id !== id));
+  }
+
+  removeTrip = removeFromNearby;
+
   return {
     trips,
     onCameraChanged(camera) {
@@ -27,6 +35,7 @@ export default function useNearby() {
 
         // remove all that already possibly timeout
         const now = moment();
+        console.log({ tmp });
         tmp = tmp.filter((trip) => {
           const expiration = moment(trip.created_at).add(2, "minutes");
 
@@ -38,7 +47,9 @@ export default function useNearby() {
         });
 
         setTrips(tmp);
-      }, 500);
+      }, 250);
     },
   };
 }
+
+export var removeTrip = () => {};

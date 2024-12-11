@@ -2,12 +2,15 @@ import moment from "moment";
 import { memo, useEffect, useState } from "react";
 import Mapbox from "@rnmapbox/maps";
 import { Image } from "expo-image";
+import { TouchableOpacity } from "react-native";
+import { point } from "@/src/services/images/remote";
 
 export default memo(function TripMarker({
   created_at,
   latitude,
   longitude,
   id,
+  onPress = () => {},
 }) {
   const [isExpired, setIsExpired] = useState(false);
 
@@ -62,7 +65,7 @@ export default memo(function TripMarker({
         key={id}
         coordinate={[longitude, latitude]}
       >
-        <TouchableOpacity>
+        <TouchableOpacity onPress={onPress}>
           <Image
             style={{ width: 92, height: 92 }}
             cachePolicy="memory-disk"

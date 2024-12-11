@@ -6,7 +6,7 @@ import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
 import Tooltip from "rn-tooltip";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import storage from "@/src/services/storage";
 import useLocation from "@/src/services/hooks/useLocation";
 import useDriverIcon from "@/src/services/hooks/useDriverIcon";
@@ -20,11 +20,15 @@ import useRenderCounter from "@/src/services/hooks/useRenderCounter";
 import { point, plate } from "@/src/services/images/remote";
 import useNearby from "@/src/services/hooks/useNearby";
 import TripMarker from "@/src/screens/home/components/marker";
+import Preview from "@/src/screens/home/components/preview";
+import JSON from "@/src/services/json";
 
 export default function Home() {
   useRenderCounter("Home");
   const cameraRef = useRef();
   const tooltipRef = useRef(null);
+
+  const [selected, setSelected] = useState();
 
   const isMapInitialized = true;
   const controller = useController();
@@ -82,9 +86,17 @@ export default function Home() {
     handleCenterMap();
   }
 
+  const closePreview = useCallback(() => {
+    setSelected();
+  }, []);
+
+  const onRegister = useCallback(() => {
+    controller.clearError("NO_PROFILE");
+  }, []);
+
   function handleCenterMap() {
     if (cameraRef?.current) {
-      const location = JSON.parse(storage.getString("user.location"));
+      const location = JSON.parse(storage.getString("user.location"), {});
 
       if (location.longitude && location.latitude) {
         cameraRef.current.setCamera({
@@ -157,6 +169,7 @@ export default function Home() {
 
         {nearby?.map((trip) => (
           <TripMarker
+            onPress={() => setSelected(trip.id)}
             key={trip.id}
             id={trip.id}
             created_at={trip.created_at}
@@ -286,6 +299,10 @@ export default function Home() {
           </View>
         </View>
       </View>
+
+      <Optional condition={selected}>
+        <Preview id={selected} onClose={closePreview} onRegister={onRegister} />
+      </Optional>
 
       <Optional condition={error === "NO_PROFILE"}>
         <Registration onClose={handleCloseRegistrationPicker} />

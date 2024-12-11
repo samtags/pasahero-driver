@@ -308,7 +308,7 @@ export function useIncomingRequest() {
   return trip;
 }
 
-function useTakeTrip(id) {
+export function useTakeTrip(id) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () => takeTripRequest(id),
   });

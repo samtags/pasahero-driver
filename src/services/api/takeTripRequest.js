@@ -16,6 +16,6 @@ export default async function takeTripRequest(id) {
     console.debug("Taken trip request success!", { id });
   } catch (error) {
     console.warn("Unable to take trip request", error.response);
-    Promise.reject(error.response);
+    return Promise.reject(error.response);
   }
 }
