@@ -213,7 +213,7 @@ export default function Trip({
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9fafb",

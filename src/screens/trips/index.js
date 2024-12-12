@@ -13,9 +13,13 @@ import { useMMKVObject } from "react-native-mmkv";
 import storage from "@/src/services/storage";
 import useTrip from "@/src/services/queries/useTrip";
 import useOnUpdate from "@/src/services/hooks/useOnUpdate";
+import useRenderCounter from "@/src/services/hooks/useRenderCounter";
+import getOngoingTrips from "@/src/services/api/getOngoingTrips";
 
 let timeout;
 export default function Trips() {
+  useRenderCounter("Trips");
+
   const alreadyPromptedTimeout = useRef(false);
   const [tripRequest] = useMMKVObject("__tmp_trip.request");
   const [activeTrip, setActiveTrip] = useMMKVObject("__tmp_trip.active");
@@ -46,32 +50,162 @@ export default function Trips() {
   }
 
   async function handleAccept() {
-    let error;
-
     try {
       await take?.send();
-    } catch (err) {
-      error = err;
-      console.debug("Unable to accept trip request.", err);
 
-      // todo: handler error codes
-      if (err.data?.error === "ACCEPT_LIMIT_EXCEEDED") {
+      clearTimeout(timeout);
+      setIsExpiring(false);
+      storage.delete("__tmp_trip.request");
+
+      let _trip;
+      setTrip((prev) => {
+        _trip = { ...prev, status: "FOUND" };
+
+        setActiveTrip(_trip);
+        return _trip;
+      });
+    } catch (err) {
+      console.debug("Unable to accept trip request.", err);
+      const errorCode = err.data?.error;
+
+      if (errorCode === "WALLET_INSUFFICIENT") {
+        return Alert.alert(
+          "Wallet Insufficient",
+          "We're sorry, but you don't have enough balance to take this trip. Please top up to accept more trips!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                router.navigate({ pathname: "/(tabs)/wallet" });
+                refuse?.send();
+                reset();
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "DRIVER_BUSY") {
+        return Alert.alert(
+          "Not allowed",
+          "You have an ongoing trip. Please complete your ongoing trip before accepting a new one.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                refuse?.send();
+                reset();
+                getOngoingTrips().then((trips) => {
+                  if (trips?.[0]) {
+                    storage.set("__tmp_trip.active", JSON.stringify(trips[0]));
+                  }
+                });
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "ALREADY_TAKEN" || errorCode === "ALREADY_TIMED_OUT") {
+        return Alert.alert(
+          "Already taken",
+          "We're sorry, but this trip has already been taken by another driver.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                refuse?.send();
+                reset();
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "ACCEPT_LIMIT_EXCEEDED") {
+        return Alert.alert(
+          "Accept Limit Exceeded",
+          "Submit a proof of profile to accept more trips.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // todo: redirect to update profile
+                router.navigate({ pathname: "/(tabs)/settings" });
+                reset();
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "PROFILE_INVALID") {
+        return Alert.alert(
+          "Data Missing",
+          "Some information is needed for us to show details to the passengers. Please provide the necessary data.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // todo: redirect to registration
+                router.navigate({ pathname: "/(tabs)/settings" });
+                refuse?.send();
+                reset();
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "PROFILE_DECLINED") {
+        return Alert.alert(
+          "Oops!",
+          "There's a problem with your profile. Please check it and make sure all the information are correct.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // todo: redirect to registration
+                router.navigate({ pathname: "/(tabs)/settings" });
+                refuse?.send();
+                reset();
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "PROFILE_PENDING") {
+        return Alert.alert(
+          "Profile in Review",
+          "Your profile is currently being reviewed. We will notify you in a few minutes."
+        );
+      }
+
+      if (errorCode === "PROFILE_EMPTY") {
+        return Alert.alert(
+          "Data Missing",
+          "Some information is needed for us to show details to the passengers. Please provide the necessary data.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                refuse?.send();
+                reset();
+                router.navigate({ pathname: "/" });
+              },
+            },
+          ]
+        );
+      }
+
+      if (errorCode === "WAITING_ACKNOWLEDGEMENT") {
+        return Alert.alert(
+          "Please try again later",
+          "We're sorry, but this trip has already been requested to another driver."
+        );
       }
     }
-
-    if (error) return;
-
-    clearTimeout(timeout);
-    setIsExpiring(false);
-    storage.delete("__tmp_trip.request");
-
-    let _trip;
-    setTrip((prev) => {
-      _trip = { ...prev, status: "FOUND" };
-
-      setActiveTrip(_trip);
-      return _trip;
-    });
   }
 
   function handleOnTripTimeout() {
