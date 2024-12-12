@@ -23,11 +23,19 @@ export default memo(function Preview({
   });
 
   async function handleTake() {
+    console.debug("Taking trip...");
     try {
       await take.send();
 
+      console.debug("Successfully took trip");
+      const active = { ...trip, status: "FOUND" };
+      storage.set("__tmp_trip.active", JSON.stringify(active));
+
+      router.navigate({ pathname: "/(tabs)/trips" });
       onClose();
+      removeTrip(id);
     } catch (err) {
+      error = err;
       const errorCode = err.data?.error;
 
       if (errorCode === "WALLET_INSUFFICIENT") {
