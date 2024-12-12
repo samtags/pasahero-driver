@@ -286,6 +286,10 @@ export default function Trips() {
     }
   }, [tripSnapshot]);
 
+  const estimate_preview =
+    trip?.fare?.[trip?.service]?.estimate_preview ||
+    trip?.fare?.estimate_preview;
+
   return (
     <View style={styles.container}>
       <Optional
@@ -306,21 +310,20 @@ export default function Trips() {
 
       <Optional condition={activeTab === "MAIN" && Boolean(trip)}>
         <Trip
+          id={trip?.id}
           first_point={trip?.first_point}
           last_point={trip?.last_point}
           notes={trip?.notes}
           payment_method={trip?.payment_method}
           will_add_tip={trip?.will_add_tip}
           status={trip?.status}
-          estimate_preview={
-            trip?.fare?.[trip?.service]?.estimate_preview ||
-            trip?.fare?.estimate_preview
-          }
+          estimate_preview={estimate_preview}
           isTaking={take.isPending}
           isRefusing={refuse.isPending}
           handleTake={handleAccept}
           handleRefuse={handleRefuse}
           isExpiring={isExpiring}
+          setTrip={setTrip}
         />
       </Optional>
     </View>

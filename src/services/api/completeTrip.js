@@ -11,6 +11,6 @@ export default async function completeTrip(id) {
     log.debug("Trip completed.", { id });
     return res?.data;
   } catch (error) {
-    return null;
+    return Promise.reject(error);
   }
 }

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Text from "@/src/components/text";
 import { Image } from "expo-image";
@@ -13,8 +14,17 @@ import Cta from "@/src/components/cta";
 import Optional from "@/src/components/optional";
 import getDistance from "@/src/services/util/haversine/getDistance";
 import JSON from "@/src/services/json";
+import getColorByService from "@/src/services/util/colors/getColorByService";
+import { useMutation } from "@tanstack/react-query";
+import driverArrived from "@/src/services/api/driverArrived";
+import { memo, useEffect, useState } from "react";
+import storage from "@/src/services/storage";
+import router from "@/src/services/router";
+import cancelTrip from "@/src/services/api/cancelTrip";
+import startTrip from "@/src/services/api/startTrip";
+import completeTrip from "@/src/services/api/completeTrip";
 
-export default function Trip({
+export default memo(function Trip({
   isExpiring,
   first_point,
   last_point,
@@ -27,8 +37,12 @@ export default function Trip({
   handleTake = () => {},
   handleRefuse = () => {},
   status,
+  id,
+  setTrip,
 }) {
   const location = JSON.parse(storage.getString("user.location"));
+  const service = storage.getString("user.service");
+  const color = getColorByService(service);
 
   const distance = getDistance(
     location?.latitude,
@@ -38,149 +52,157 @@ export default function Trip({
   );
 
   const isLoading = isTaking || isRefusing;
-  console.debug("🚀 ~ isLoading:", isLoading);
 
   return (
     <View style={{ flex: 1, justifyContent: "space-between" }}>
-      <ScrollView contentContainerStyle={{ padding: 24, gap: 24 }}>
-        <Optional condition={isExpiring}>
-          <Text color="#1B1B1B" size={18} weight="bold">
-            Expiring Soon
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ padding: 24, gap: 24 }}>
+          <Optional condition={isExpiring}>
+            <Text color="#1B1B1B" size={18} weight="bold">
+              Expiring Soon
+            </Text>
+          </Optional>
+
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <Image
+              source={current}
+              style={{ width: 40, height: 40 }}
+              cachePolicy="memory-disk"
+            />
+            <View style={{ gap: 4 }}>
+              <Text weight="700" size={18} color="#1B1B1B">
+                Current Location
+              </Text>
+              <Optional condition={distance}>
+                <Text size={14} color="#707070">
+                  Approximately {distance} km away from pickup
+                </Text>
+              </Optional>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <TouchableOpacity>
+              <Image
+                source={first}
+                style={{ width: 40, height: 40 }}
+                cachePolicy="memory-disk"
+              />
+            </TouchableOpacity>
+            <TouchableWithoutFeedback>
+              <View style={{ gap: 4, flex: 1 }}>
+                <Text weight="700" size={18} color="#1B1B1B">
+                  {first_point?.short_address}
+                </Text>
+                <Text size={14} color="#707070">
+                  {first_point?.long_address}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <TouchableOpacity>
+              <Image
+                source={last}
+                style={{ width: 40, height: 40 }}
+                cachePolicy="memory-disk"
+              />
+            </TouchableOpacity>
+            <TouchableWithoutFeedback>
+              <View style={{ gap: 4, flex: 1 }}>
+                <Text weight="700" size={18} color="#1B1B1B">
+                  {last_point?.short_address}
+                </Text>
+                <Text size={14} color="#707070">
+                  {last_point?.long_address}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+
+          <View style={{ gap: 7 }}>
+            <Text size={18} weight="700" color="#707070">
+              Notes
+            </Text>
+            <Text weight="700" size={18} color="#1B1B1B">
+              {notes || "-"}
+            </Text>
+          </View>
+
+          <View style={styles.paymentTypeContainer}>
+            <View>
+              <Text size={18} weight="700" color="#707070">
+                Payment Type
+              </Text>
+            </View>
+            <View style={styles.paymentTypeChip(color)}>
+              <Text size={18} weight="700" color="#FFF">
+                {payment_method || "Cash"}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.serviceChargeContainer}>
+            <View style={{ flex: 1, gap: 7 }}>
+              <Text size={18} weight="700" color="#707070">
+                Service Charge
+              </Text>
+              <Text size={14} color="#707070">
+                Kindly collect service charge to the passenger. On top of the
+                fare and tip.
+              </Text>
+            </View>
+            <View style={styles.serviceChargeChip}>
+              <Text
+                size={14}
+                color="#fff"
+                style={{
+                  textDecorationLine: "line-through",
+                  textDecorationStyle: "solid",
+                }}
+              >
+                P 10.00
+              </Text>
+              <Text size={18} weight="700" color="#fff">
+                P 0.00
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ alignItems: "center", marginTop: 64 }}>
+            <View style={{ position: "relative", gap: 4 }}>
+              <Text size={14} weight="700" color="#707070">
+                Estimated Fare
+              </Text>
+            </View>
+          </View>
+
+          <Text textAlign="center" size={34} color="#353579" weight="700">
+            {estimate_preview} {will_add_tip && "+"}
           </Text>
+          <View>
+            <Text textAlign="center" size={13} color="#707070">
+              Estimation is based on fare structure set by LTFRB.
+            </Text>
+            <Text textAlign="center" size={13} color="#707070">
+              Estimated fare may vary in the actual trip in the application.
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
+      <View style={styles.ctaContainer}>
+        <Optional condition={status === "STARTED"}>
+          <StartedCta id={id} setTrip={setTrip} />
         </Optional>
 
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          <Image
-            source={current}
-            style={{ width: 40, height: 40 }}
-            cachePolicy="memory-disk"
-          />
-          <View style={{ gap: 4 }}>
-            <Text weight="700" size={18} color="#1B1B1B">
-              Current Location
-            </Text>
-            <Optional condition={distance}>
-              <Text size={14} color="#707070">
-                Approximately {distance} km away from pickup
-              </Text>
-            </Optional>
-          </View>
-        </View>
+        <Optional condition={status === "ARRIVED"}>
+          <ArrivedCta id={id} setTrip={setTrip} />
+        </Optional>
 
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          <TouchableOpacity>
-            <Image
-              source={first}
-              style={{ width: 40, height: 40 }}
-              cachePolicy="memory-disk"
-            />
-          </TouchableOpacity>
-          <TouchableWithoutFeedback>
-            <View style={{ gap: 4, flex: 1 }}>
-              <Text weight="700" size={18} color="#1B1B1B">
-                {first_point?.short_address}
-              </Text>
-              <Text size={14} color="#707070">
-                {first_point?.long_address}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          <TouchableOpacity>
-            <Image
-              source={last}
-              style={{ width: 40, height: 40 }}
-              cachePolicy="memory-disk"
-            />
-          </TouchableOpacity>
-          <TouchableWithoutFeedback>
-            <View style={{ gap: 4, flex: 1 }}>
-              <Text weight="700" size={18} color="#1B1B1B">
-                {last_point?.short_address}
-              </Text>
-              <Text size={14} color="#707070">
-                {last_point?.long_address}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-
-        <View style={{ gap: 7 }}>
-          <Text size={18} weight="700" color="#707070">
-            Notes
-          </Text>
-          <Text weight="700" size={18} color="#1B1B1B">
-            {notes || "-"}
-          </Text>
-        </View>
-
-        <View style={styles.paymentTypeContainer}>
-          <View>
-            <Text size={18} weight="700" color="#707070">
-              Payment Type
-            </Text>
-          </View>
-          <View style={styles.paymentTypeChip}>
-            <Text size={18} weight="700" color="#FFF">
-              {payment_method || "Cash"}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.serviceChargeContainer}>
-          <View style={{ flex: 1, gap: 7 }}>
-            <Text size={18} weight="700" color="#707070">
-              Service Charge
-            </Text>
-            <Text size={14} color="#707070">
-              Kindly collect service charge to the passenger. On top of the fare
-              and tip.
-            </Text>
-          </View>
-          <View style={styles.serviceChargeChip}>
-            <Text
-              size={14}
-              color="#fff"
-              style={{
-                textDecorationLine: "line-through",
-                textDecorationStyle: "solid",
-              }}
-            >
-              P 10.00
-            </Text>
-            <Text size={18} weight="700" color="#fff">
-              P 0.00
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ alignItems: "center", marginTop: 64 }}>
-          <View style={{ position: "relative", gap: 4 }}>
-            <Text size={14} weight="700" color="#707070">
-              Estimated Fare
-            </Text>
-
-            {/* <View style={styles.tipChip}>
-                <Text size={12} weight="700" color="#FFF">
-                  +Tip
-                </Text>
-              </View> */}
-          </View>
-        </View>
-
-        <Text textAlign="center" size={34} color="#353579" weight="700">
-          {estimate_preview} {will_add_tip && "+"}
-        </Text>
-        <View>
-          <Text textAlign="center" size={13} color="#707070">
-            Estimation is based on fare structure set by LTFRB.
-          </Text>
-          <Text textAlign="center" size={13} color="#707070">
-            Estimated fare may vary in the actual trip in the application.
-          </Text>
-        </View>
+        <Optional condition={status === "FOUND"}>
+          <FoundCta setTrip={setTrip} color={color} id={id} />
+        </Optional>
 
         <Optional condition={status === "REQUESTED"}>
           <>
@@ -198,20 +220,20 @@ export default function Trip({
                   color="transparent"
                   textColor="#EF4444"
                 >
-                  Refuse
+                  Tanggihan
                 </Cta>
 
                 <Cta onPress={handleTake} color="#10B981">
-                  Take
+                  Tanggapin
                 </Cta>
               </View>
             </Optional>
           </>
         </Optional>
-      </ScrollView>
+      </View>
     </View>
   );
-}
+});
 
 export const styles = StyleSheet.create({
   container: {
@@ -288,12 +310,12 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 16,
   },
-  paymentTypeChip: {
-    backgroundColor: "#6366F1",
+  paymentTypeChip: (color) => ({
+    backgroundColor: color || "#6366F1",
     paddingHorizontal: 24,
     paddingVertical: 8,
     borderRadius: 24,
-  },
+  }),
   serviceChargeContainer: {
     marginTop: 16,
     gap: 4,
@@ -321,4 +343,175 @@ export const styles = StyleSheet.create({
     left: 101,
     top: -2,
   },
+  ctaContainer: {
+    flexShrink: 0,
+    padding: 16,
+    borderTopWidth: 2,
+    borderColor: "#00000003",
+  },
 });
+
+function FoundCta({ color, id, setTrip }) {
+  const { isPending: isArriving, mutate: arrive } = useMutation({
+    mutationFn: () => driverArrived(id),
+    onSuccess() {
+      setTrip((prev) => ({
+        ...prev,
+        status: "ARRIVED",
+      }));
+    },
+    onError() {
+      Alert.alert(
+        "Hindi makapagpatuloy",
+        "Maaring subukang ulit. Kung kinakailangan, mangyaring makipag-ugnayan sa aming support team."
+      );
+    },
+  });
+
+  const { isPending: isCanceling, mutate: cancel } = useMutation({
+    mutationFn: () => cancelTrip(id),
+    onSuccess() {
+      setTrip();
+      storage.delete("__tmp_trip.active");
+      router.navigate({ pathname: "/" });
+    },
+  });
+
+  function handleCancelTrip() {
+    Alert.alert(
+      "Paalala",
+      "Ang pag cancel ng trip ay maaring mag iwan ng hindi magandang impresyon sa ating mga pasahero. Nais mo ba itong ituloy ang pag cancel?",
+      [
+        {
+          text: "Hindi",
+          style: "cancel",
+        },
+        {
+          text: "Oo",
+          style: "default",
+          onPress: cancel,
+        },
+      ]
+    );
+  }
+
+  const isLoading = isArriving || isCanceling;
+
+  return (
+    <>
+      <Cta
+        style={{ opacity: isLoading ? 0.5 : 1 }}
+        disabled={isLoading}
+        color="transparent"
+        textColor="#EF4444"
+        onPress={handleCancelTrip}
+      >
+        I-cancel ang Trip
+      </Cta>
+      <Cta
+        style={{ opacity: isLoading ? 0.5 : 1 }}
+        disabled={isLoading}
+        onPress={arrive}
+        color={color}
+      >
+        Nakarating na sa Pickup
+      </Cta>
+    </>
+  );
+}
+
+function ArrivedCta({ id, setTrip }) {
+  const service = storage.getString("user.service");
+  const color = getColorByService(service);
+
+  const [isEnabled, setIsEnabled] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setIsEnabled(true);
+    }, 2000);
+  }, []);
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: () => startTrip(id),
+    onSuccess() {
+      setTrip((prev) => ({
+        ...prev,
+        status: "STARTED",
+      }));
+    },
+  });
+
+  const isLoading = isPending || isEnabled === false;
+
+  return (
+    <>
+      <Cta disabled={isLoading} color="transparent" textColor="#000">
+        I-transfer sa App
+      </Cta>
+      <Cta
+        style={{ opacity: isLoading ? 0.5 : 1 }}
+        disabled={isLoading}
+        color={color}
+        onPress={mutate}
+      >
+        Simulan ang Biyahe
+      </Cta>
+    </>
+  );
+}
+
+function StartedCta({ id, setTrip }) {
+  const service = storage.getString("user.service");
+  const color = getColorByService(service);
+
+  const [isEnabled, setIsEnabled] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setIsEnabled(true);
+    }, 2000);
+  }, []);
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: () => completeTrip(id),
+    onSuccess() {
+      setTrip((prev) => ({
+        ...prev,
+        status: "DONE",
+      }));
+
+      Alert.alert(
+        "Nakarating ka na!",
+        "Tapos na ang iyong trip. Mag online ulit para maka receive ng bagong trip.",
+        [
+          {
+            text: "OK",
+            style: "default",
+            onPress: () => {
+              setTrip();
+              storage.delete("__tmp_trip.active");
+              router.navigate({ pathname: "/" });
+            },
+          },
+        ]
+      );
+    },
+  });
+
+  const isLoading = isPending || isEnabled === false;
+
+  return (
+    <>
+      <Cta disabled={isLoading} color="transparent" textColor="#000">
+        I-transfer sa App
+      </Cta>
+      <Cta
+        style={{ opacity: isLoading ? 0.5 : 1 }}
+        disabled={isLoading}
+        color={color}
+        onPress={mutate}
+      >
+        Nakarating na sa Drop-off
+      </Cta>
+    </>
+  );
+}

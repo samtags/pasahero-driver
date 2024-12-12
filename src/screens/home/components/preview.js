@@ -21,6 +21,7 @@ import { current, first, last } from "@/src/services/images/remote";
 import getDistance from "@/src/services/util/haversine/getDistance";
 import Text from "@/src/components/text";
 import { styles } from "@/src/screens/trips/components/trip";
+import getColorByService from "@/src/services/util/colors/getColorByService";
 
 export default memo(function Preview({
   id,
@@ -208,6 +209,7 @@ export default memo(function Preview({
   }
 
   const service = storage.getString("user.service");
+  const color = getColorByService(service);
 
   const estimate_preview =
     trip?.fare?.[service]?.estimate_preview || trip?.fare?.estimate_preview;
@@ -305,7 +307,7 @@ export default memo(function Preview({
                   Payment Type
                 </Text>
               </View>
-              <View style={styles.paymentTypeChip}>
+              <View style={styles.paymentTypeChip(color)}>
                 <Text size={18} weight="700" color="#FFF">
                   {trip?.payment_method || "Cash"}
                 </Text>
@@ -361,14 +363,7 @@ export default memo(function Preview({
           </ScrollView>
         </Optional>
       </View>
-      <View
-        style={{
-          flexShrink: 0,
-          padding: 16,
-          borderTopWidth: 2,
-          borderColor: "#00000003",
-        }}
-      >
+      <View style={styles.ctaContainer}>
         <Optional condition={take.isPending}>
           <ActivityIndicator size="large" color="#10B981" />
         </Optional>

@@ -46,7 +46,6 @@ export default function Home() {
   };
 
   const { trips: nearby, onCameraChanged } = useNearby();
-  console.log("🚀 ~ Home ~ nearby:", nearby);
 
   useEffect(() => {
     const firstTime = storage.getBoolean("settings.app.firstTime");
