@@ -165,6 +165,13 @@ export default memo(function Preview({
           ]
         );
       }
+
+      if (errorCode === "WAITING_ACKNOWLEDGEMENT") {
+        return Alert.alert(
+          "Please try again later",
+          "We're sorry, but this trip has already been requested to another driver."
+        );
+      }
     }
   }
 
