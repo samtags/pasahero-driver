@@ -2,10 +2,14 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Text from "@/src/components/text";
 import storage from "@/src/services/storage";
 import getColorByService from "@/src/services/util/colors/getColorByService";
+import { useMMKVString } from "react-native-mmkv";
 
 export default function Tabs({ activeTab = "MAIN", setActiveTab }) {
-  const service = storage.getString("user.service");
-  const color = getColorByService(service);
+  const [status] = useMMKVString("controller.status");
+  const [service] = useMMKVString("user.service");
+  let color = "#6366F1";
+
+  if (status === "ACTIVE") color = getColorByService(service);
 
   return (
     <View style={styles.tabsContainer}>

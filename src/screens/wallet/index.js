@@ -3,9 +3,13 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import Cta from "@/src/components/cta";
 import { Image } from "expo-image";
 import { transaction } from "@/src/services/images/remote";
+import useWallets from "@/src/services/queries/useWallet";
+import amount from "@/src/services/util/amount";
 
 // todo: configure balance threshold in growthbook
 export default function WalletScreen() {
+  const { data } = useWallets();
+
   return (
     <View style={styles.container}>
       <View style={{ flexShrink: 0, paddingTop: 32, gap: 8 }}>
@@ -13,7 +17,7 @@ export default function WalletScreen() {
           Available Balance
         </Text>
         <Text weight="bold" size={36} color="#3F3D56" textAlign="center">
-          ₱ 0.00
+          {amount.format(data?.balance || 0)}
         </Text>
       </View>
       <View style={{ flex: 1, marginTop: 32 }}>
