@@ -5,6 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
+import { useMMKVString } from "react-native-mmkv";
 import Tooltip from "rn-tooltip";
 import { useCallback, useEffect, useRef, useState } from "react";
 import storage from "@/src/services/storage";
@@ -267,12 +268,12 @@ export default function Home() {
           <View style={{ alignItems: "center" }}>
             <Tooltip
               ref={tooltipRef}
-              backgroundColor="#363F59"
+              backgroundColor="#10B981"
               height={50}
               width={220}
               pointerStyle={{ marginTop: -44 }}
               containerStyle={{ marginLeft: 90, marginTop: -44 }}
-              popover={<Text color="white">Pindutin para mag simula</Text>}
+              popover={<Text color="white">Pindutin para bumiyahe</Text>}
             >
               <TouchableOpacity
                 onPress={handlePressCallToAction}
@@ -289,10 +290,12 @@ export default function Home() {
             </Tooltip>
           </View>
           <View style={styles.statusRow}>
-            <Text key={status} weight="bold" size={18} color="black">
-              <Optional condition={status === "ACTIVE"}>Online ka na!</Optional>
+            <Text textAlign="center" weight="bold" size={18} color="black">
+              <Optional condition={status === "ACTIVE"}>
+                Handa nang bumiyahe
+              </Optional>
               <Optional condition={status === "INACTIVE"}>
-                Ikaw ay offline
+                Hindi Aktibo
               </Optional>
             </Text>
           </View>

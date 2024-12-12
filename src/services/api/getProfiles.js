@@ -4,6 +4,8 @@ import storage from "@/src/services/storage";
 export default async function getProfiles() {
   const id = storage.getString("user.id");
 
+  if (!id) return;
+
   const response = await axios.get(
     `https://driver.pasahero.app/profiles?id=${id}`
   );

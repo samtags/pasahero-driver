@@ -37,19 +37,7 @@ export default function useController() {
   const handlePressButton = async () => {
     console.debug("Controller button pressed.");
 
-    const userId = storage.getString("user.id");
     setError("");
-
-    if (!userId) {
-      console.debug("No user found. Signing user via Google.");
-
-      const isSignedIn = await handleSignInViaGoogle();
-      if (!isSignedIn) {
-        console.debug("User not signed in.");
-        setError("NO_USER");
-        return;
-      }
-    }
 
     const isForegroundLocationGranted = storage.getBoolean("settings.location.foreground.granted"); // prettier-ignore
     const isBackgroundLocationGranted = storage.getBoolean("settings.location.background.granted"); // prettier-ignore
@@ -95,6 +83,27 @@ export default function useController() {
       }
     }
 
+    const userId = storage.getString("user.id");
+
+    if (!userId) {
+      console.debug("No user found. Signing user via Google.");
+      if (loaded === false) {
+        Alert.alert(
+          "Paumanhin",
+          "Hindi nag start ng maayos ang app. Subukan ulit matapos ang ilang segundo."
+        );
+
+        return;
+      }
+
+      const isSignedIn = await handleSignInViaGoogle();
+      if (!isSignedIn) {
+        console.debug("User not signed in.");
+        setError("NO_USER");
+        return;
+      }
+    }
+
     const currentStatus = storage.getString("controller.status");
 
     if (currentStatus === "ACTIVE") {
@@ -131,12 +140,12 @@ export default function useController() {
       });
 
       getProfiles().then((profiles) => {
-        if (profiles.length === 0) {
+        if (profiles?.length === 0) {
           handleSetStatus("INACTIVE");
           setError("NO_PROFILE");
         }
 
-        if (profiles.length === 1) {
+        if (profiles?.length === 1) {
           storage.set("user.service", profiles[0].service);
           storage.set("user.profile_id", profiles[0].id);
         }

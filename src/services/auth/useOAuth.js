@@ -7,7 +7,8 @@ import {
 import log from "@/src/services/log";
 import storage from "@/src/services/storage";
 import useOnUpdate from "@/src/services/hooks/useOnUpdate";
-import updateUser from "../api/updateUser";
+import updateUser from "@/src/services/api/updateUser";
+import getProfiles from "@/src/services/api/getProfiles";
 
 export const startOAuthFlow = async () => {
   const oAuth = UNSAFE_retrieveProperty("startOAuthFlow");
@@ -106,5 +107,11 @@ function handleInitializeUser(userInfo) {
     if (email) storage.set("user.email", email);
 
     updateUser({ id, email, name });
+    getProfiles().then((profiles) => {
+      if (profiles?.length === 1) {
+        storage.set("user.service", profiles[0].service);
+        storage.set("user.profile_id", profiles[0].id);
+      }
+    });
   }
 }
