@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMMKVString } from "react-native-mmkv";
-import getWallet from "../api/getWallet";
+import getWallet from "@/src/services/api/getWallet";
 
 export default function useWallets() {
   const [userId] = useMMKVString("user.id");

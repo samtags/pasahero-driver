@@ -1,6 +1,6 @@
-import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import Text from "../../components/text";
+import Text from "@/src/components/text";
+import router from "@/src/services/router";
 
 export default function FAQs() {
   return (
@@ -24,19 +24,15 @@ function Link({
   children,
   onPress = () => {}, //
 }) {
-  const router = useRouter();
-
   const handleOnPress = () => {
-    if (href) router.navigate(href);
+    if (href) router.navigate({ pathname: href });
     onPress?.();
   };
 
   return (
     <View style={styles.item}>
       <TouchableOpacity onPress={handleOnPress} style={styles.link}>
-        <Text size={18} color="#353579">
-          {children}
-        </Text>
+        <Text size={18}>{children}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -51,10 +47,10 @@ const styles = StyleSheet.create({
   link: {
     borderBottomWidth: 1,
     paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     borderColor: "#EAEAEA",
   },
-  item: { paddingHorizontal: 16 },
+  // item: { paddingHorizontal: 16 },
   full: {
     flex: 1,
   },

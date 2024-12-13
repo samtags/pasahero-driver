@@ -23,6 +23,7 @@ import router from "@/src/services/router";
 import cancelTrip from "@/src/services/api/cancelTrip";
 import startTrip from "@/src/services/api/startTrip";
 import completeTrip from "@/src/services/api/completeTrip";
+import useRenderCounter from "@/src/services/hooks/useRenderCounter";
 
 export default memo(function Trip({
   isExpiring,
@@ -40,6 +41,7 @@ export default memo(function Trip({
   id,
   setTrip,
 }) {
+  useRenderCounter("Trip");
   const location = JSON.parse(storage.getString("user.location"));
   const service = storage.getString("user.service");
   const color = getColorByService(service);
@@ -205,30 +207,12 @@ export default memo(function Trip({
         </Optional>
 
         <Optional condition={status === "REQUESTED"}>
-          <>
-            <Optional condition={isLoading}>
-              <ActivityIndicator
-                size="large"
-                color={isTaking ? "#10B981" : "#EF4444"}
-              />
-            </Optional>
-
-            <Optional condition={!isLoading}>
-              <View>
-                <Cta
-                  onPress={handleRefuse}
-                  color="transparent"
-                  textColor="#EF4444"
-                >
-                  Tanggihan
-                </Cta>
-
-                <Cta onPress={handleTake} color="#10B981">
-                  Tanggapin
-                </Cta>
-              </View>
-            </Optional>
-          </>
+          <RequestedRca
+            isLoading={isLoading}
+            isTaking={isTaking}
+            handleRefuse={handleRefuse}
+            handleTake={handleTake}
+          />
         </Optional>
       </View>
     </View>
@@ -513,5 +497,27 @@ function StartedCta({ id, setTrip }) {
         Nakarating na sa Drop-off
       </Cta>
     </>
+  );
+}
+
+function RequestedRca({ isLoading, isTaking, handleRefuse, handleTake }) {
+  if (isLoading)
+    return (
+      <ActivityIndicator
+        size="large"
+        color={isTaking ? "#10B981" : "#EF4444"}
+      />
+    );
+
+  return (
+    <View>
+      <Cta onPress={handleRefuse} color="transparent" textColor="#EF4444">
+        Tanggihan
+      </Cta>
+
+      <Cta onPress={handleTake} color="#10B981">
+        Tanggapin
+      </Cta>
+    </View>
   );
 }

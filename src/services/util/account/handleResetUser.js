@@ -7,4 +7,6 @@ export default function handleResetUser() {
   storage.delete("user.lastName");
   storage.delete("user.imageUrl");
   storage.delete("user.email");
+  storage.delete("user.service");
+  storage.delete("user.profile_id");
 }

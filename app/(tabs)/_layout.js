@@ -31,6 +31,7 @@ export default function TabLayout() {
             fontSize: 10,
             backgroundColor: "#EF4444",
           },
+          lazy: false,
         }}
       />
       <Tabs.Screen
@@ -40,6 +41,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={24} name="layers-outline" color={color} />
           ),
+          lazy: false,
         }}
       />
       <Tabs.Screen

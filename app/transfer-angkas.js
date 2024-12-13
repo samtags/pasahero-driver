@@ -14,11 +14,10 @@ export default function Entry() {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <Text size={19} weight="bold" color="#353579">
-              Transfer to JoyRide
+            <Text size={19} weight="bold">
+              Transfer to Angkas
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
         }}
       />
@@ -47,7 +46,7 @@ export default function Entry() {
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://pasahero.notion.site/Transfer-trip-to-JoyRide-1e809af1646a44449f81a4db668963dc`,
+            uri: `https://pasahero.notion.site/Transfer-trip-to-Angkas-7e46bd53fece48589422e8888d3fca26`,
           }}
         />
       </View>

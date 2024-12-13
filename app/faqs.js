@@ -8,15 +8,14 @@ export default function Entry(props) {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <Text size={19} weight="bold" color="#353579">
+            <Text size={19} weight="bold">
               FAQs
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
         }}
       />
-      <FAQs />
+      <FAQs {...props} />
     </>
   );
 }

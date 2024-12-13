@@ -270,6 +270,15 @@ export default function Trips() {
   }, [tripRequest]);
 
   useEffect(() => {
+    console.debug("Trips screen mounted.");
+    getOngoingTrips().then((trips) => {
+      if (trips?.[0]) {
+        storage.set("__tmp_trip.active", JSON.stringify(trips[0]));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (activeTrip?.id) {
       setTrip(activeTrip);
     }

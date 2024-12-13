@@ -1,17 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
+import SettingsScreen from "@/src/screens/settings";
 
-export default function Tab() {
-  return (
-    <View style={styles.container}>
-      <Text>Tab [Home|Settings]</Text>
-    </View>
-  );
+export default function Tab(props) {
+  return <SettingsScreen {...props} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

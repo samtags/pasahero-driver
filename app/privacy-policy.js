@@ -6,7 +6,7 @@ import { useState } from "react";
 import Optional from "@/src/components/optional";
 import LottieView from "lottie-react-native";
 
-export default function Entry() {
+export default function Entry(props) {
   const [showWebview, setShowWebView] = useState(false);
 
   return (
@@ -14,11 +14,10 @@ export default function Entry() {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <Text size={19} weight="bold" color="#353579">
-              Transfer to Angkas
+            <Text size={19} weight="bold">
+              Privacy Policy
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
         }}
       />
@@ -35,7 +34,7 @@ export default function Entry() {
                 marginTop: -64,
                 marginBottom: -88,
               }}
-              source={require("@/src/assets/json/autocomplete-preloader.json")}
+              source={require("../src/assets/json/autocomplete-preloader.json")}
             />
           </View>
         </Optional>
@@ -43,11 +42,11 @@ export default function Entry() {
           onLoadEnd={() => {
             setTimeout(() => {
               setShowWebView(true);
-            }, 4000);
+            }, 500);
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://pasahero.notion.site/Transfer-trip-to-Angkas-7e46bd53fece48589422e8888d3fca26`,
+            uri: "https://pasahero.notion.site/Privacy-Policy-8509d15dfd6749b696ca624b857c203e?pvs=74",
           }}
         />
       </View>

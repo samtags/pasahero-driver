@@ -86,16 +86,6 @@ export default function useController() {
     const userId = storage.getString("user.id");
 
     if (!userId) {
-      console.debug("No user found. Signing user via Google.");
-      if (loaded === false) {
-        Alert.alert(
-          "Paumanhin",
-          "Hindi nag start ng maayos ang app. Subukan ulit matapos ang ilang segundo."
-        );
-
-        return;
-      }
-
       const isSignedIn = await handleSignInViaGoogle();
       if (!isSignedIn) {
         console.debug("User not signed in.");
