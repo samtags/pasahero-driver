@@ -1,14 +1,36 @@
 import Text from "@/src/components/text";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
 import Cta from "@/src/components/cta";
 import { Image } from "expo-image";
 import { transaction } from "@/src/services/images/remote";
 import useWallets from "@/src/services/queries/useWallet";
 import amount from "@/src/services/util/amount";
+import router from "@/src/services/router";
+import storage from "@/src/services/storage";
 
 // todo: configure balance threshold in growthbook
 export default function WalletScreen() {
   const { data } = useWallets();
+
+  function handleTopup() {
+    const user = storage.getString("user.id");
+    if (!user) {
+      return Alert.alert(
+        "Walang account",
+        "Siguraduhing naka sign-in muna bago mag top-up.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.navigate({ pathname: "/(tabs)/settings" });
+            },
+          },
+        ]
+      );
+    }
+
+    router.navigate({ pathname: "/top-up" });
+  }
 
   return (
     <View style={styles.container}>
@@ -38,7 +60,7 @@ export default function WalletScreen() {
         <Text textAlign="center" size={18} color="#707070">
           Your balance threshold is ₱-50.00
         </Text>
-        <Cta color="#6366F1" textColor="#fff">
+        <Cta onPress={handleTopup} color="#6366F1" textColor="#fff">
           Top-up Now
         </Cta>
       </View>

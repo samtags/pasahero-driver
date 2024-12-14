@@ -22,6 +22,7 @@ import OAuthProvider from "@/src/services/auth/useOAuth";
 import useSupply from "@/src/services/background/supply";
 import useLocation from "@/src/services/background/location";
 import useSubscribeToIncomingTrip from "@/src/services/trip/incoming";
+import { useMMKVString } from "react-native-mmkv";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -44,6 +45,8 @@ const queryClient = new QueryClient({});
 UNSAFE_registerProperty("__queryClient__", queryClient);
 
 export default function Layout() {
+  const isSignedIn = useMMKVString("user.id");
+
   useWillEffect(() => {
     // check for codepush updates
     onFetchUpdateAsync();
@@ -63,6 +66,28 @@ export default function Layout() {
     "Lato-Black": require("../assets/fonts/Lato/Lato-Black.ttf"),
   });
 
+  let stack = (
+    <>
+      <ClerkLoading>
+        <SplashScreen />
+      </ClerkLoading>
+
+      <ClerkLoaded>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </ClerkLoaded>
+    </>
+  );
+
+  if (isSignedIn) {
+    stack = (
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    );
+  }
+
   return (
     <>
       <ImagePreRenderer />
@@ -73,20 +98,7 @@ export default function Layout() {
               tokenCache={tokenCache}
               publishableKey={publishableKey}
             >
-              <OAuthProvider>
-                <ClerkLoading>
-                  <SplashScreen />
-                </ClerkLoading>
-
-                <ClerkLoaded>
-                  <Stack>
-                    <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
-                    />
-                  </Stack>
-                </ClerkLoaded>
-              </OAuthProvider>
+              <OAuthProvider>{stack}</OAuthProvider>
             </ClerkProvider>
           </GestureHandlerRootView>
         </GrowthBook>

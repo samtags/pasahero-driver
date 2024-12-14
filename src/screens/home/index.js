@@ -5,8 +5,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Optional from "@/src/components/optional";
 import useController from "@/src/services/controller";
 import * as Linking from "expo-linking";
-import { useMMKVString } from "react-native-mmkv";
-import Tooltip from "rn-tooltip";
 import { useCallback, useEffect, useRef, useState } from "react";
 import storage from "@/src/services/storage";
 import useLocation from "@/src/services/hooks/useLocation";
@@ -266,36 +264,32 @@ export default function Home() {
         </View>
         <View style={styles.statusContainer}>
           <View style={{ alignItems: "center" }}>
-            <Tooltip
-              ref={tooltipRef}
-              backgroundColor="#10B981"
-              height={50}
-              width={220}
-              pointerStyle={{ marginTop: -44 }}
-              containerStyle={{ marginLeft: 90, marginTop: -44 }}
-              popover={<Text color="white">Pindutin para bumiyahe</Text>}
+            <TouchableOpacity
+              onPress={handlePressCallToAction}
+              style={{ marginTop: -37.5 }}
             >
-              <TouchableOpacity
-                onPress={handlePressCallToAction}
-                style={{ marginTop: -37.5 }}
-              >
-                <View style={styles.callToAction()}>
-                  <Ionicons
-                    name={status === "ACTIVE" ? "stop" : "power-outline"}
-                    size={32}
-                    color="white"
-                  />
-                </View>
-              </TouchableOpacity>
-            </Tooltip>
+              <View style={styles.callToAction()}>
+                <Ionicons
+                  name={status === "ACTIVE" ? "stop" : "power-outline"}
+                  size={32}
+                  color="white"
+                />
+              </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.statusRow}>
-            <Text textAlign="center" weight="bold" size={18} color="black">
+            <Text
+              style={{ minWidth: 210 }}
+              textAlign="center"
+              weight="bold"
+              size={18}
+              color="black"
+            >
               <Optional condition={status === "ACTIVE"}>
                 Handa nang bumiyahe
               </Optional>
               <Optional condition={status === "INACTIVE"}>
-                Hindi Aktibo
+                Ikaw ay offline
               </Optional>
             </Text>
           </View>
