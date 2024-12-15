@@ -9,11 +9,17 @@ import router from "@/src/services/router";
 import storage from "@/src/services/storage";
 import useTopups from "@/src/services/queries/useTopups";
 import Optional from "@/src/components/optional";
+import useOnFocus from "@/src/services/hooks/useOnFocus";
 
 // todo: configure balance threshold in growthbook
 export default function WalletScreen() {
-  const { data: wallet } = useWallets();
-  const { data: topups } = useTopups();
+  const { data: wallet, refetch: getWallet } = useWallets();
+  const { data: topups, refetch: getTopups } = useTopups();
+
+  useOnFocus(() => {
+    getWallet();
+    getTopups();
+  });
 
   function handleTopup() {
     const user = storage.getString("user.id");

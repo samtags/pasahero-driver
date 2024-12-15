@@ -2,7 +2,6 @@ import { Alert, TextInput, View } from "react-native";
 import Cta from "@/src/components/cta";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
 import JSON from "@/src/services/json";
 import Text from "@/src/components/text";
 import bucket from "@react-native-firebase/storage";
