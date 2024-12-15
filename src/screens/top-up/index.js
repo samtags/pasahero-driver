@@ -7,6 +7,7 @@ import JSON from "@/src/services/json";
 import Text from "@/src/components/text";
 import bucket from "@react-native-firebase/storage";
 import storage from "@/src/services/storage";
+import router from "@/src/services/router";
 
 export default function TopUpScreen() {
   const [file, setFile] = useState();
@@ -122,27 +123,24 @@ export default function TopUpScreen() {
       task
         .then(async () => {
           const screenshot = await ref.getDownloadURL();
-          const email = storage.getString("user.email");
+          const driver_id = storage.getString("user.id");
 
           setIsLoading(false);
           console.log("Profile image uploaded", { screenshot });
           await axios
-            .post(
-              "https://app.nocodb.com/api/v2/tables/mr33bvf49qc3xmd/records",
-              {
-                reference,
-                amount,
-                screenshot,
-                email,
-              },
-              {
-                headers: {
-                  "xc-token": "pUgoMx8PbT4N8j6ddNYZfhV_0-rAZylgaa0pioUB",
+            .post("https://driver.pasahero.app/wallet/top-up", {
+              reference,
+              amount: Number(amount),
+              screenshot,
+              driver_id,
+            })
+            .then(() => {
+              Alert.alert("Success", "Top up successful", [
+                {
+                  text: "OK",
+                  onPress: router.back,
                 },
-              }
-            )
-            .then((res) => {
-              console.log("🚀 ~ .then ~ res:", res);
+              ]);
               resolve();
             })
             .catch((err) => {
