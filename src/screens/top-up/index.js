@@ -8,6 +8,7 @@ import Text from "@/src/components/text";
 import bucket from "@react-native-firebase/storage";
 import storage from "@/src/services/storage";
 import router from "@/src/services/router";
+import { resetTopups } from "@/src/services/queries/useTopups";
 
 export default function TopUpScreen() {
   const [file, setFile] = useState();
@@ -27,7 +28,6 @@ export default function TopUpScreen() {
 
     const file = results.assets?.[0];
     setFile(file);
-    console.log("🚀 ~ handleOnPress ~ file:", file);
 
     console.log("Sending request to vision api");
     const response = await axios.post(
@@ -141,6 +141,7 @@ export default function TopUpScreen() {
                   onPress: router.back,
                 },
               ]);
+              resetTopups();
               resolve();
             })
             .catch((err) => {
@@ -166,7 +167,7 @@ export default function TopUpScreen() {
 
       <View>
         <TextInput
-          editable={isLoading === false}
+          editable={false}
           value={amount}
           onChangeText={setAmount}
           placeholder="Enter amount"
@@ -175,7 +176,7 @@ export default function TopUpScreen() {
 
       <View>
         <TextInput
-          editable={isLoading === false}
+          editable={false}
           value={reference}
           onChangeText={setReference}
           placeholder="Reference Number"

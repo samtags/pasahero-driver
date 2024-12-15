@@ -7,10 +7,13 @@ import useWallets from "@/src/services/queries/useWallet";
 import amount from "@/src/services/util/amount";
 import router from "@/src/services/router";
 import storage from "@/src/services/storage";
+import useTopups from "@/src/services/queries/useTopups";
+import Optional from "@/src/components/optional";
 
 // todo: configure balance threshold in growthbook
 export default function WalletScreen() {
-  const { data } = useWallets();
+  const { data: wallet } = useWallets();
+  const { data: topups } = useTopups();
 
   function handleTopup() {
     const user = storage.getString("user.id");
@@ -34,12 +37,19 @@ export default function WalletScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={{ flexShrink: 0, paddingTop: 32, gap: 8 }}>
+      <View style={{ flexShrink: 0, paddingTop: 16, gap: 8 }}>
+        <Optional condition={topups?.length}>
+          <View style={styles.topupNotice}>
+            <Text color="#fff">
+              You have {topups?.length || 0} Top-up Requests
+            </Text>
+          </View>
+        </Optional>
         <Text size={18} color="#707070" textAlign="center">
           Available Balance
         </Text>
         <Text weight="bold" size={36} color="#3F3D56" textAlign="center">
-          {amount.format(data?.balance || 0)}
+          {amount.format(wallet?.balance || 0)}
         </Text>
       </View>
       <View style={{ flex: 1, marginTop: 32 }}>
@@ -72,5 +82,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9fafb",
+  },
+  topupNotice: {
+    backgroundColor: "#10B981",
+    borderRadius: 14,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 32,
   },
 });
