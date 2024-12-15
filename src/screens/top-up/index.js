@@ -9,6 +9,9 @@ import bucket from "@react-native-firebase/storage";
 import storage from "@/src/services/storage";
 import router from "@/src/services/router";
 import { resetTopups } from "@/src/services/queries/useTopups";
+import ocr from "@/src/services/api/ocr";
+import OcrGpt from "@/src/services/api/ocr-gpt";
+import topUp from "@/src/services/api/topUp";
 
 export default function TopUpScreen() {
   const [file, setFile] = useState();
@@ -29,72 +32,21 @@ export default function TopUpScreen() {
     const file = results.assets?.[0];
     setFile(file);
 
-    console.log("Sending request to vision api");
-    const response = await axios.post(
-      "https://vision.googleapis.com/v1/images:annotate?key=REDACTED",
-      {
-        requests: [
-          {
-            image: {
-              content: file?.base64,
-            },
-            features: [{ type: "TEXT_DETECTION", maxResults: 5 }],
-          },
-        ],
-      }
-    );
-    console.log(
-      "🚀 ~ handleOnPress ~ response:",
-      response?.data?.responses?.[0]
-    );
+    console.debug("Sending request to vision api");
+    const response = await ocr(file?.base64);
 
     const words = response?.data?.responses?.[0]?.fullTextAnnotation?.text;
 
     if (!words) {
-      console.log("No words found in image");
+      console.debug("No words found in image");
       return setIsLoading(false);
     }
 
     const content = `""" ${words} """ Extract the amount and reference number and return them in JSON format { amount, reference } . JSON answer only.`;
 
-    console.log("🚀 ~ handleOnPress ~ content:", content);
+    console.debug("prompt:", content);
 
-    const res = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content,
-          },
-        ],
-        functions: [
-          {
-            name: "extractJson",
-            parameters: {
-              type: "object",
-              properties: {
-                amount: {
-                  type: "number",
-                },
-                reference: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        ],
-        function_call: { name: "extractJson" },
-      },
-      {
-        headers: {
-          Authorization:
-            "Bearer REDACTED",
-        },
-      }
-    );
-
+    const res = await OcrGpt(content);
     setIsLoading(false);
 
     const result = res.data?.choices?.[0]?.message?.function_call?.arguments;
@@ -116,24 +68,21 @@ export default function TopUpScreen() {
 
     const ref = bucket().ref(path);
 
-    console.log("Uploading profile image", { now, uri, fileName, file, path }); // prettier-ignore
+    console.debug("Uploading profile image", { now, uri, fileName, file, path }); // prettier-ignore
     const task = ref.putFile(uri);
 
     await new Promise((resolve, reject) => {
       task
         .then(async () => {
           const screenshot = await ref.getDownloadURL();
-          const driver_id = storage.getString("user.id");
 
           setIsLoading(false);
-          console.log("Profile image uploaded", { screenshot });
-          await axios
-            .post("https://driver.pasahero.app/wallet/top-up", {
-              reference,
-              amount: Number(amount),
-              screenshot,
-              driver_id,
-            })
+          console.debug("Profile image uploaded", { screenshot });
+          topUp({
+            reference,
+            amount: Number(amount),
+            screenshot,
+          })
             .then(() => {
               Alert.alert("Success", "Top up successful", [
                 {
@@ -145,12 +94,15 @@ export default function TopUpScreen() {
               resolve();
             })
             .catch((err) => {
-              console.log("🚀 ~ .then ~ err:", err);
-              Alert.alert("Unable to upload.", "Please try again later.");
+              console.debug("Unable to top-up", err);
+              Alert.alert(
+                "Try again later.",
+                "Unable to submit top up request at this time. If the problem persists, please contact us."
+              );
             });
         })
         .catch((err) => {
-          console.log("🚀 ~ onSubmitTopup ~ err:", err);
+          console.debug("Unable to upload image", err);
           Alert.alert(
             "Unable to upload.",
             "There is wrong with the image you selected. Please try again."
