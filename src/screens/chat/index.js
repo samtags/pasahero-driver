@@ -19,7 +19,7 @@ export default function ChatScreen() {
   const refInput = useRef();
   const messageText = useRef();
 
-  const chats = useChats(params.id, params.driver_id);
+  const chats = useChats(params.id, params.passenger_id);
 
   function handleScrollToBottom() {
     scrollViewRef?.current?.scrollToEnd?.();

@@ -8,8 +8,6 @@ import ChatScreen from "@/src/screens/chat";
 import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 
 export default function Entry(props) {
-  const params = useRouterParams();
-
   // function handlePressCall() {
   //   router.navigate({
   //     pathname: "/call/dial",
@@ -19,20 +17,13 @@ export default function Entry(props) {
   //   });
   // }
 
-  let service = handleGetPlatformByService(params.service) || "";
-  let driver = "";
-
-  if (params?.first_name && params?.last_name) {
-    driver = `- ${params?.first_name} ${params?.last_name}`;
-  }
-
   return (
     <>
       <Stack.Screen
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              {service} {driver}
+              Passenger
             </Text>
           ),
           headerTitleAlign: "center",

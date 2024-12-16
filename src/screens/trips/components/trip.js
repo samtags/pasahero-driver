@@ -9,7 +9,13 @@ import {
 } from "react-native";
 import Text from "@/src/components/text";
 import { Image } from "expo-image";
-import { current, first, last } from "@/src/services/images/remote";
+import {
+  current,
+  first,
+  last,
+  call,
+  message,
+} from "@/src/services/images/remote";
 import Cta from "@/src/components/cta";
 import Optional from "@/src/components/optional";
 import getDistance from "@/src/services/util/haversine/getDistance";
@@ -35,11 +41,14 @@ export default memo(function Trip({
   will_add_tip,
   isTaking,
   isRefusing,
-  handleTake = () => {},
-  handleRefuse = () => {},
   status,
   id,
   setTrip,
+  handleTake = () => {},
+  handleRefuse = () => {},
+  handleMessage = () => {},
+  handlePressPickup = () => {},
+  handlePressDropoff = () => {},
 }) {
   useRenderCounter("Trip");
   const location = JSON.parse(storage.getString("user.location"));
@@ -59,10 +68,39 @@ export default memo(function Trip({
     <View style={{ flex: 1, justifyContent: "space-between" }}>
       <View style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 24, gap: 24 }}>
-          <Optional condition={isExpiring}>
+          <Optional condition={isExpiring && status === "REQUESTED"}>
             <Text color="#1B1B1B" size={18} weight="bold">
               Expiring Soon
             </Text>
+          </Optional>
+          <Optional
+            condition={["FOUND", "ARRIVED", "STARTED", "DONE"].includes(status)}
+          >
+            <View style={styles.commsRow}>
+              <TouchableOpacity
+                onPress={handleMessage}
+                style={{ flexDirection: "row", alignItems: "center", gap: 16 }}
+              >
+                <Image source={message} style={{ width: 32, height: 32 }} />
+                <Text weight="700" color="#707070">
+                  Message
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                disabled
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 16,
+                  opacity: 0.5,
+                }}
+              >
+                <Image source={call} style={{ width: 32, height: 32 }} />
+                <Text weight="700" color="#707070">
+                  Call
+                </Text>
+              </TouchableOpacity>
+            </View>
           </Optional>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
@@ -84,7 +122,7 @@ export default memo(function Trip({
           </View>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handlePressPickup}>
               <Image
                 source={first}
                 style={{ width: 40, height: 40 }}
@@ -104,7 +142,7 @@ export default memo(function Trip({
           </View>
 
           <View style={{ flexDirection: "row", gap: 12 }}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handlePressDropoff}>
               <Image
                 source={last}
                 style={{ width: 40, height: 40 }}
@@ -332,6 +370,11 @@ export const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 2,
     borderColor: "#00000003",
+  },
+  commsRow: {
+    flexDirection: "row",
+    gap: 16,
+    paddingLeft: 5,
   },
 });
 

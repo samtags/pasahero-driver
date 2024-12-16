@@ -4,10 +4,10 @@ import subscribe from "@/src/services/realtime";
 import getChats from "@/src/services/api/getChats";
 import sendChat from "@/src/services/api/sendChat";
 import Chat from "./Chat";
-import storage from "../storage";
+import storage from "@/src/services/storage";
 import moment from "moment";
 
-export default function useChats(tripId, driverId) {
+export default function useChats(tripId, passengerId) {
   const chatsMap = useRef(new OrderedMap());
   const [_, toggleState] = useState(false);
 
@@ -16,7 +16,7 @@ export default function useChats(tripId, driverId) {
   }
 
   function send(message) {
-    const chat = new Chat(message, tripId, driverId);
+    const chat = new Chat(message, tripId, passengerId);
 
     addChat(chat);
     sendChat(chat);

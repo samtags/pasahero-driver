@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Linking } from "react-native";
 import { MotiView } from "moti";
 import Optional from "@/src/components/optional";
 import Trip from "./components/trip";
@@ -247,6 +247,28 @@ export default function Trips() {
     handleOnTripTimeout();
   }
 
+  function handleMessage() {
+    router.navigate({
+      pathname: "/chat",
+      params: {
+        id: trip?.id,
+        passenger_id: trip?.passenger_id,
+      },
+    });
+  }
+
+  function handlePressPickup() {
+    Linking.openURL(
+      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`
+    );
+  }
+
+  function handlePressDropoff() {
+    Linking.openURL(
+      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`
+    );
+  }
+
   useEffect(() => {
     console.debug("Detected change from router params", {
       data: tripRequest,
@@ -333,6 +355,9 @@ export default function Trips() {
           handleRefuse={handleRefuse}
           isExpiring={isExpiring}
           setTrip={setTrip}
+          handleMessage={handleMessage}
+          handlePressDropoff={handlePressDropoff}
+          handlePressPickup={handlePressPickup}
         />
       </Optional>
     </View>
