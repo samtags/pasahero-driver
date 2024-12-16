@@ -84,14 +84,19 @@ export default function useController() {
     }
 
     const userId = storage.getString("user.id");
+    let isFromAuth = false;
 
     if (!userId) {
+      isFromAuth = true;
       const isSignedIn = await handleSignInViaGoogle();
       if (!isSignedIn) {
         console.debug("User not signed in.");
         setError("NO_USER");
         return;
       }
+
+      // wait for 1.5 sec to let the user data populate in cache
+      await new Promise((res) => setTimeout(res, 750));
     }
 
     const currentStatus = storage.getString("controller.status");
@@ -139,7 +144,9 @@ export default function useController() {
       getProfiles().then((profiles) => {
         if (profiles?.length === 0) {
           handleSetStatus("INACTIVE");
-          setError("NO_PROFILE");
+          if (isFromAuth === faålse) {
+            setError("NO_PROFILE");
+          }
         }
 
         if (profiles?.length === 1) {

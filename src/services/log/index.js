@@ -22,7 +22,7 @@ function log(message, payload = {}) {
   payload.created_at = new Date().toISOString();
   payload.context = payload.context || {};
   payload.context["@service_name"] = "com.pasahero.driver";
-  payload.context["@version"] = "1.0.12";
+  payload.context["@version"] = "1.1.0";
   payload.context["@environment"] = process.env.NODE_ENV;
   payload.context["@user_id"] = storage.getString("user.id");
 

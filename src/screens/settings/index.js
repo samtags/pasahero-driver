@@ -53,10 +53,10 @@ export default function SettingsScreen() {
         <Link href="/faqs">FAQs</Link>
         <Link href="/privacy-policy">Privacy Policy</Link>
         <Link href="/terms-condition">Terms and Condition</Link>
+        <Link href="/contact-us">Contact Us</Link>
         {/* <Link href="/feedback">Send Feedback</Link> */}
-        {/* <Link href="/contact-us">Contact Us</Link> */}
         <SignedIn>
-          {/* <Link href="/delete-account">Delete Account</Link> */}
+          <Link href="/delete-account">Delete Account</Link>
           <Link onPress={handleSignOut}>Sign Out</Link>
         </SignedIn>
         <SignedOut>

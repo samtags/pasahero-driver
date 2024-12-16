@@ -1,13 +1,15 @@
 import { Stack } from "expo-router";
 import { WebView } from "react-native-webview";
 import { StyleSheet, View } from "react-native";
-import Text from "@/src/components/text";
+import Text from "../src/components/text";
 import { useState } from "react";
-import Optional from "@/src/components/optional";
+import Optional from "../src/components/optional";
 import LottieView from "lottie-react-native";
+import { useMMKVString } from "react-native-mmkv";
 
 export default function Entry(props) {
   const [showWebview, setShowWebView] = useState(false);
+  const [email] = useMMKVString("user.email");
 
   return (
     <>
@@ -15,10 +17,9 @@ export default function Entry(props) {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Contact Us
+              Delete Account
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
         }}
       />
@@ -41,13 +42,11 @@ export default function Entry(props) {
         </Optional>
         <WebView
           onLoadEnd={() => {
-            setTimeout(() => {
-              setShowWebView(true);
-            }, 4000);
+            setShowWebView(true);
           }}
           style={[styles.container, { opacity: showWebview ? 1 : 0 }]}
           source={{
-            uri: `https://pasahero.notion.site/Contact-us-cb3ddbe6b42f445b85e01a88fa0edefb`,
+            uri: `https://app.nocodb.com/#/nc/form/14d948eb-24b6-48bd-87df-69a82bddafad?Email=${email}`,
           }}
         />
       </View>
@@ -58,6 +57,5 @@ export default function Entry(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: -60,
   },
 });
