@@ -6,6 +6,11 @@ export default async function getTopup() {
 
   console.debug("Received get topup request", id);
 
+  if (!id) {
+    console.debug("No user id found. Not proceeding with the request.");
+    return [];
+  }
+
   const response = await axios.get(
     `https://driver.pasahero.app/wallet/top-up?driver_id=${id}`
   );
