@@ -100,9 +100,16 @@ export default function useController() {
       handleSetStatus("INACTIVE");
     } else {
       const tripRequest = storage.getString("__tmp_trip.request");
-      console.debug("🚀 ~ handlePressButton ~ tripRequest:", tripRequest);
 
       if (tripRequest) {
+        const trip = JSON.parse(tripRequest);
+        if (trip.status !== "REQUESTED") {
+          console.debug(
+            "User incoming trip status is not requested. Deleting the request."
+          );
+          return storage.delete("__tmp_trip.request");
+        }
+
         console.debug("User has trip request. Redirecting to trips instead.");
         return router.navigate({ pathname: "/(tabs)/trips" });
       }

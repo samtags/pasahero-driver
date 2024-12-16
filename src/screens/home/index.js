@@ -53,7 +53,9 @@ export default function Home() {
     getIncomingTrip().then((trip) => {
       if (trip) {
         console.debug("There is incoming trip. Prompting in home screen.");
-        storage.set("__tmp_trip.request", JSON.stringify(trip));
+        if (trip.status === "REQUESTED") {
+          storage.set("__tmp_trip.request", JSON.stringify(trip));
+        }
       }
     });
   }, []);
