@@ -2260,10 +2260,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-21.4.1.tgz#c2c0463baaf1f0efc3b93c2c6a9efeec931ba7b2"
   integrity sha512-WuCXzmklBXqlLO+P2+UJoa0Nx6yacOXm5VqQhGYMPaSNb1tw20aMINd+fqJI/CGJJ2JA0oQgapvsPTi1frvyqw==
 
-"@react-native-firebase/storage@^21.6.1":
-  version "21.6.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-21.6.1.tgz#8d3ffc7d786302d611fbe15a6e7617c74f55b7f0"
-  integrity sha512-97PsRf1i+0TdQgbLV0WD/HDB+3cae7JWimqc8eTGVc+QK2OuooYgs34flnbDkXu71brzDWdGJRWijsZhtORggg==
+"@react-native-firebase/storage@21.4.1":
+  version "21.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-21.4.1.tgz#b90bab6a6407eb704620a0b8ffde09abb2a83b73"
+  integrity sha512-zN9O+UkiRpiKAUO/vGVm17sCaap7ziAOUbcbl+nkOW0CUGNqYnMpUd93iGalq4fWO6ziVINS/4277EQ3f6MYJQ==
 
 "@react-native/assets-registry@0.76.3":
   version "0.76.3"
