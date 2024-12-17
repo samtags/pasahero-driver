@@ -1,12 +1,12 @@
 import { Stack } from "expo-router";
 import Text from "@/src/components/text";
 import { useRouterParams } from "@/src/services/router";
-import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 import RegisterProfile from "@/src/screens/register";
+import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
+import { useMMKVString } from "react-native-mmkv";
 
 export default function Entry() {
-  const params = useRouterParams();
-  const service = handleGetPlatformByService(params?.service);
+  const [service] = useMMKVString("user.service");
 
   return (
     <>
@@ -14,10 +14,9 @@ export default function Entry() {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Register Profile
+              Register {handleGetPlatformByService(service)} Profile
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
         }}
       />

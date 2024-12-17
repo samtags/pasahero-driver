@@ -144,7 +144,7 @@ export default function useController() {
       getProfiles().then((profiles) => {
         if (profiles?.length === 0) {
           handleSetStatus("INACTIVE");
-          if (isFromAuth === faålse) {
+          if (isFromAuth === false) {
             setError("NO_PROFILE");
           }
         }

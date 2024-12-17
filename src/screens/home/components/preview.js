@@ -143,8 +143,12 @@ export default memo(function Preview({
               text: "OK",
               onPress: () => {
                 onClose();
-                // todo: redirect to registration page
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: storage.getString("user.profile_id"),
+                  },
+                });
               },
             },
           ]

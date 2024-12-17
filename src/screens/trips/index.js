@@ -192,7 +192,12 @@ export default function Trips() {
               onPress: () => {
                 refuse?.send();
                 reset();
-                router.navigate({ pathname: "/" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: storage.getString("user.profile_id"),
+                  },
+                });
               },
             },
           ]

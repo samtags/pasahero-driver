@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { Image } from "expo-image";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, use } from "react";
 import Text from "@/src/components/text";
 import { useUser } from "@clerk/clerk-expo";
 import { router, useLocalSearchParams, Link } from "expo-router";
@@ -25,12 +25,15 @@ import { sent } from "@/src/services/images/remote";
 import { useRouterParams } from "@/src/services/router";
 import submitRegistration from "@/src/services/api/registerProfile";
 import updateProfile from "@/src/services/api/updateProfile";
+import { useMMKVString } from "react-native-mmkv";
+import getColorByService from "@/src/services/util/colors/getColorByService";
 
 export default function RegisterProfile() {
   const { user } = useUser();
   const client = useQueryClient();
   const params = useRouterParams();
   const scrollViewRef = useRef();
+  const [service] = useMMKVString("user.service");
 
   const [preview, setPreview] = useProfilePreview({
     mobile_number: params?.mobile_number,
@@ -50,7 +53,7 @@ export default function RegisterProfile() {
       handleRetriggerProfiles();
       Alert.alert(
         "Profile submitted!",
-        "Please wait 1 to 2 minutes while we review your profile.",
+        "Please wait for a few minutes while we review your profile.",
         [
           {
             text: "OK",
@@ -177,6 +180,25 @@ export default function RegisterProfile() {
 
         <View style={{ marginTop: 24 }} />
 
+        <ProfileInput
+          name="first_name"
+          label="First Name"
+          placeholder="Enter your first name"
+          defaultValue={params?.first_name}
+          onBlur={(value) => setPreview("first_name", value)}
+        />
+        <View style={{ marginTop: 24 }} />
+
+        <ProfileInput
+          name="last_name"
+          label="Last Name"
+          placeholder="Enter your last name"
+          defaultValue={params?.last_name}
+          onBlur={(value) => setPreview("last_name", value)}
+        />
+
+        <View style={{ marginTop: 24 }} />
+
         <View style={{ gap: 12 }}>
           <ProfileInput
             name="mobile_number"
@@ -224,7 +246,8 @@ export default function RegisterProfile() {
         <Cta
           disabled={isPending}
           onPress={handleSumbitProfile}
-          color={isPending ? "#B9BAF9" : "#6366F1"}
+          style={{ opacity: isPending ? 0.5 : 1 }}
+          color={getColorByService(service)}
         >
           Submit to Accept Trips
         </Cta>
@@ -279,7 +302,7 @@ function ProfileInput({
           style={{
             backgroundColor: "#EFEFF0",
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingVertical: 16,
             borderRadius: 12,
             flexDirection: "row",
             alignItems: "center",
