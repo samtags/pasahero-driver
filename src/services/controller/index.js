@@ -13,6 +13,7 @@ import undoFindTrips from "@/src/services/api/undoFindTrips";
 import useWillEffect from "@/src/services/hooks/useWillEffect";
 import { transform } from "@/src/services/background/location";
 import router from "@/src/services/router";
+import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE

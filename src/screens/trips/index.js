@@ -16,6 +16,9 @@ import useOnUpdate from "@/src/services/hooks/useOnUpdate";
 import useRenderCounter from "@/src/services/hooks/useRenderCounter";
 import getOngoingTrips from "@/src/services/api/getOngoingTrips";
 import getDriverProfile from "@/src/services/api/getDriverProfile";
+import getIncomingTrip from "@/src/services/api/getIncomingTrip";
+import { handleSetStatus } from "@/src/services/controller";
+import useOnFocus from "@/src/services/hooks/useOnFocus";
 
 let timeout;
 export default function Trips() {
@@ -32,6 +35,10 @@ export default function Trips() {
 
   const take = useTakeTrip(trip?.id);
   const refuse = useRejectTrip(trip?.id);
+
+  useOnFocus(() => {
+    getIncomingTripRequest();
+  });
 
   useOnTripTimeoutWarning(trip?.id, handleOnTripTimeoutWarning);
   useOnTripTimeout(trip?.id, handleOnTripTimeout);
@@ -535,4 +542,11 @@ function useOnTripTimeout(id, callback) {
 
     return () => unsubscribe?.();
   }, [id]);
+}
+
+export function getIncomingTripRequest() {
+  getIncomingTrip().then((trip) => {
+    storage.set("__tmp_trip.request", JSON.stringify(trip));
+    handleSetStatus("INACTIVE");
+  });
 }

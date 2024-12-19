@@ -12,7 +12,10 @@ import useDriverIcon from "@/src/services/hooks/useDriverIcon";
 import getColorByService from "@/src/services/util/colors/getColorByService";
 import Registration from "@/src/screens/home/components/registration";
 import Center from "@/src/screens/home/components/center";
-import { useIncomingRequest } from "@/src/screens/trips";
+import {
+  getIncomingTripRequest,
+  useIncomingRequest,
+} from "@/src/screens/trips";
 import router from "@/src/services/router";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 import useRenderCounter from "@/src/services/hooks/useRenderCounter";
@@ -21,6 +24,8 @@ import useNearby from "@/src/services/hooks/useNearby";
 import TripMarker from "@/src/screens/home/components/marker";
 import Preview from "@/src/screens/home/components/preview";
 import JSON from "@/src/services/json";
+import useOnAppFocus from "@/src/services/hooks/useFocus";
+import useOnFocus from "@/src/services/hooks/useOnFocus";
 
 export default function Home() {
   useRenderCounter("Home");
@@ -45,6 +50,16 @@ export default function Home() {
   };
 
   const { trips: nearby, onCameraChanged } = useNearby();
+
+  useOnAppFocus(() => {
+    console.debug("App refocused. Checking for incoming trips.");
+    getIncomingTripRequest();
+  });
+
+  useOnFocus(() => {
+    console.debug("Refocused in home screen. Checking for incoming trips.");
+    getIncomingTripRequest();
+  });
 
   useEffect(() => {
     const firstTime = storage.getBoolean("settings.app.firstTime");
