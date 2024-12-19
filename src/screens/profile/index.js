@@ -19,7 +19,7 @@ export default function ProfileScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={{ padding: 16 }}>
-        <Text color="#707070">Press to review the profile.</Text>
+        <Text color="#707070">Press to review your profile.</Text>
       </View>
       <View style={{ padding: 16 }}>
         {profiles?.map((profile) => (

@@ -38,6 +38,7 @@ export default function Trips() {
   const refuse = useRejectTrip(trip?.id);
 
   useOnFocus(() => {
+    console.log("Getting incoming trip request");
     getIncomingTripRequest();
   });
 
@@ -328,6 +329,7 @@ export default function Trips() {
 
   useEffect(() => {
     if (activeTrip?.id) {
+      console.debug("Updating from active trip.");
       setTrip(activeTrip);
     }
   }, [activeTrip]);

@@ -47,5 +47,7 @@ export default function useTrip(id, defaultValue) {
     };
   }, [id]);
 
+  if (!id) return defaultValue;
+
   return trip;
 }

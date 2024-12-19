@@ -125,6 +125,22 @@ export default function Home() {
     }
   }
 
+  function handlePressDeclineNotice() {
+    controller.clearError();
+    const profile_id = storage.getString("user.profile_id");
+    const profileString = storage.getString(`__tmp_profile.${profile_id}`);
+    const profile = JSON.parse(profileString, {});
+
+    router.navigate({
+      pathname: "/register",
+      params: {
+        ...profile,
+        id: storage.getString("user.profile_id"),
+        status: "DECLINED",
+      },
+    });
+  }
+
   if (!location.fallback) {
     featureCollection.features.push({
       type: "Feature",
@@ -204,6 +220,17 @@ export default function Home() {
                 <Text>
                   You have ongoing trip request! Please acknowledge it before it
                   expires.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </Optional>
+
+          <Optional condition={error === "PROFILE_DECLINED"}>
+            <TouchableOpacity onPress={handlePressDeclineNotice}>
+              <View style={{ backgroundColor: "white", padding: 16 }}>
+                <Text>
+                  Ang iyong profile ay na decline. I-update ang profile at
+                  subukang i-submit ito ulit.
                 </Text>
               </View>
             </TouchableOpacity>

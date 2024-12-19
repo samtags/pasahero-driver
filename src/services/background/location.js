@@ -33,7 +33,7 @@ export default function useLocation() {
       (async () => {
         unsubscribe = await Location.watchPositionAsync(
           {
-            accuracy: Location.Accuracy.High,
+            accuracy: Location.Accuracy.Balanced,
             timeInterval: 5000, // Minimum time interval between updates (ms)
             distanceInterval: 10, // Minimum distance between updates (meters)
           },

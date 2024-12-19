@@ -14,6 +14,7 @@ import useWillEffect from "@/src/services/hooks/useWillEffect";
 import { transform } from "@/src/services/background/location";
 import router from "@/src/services/router";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
+import getDriverProfile from "@/src/services/api/getDriverProfile";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
@@ -159,6 +160,14 @@ export default function useController() {
       getIncomingTrip().then((trip) => {
         storage.set("__tmp_trip.request", JSON.stringify(trip));
         handleSetStatus("INACTIVE");
+      });
+
+      const profile_id = storage.getString("user.profile_id");
+      getDriverProfile(profile_id).then((profile) => {
+        console.log("🚀 ~ getDriverProfile ~ profile:", profile);
+        if (profile.status === "DECLINED") {
+          setError("PROFILE_DECLINED");
+        }
       });
 
       handleSetUserLocation();
