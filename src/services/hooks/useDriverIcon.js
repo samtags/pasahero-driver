@@ -14,7 +14,7 @@ export default function useDriverIcon() {
 
   if (status === "ACTIVE") {
     if (service === "mc-taxi") icon = motorJoyRideIcon;
-    if (service === "move-it") icon = motorMoveItIcon;
+    if (service === "moto-taxi") icon = motorMoveItIcon;
     if (service === "angkas") icon = motorAngkasIcon;
   }
 

@@ -15,6 +15,7 @@ import useTrip from "@/src/services/queries/useTrip";
 import useOnUpdate from "@/src/services/hooks/useOnUpdate";
 import useRenderCounter from "@/src/services/hooks/useRenderCounter";
 import getOngoingTrips from "@/src/services/api/getOngoingTrips";
+import getDriverProfile from "@/src/services/api/getDriverProfile";
 
 let timeout;
 export default function Trips() {
@@ -158,6 +159,12 @@ export default function Trips() {
       }
 
       if (errorCode === "PROFILE_DECLINED") {
+        const profile_id = storage.getString("user.profile_id");
+        getDriverProfile(profile_id) //
+          .then((profile) => {
+            if (profile) router.setParams("/register", profile);
+          });
+
         return Alert.alert(
           "Oops!",
           "There's a problem with your profile. Please check it and make sure all the information are correct.",
@@ -166,7 +173,13 @@ export default function Trips() {
               text: "OK",
               onPress: () => {
                 // todo: redirect to registration
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: profile_id,
+                    status: "DECLINED",
+                  },
+                });
                 refuse?.send();
                 reset();
               },

@@ -89,7 +89,7 @@ export default function WalletScreen() {
       </View>
       <View style={{ flexShrink: 0, padding: 16, gap: 24 }}>
         <Text textAlign="center" size={18} color="#707070">
-          Your balance threshold is ₱-50.00
+          Your balance limit is ₱-50.00
         </Text>
         <Cta onPress={handleTopup} color="#6366F1" textColor="#fff">
           Top-up Now

@@ -1,6 +1,8 @@
 import Text from "@/src/components/text";
+import useOnFocus from "@/src/services/hooks/useOnFocus";
 import useProfiles from "@/src/services/hooks/useProfiles";
 import { radioOff, radioOn } from "@/src/services/images/remote";
+import router from "@/src/services/router";
 import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 import { Image } from "expo-image";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -8,29 +10,46 @@ import { useMMKVString } from "react-native-mmkv";
 
 export default function ProfileScreen() {
   const [activeProfileId] = useMMKVString("user.profile_id");
-  const { data: profiles = [] } = useProfiles();
+  const { data: profiles = [], refetch } = useProfiles();
+
+  useOnFocus(() => {
+    refetch();
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      {profiles?.map((profile) => (
-        <Profile
-          selected={activeProfileId === profile.id}
-          platform={handleGetPlatformByService(profile.service)}
-          brand={profile.vehicle_make}
-          model={profile.vehicle_model}
-          platenNumber={profile.vehicle_plate_number}
-          color={profile.vehicle_color}
-          firstName={profile.first_name}
-          lastName={profile.last_name}
-          img={profile.image_url}
-          showRadioButton
-        />
-      ))}
+      <View style={{ padding: 16 }}>
+        <Text color="#707070">Press to review the profile.</Text>
+      </View>
+      <View style={{ padding: 16 }}>
+        {profiles?.map((profile) => (
+          <Profile
+            selected={activeProfileId === profile.id}
+            platform={handleGetPlatformByService(profile.service)}
+            brand={profile.vehicle_make}
+            model={profile.vehicle_model}
+            platenNumber={profile.vehicle_plate_number}
+            color={profile.vehicle_color}
+            firstName={profile.first_name}
+            lastName={profile.last_name}
+            img={profile.image_url}
+            showRadioButton
+            onPress={() => {
+              if (["DRAFT", "PENDING", "DECLINED"]?.includes(profile?.status)) {
+                router.navigate({
+                  pathname: "/register",
+                  params: profile,
+                });
+              }
+            }}
+          />
+        ))}
+      </View>
     </View>
   );
 }
 
-function Profile({
+export function Profile({
   selected = false,
   platform,
   brand,
@@ -41,46 +60,64 @@ function Profile({
   lastName,
   img,
   showRadioButton,
+  onPress = () => {},
 }) {
   return (
-    <View style={{ padding: 16, gap: 8 }}>
-      <Text size={18} weight="bold">
-        {platform}
-      </Text>
-      <View style={styles.row}>
-        <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
-          <Image source={img} style={styles.image} />
-          <View>
-            <Text numberOfLines={1} size={18} weight="bold">
-              {platenNumber} — {color} {brand} {model}
-            </Text>
-            <Text>
-              {firstName} {lastName}
-            </Text>
+    <TouchableOpacity onPress={onPress}>
+      <View style={{ gap: 8 }}>
+        <Text size={18} weight="bold">
+          {platform}
+        </Text>
+        <View style={styles.row}>
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 16,
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
+            <Image source={img} style={styles.image} />
+            <View style={{ flex: 1 }}>
+              <Text numberOfLines={1} size={18} weight="bold">
+                {platenNumber} — {color} {brand} {model}
+              </Text>
+              <Text>
+                {firstName} {lastName}
+              </Text>
+            </View>
+          </View>
+          <View style={{ flexShrink: 0 }}>
+            {showRadioButton && (
+              <TouchableOpacity
+                hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+              >
+                <Image
+                  source={selected ? radioOn : radioOff}
+                  style={{ width: 24, height: 24 }}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-        <View>
-          {showRadioButton && (
-            <TouchableOpacity
-              hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
-            >
-              <Image
-                source={selected ? radioOn : radioOff}
-                style={{ width: 24, height: 24 }}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  image: { width: 50, height: 50, borderRadius: 8, backgroundColor: "gray" },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    backgroundColor: "gray",
+    flexShrink: 0,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
+    gap: 16,
   },
 });

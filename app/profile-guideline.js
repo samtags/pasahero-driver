@@ -18,9 +18,7 @@ export default function Entry() {
               Submit Profile Guide
             </Text>
           ),
-          headerTitleAlign: "center",
           headerTintColor: "#757477",
-          animation: "ios",
         }}
       />
 

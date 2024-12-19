@@ -27,6 +27,8 @@ import submitRegistration from "@/src/services/api/registerProfile";
 import updateProfile from "@/src/services/api/updateProfile";
 import { useMMKVString } from "react-native-mmkv";
 import getColorByService from "@/src/services/util/colors/getColorByService";
+import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
+import { Profile } from "../profile";
 
 export default function RegisterProfile() {
   const { user } = useUser();
@@ -34,17 +36,22 @@ export default function RegisterProfile() {
   const params = useRouterParams();
   const scrollViewRef = useRef();
   const [service] = useMMKVString("user.service");
+  const platform = handleGetPlatformByService(service);
+  const [file, setFile] = useState();
 
   const [preview, setPreview] = useProfilePreview({
+    first_name: params?.first_name,
+    last_name: params?.last_name,
     mobile_number: params?.mobile_number,
     vehicle_make: params?.vehicle_make,
     vehicle_model: params?.vehicle_model,
     vehicle_plate_number: params?.vehicle_plate_number,
     image_url: params?.image_url,
+    vehicle_color: params?.vehicle_color,
   });
 
   function handleRetriggerProfiles() {
-    client.invalidateQueries(["getProfiles", user?.id]);
+    client.invalidateQueries(["getProfiles", store.getString("user.id")]);
   }
 
   const { isPending, mutate: handleSubmit } = useMutation({
@@ -95,6 +102,12 @@ export default function RegisterProfile() {
     handleSubmit(params?.id);
   }
 
+  let ctaLabel = "Submit to Accept Trips";
+
+  if (params.status === "DECLINED") {
+    ctaLabel = "Resubmit Profile";
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -102,27 +115,55 @@ export default function RegisterProfile() {
         style={styles.container}
         contentContainerStyle={{ padding: 24 }}
       >
-        <TouchableOpacity
-          onPress={() => router.navigate("/profile-guideline")}
-          style={{
-            backgroundColor: "#f3f4f6",
-            padding: 16,
-            borderRadius: 12,
-            marginBottom: 24,
-          }}
-        >
-          <Text color="#707070" size={14}>
-            Before filling out your profile, please read our{" "}
-            <Text
-              color="#707070"
-              size={14}
-              weight="700"
-              style={{ textDecorationLine: "underline", marginTop: 16 }}
-            >
-              Profile review guidelines.
+        <Optional condition={params.status === "DECLINED"}>
+          <TouchableOpacity
+            onPress={() => router.navigate({ pathname: "/profile-guideline" })}
+            style={{
+              backgroundColor: "#EF4444",
+              padding: 16,
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          >
+            <Text color="#fff" size={14}>
+              Profile has been declined. Please make sure all the details are
+              correct. You can read the{" "}
+              <Text
+                color="#fff"
+                size={14}
+                weight="700"
+                style={{ textDecorationLine: "underline", marginTop: 16 }}
+              >
+                profile review guidelines.
+              </Text>{" "}
+              for more details.
             </Text>
-          </Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </Optional>
+
+        <Optional condition={params.status === "DRAFT"}>
+          <TouchableOpacity
+            onPress={() => router.navigate("/profile-guideline")}
+            style={{
+              backgroundColor: "#f3f4f6",
+              padding: 16,
+              borderRadius: 12,
+              marginBottom: 24,
+            }}
+          >
+            <Text color="#707070" size={14}>
+              Before filling out your profile, please read our{" "}
+              <Text
+                color="#707070"
+                size={14}
+                weight="700"
+                style={{ textDecorationLine: "underline", marginTop: 16 }}
+              >
+                Profile review guidelines.
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </Optional>
 
         <View style={styles.header}>
           <Text size={18} weight="700" color="#1B1B1B">
@@ -213,11 +254,33 @@ export default function RegisterProfile() {
           <FileInput
             name="image_url"
             label="Driver Photo"
-            placeholder="Select a photo"
-            helperText={`Photo wearing your ${params.platform} gears`}
+            placeholder={preview?.image_url || "Select a photo"}
+            helperText={`Photo wearing your ${platform} gears`}
             onChange={(value) => setPreview("image_url", value)}
+            onChangeFile={setFile}
           />
         </View>
+
+        <View style={{ marginTop: 24 }} />
+
+        <View style={styles.header}>
+          <Text size={18} weight="700" color="#1B1B1B">
+            Profile Preview
+          </Text>
+        </View>
+
+        <Profile
+          showRadioButton={false}
+          firstName={preview?.first_name}
+          lastName={preview?.last_name}
+          mobile_number={preview?.mobile_number}
+          img={file?.uri || preview?.image_url || params?.image_url}
+          model={preview?.vehicle_model}
+          platenNumber={preview?.vehicle_plate_number}
+          color={preview?.vehicle_color}
+        />
+
+        <View style={{ marginTop: 24 }} />
 
         <View style={{ marginTop: 180 }} />
 
@@ -249,7 +312,7 @@ export default function RegisterProfile() {
           style={{ opacity: isPending ? 0.5 : 1 }}
           color={getColorByService(service)}
         >
-          Submit to Accept Trips
+          {ctaLabel}
         </Cta>
       </ScrollView>
     </View>
@@ -353,6 +416,7 @@ function FileInput({
   name,
   onChange,
   helperText,
+  onChangeFile = () => {},
 }) {
   const params = useLocalSearchParams();
   const key = `profiles.${params?.id}.${name}`;
@@ -396,6 +460,8 @@ function FileInput({
         setErrorMessage("No image selected.");
         return;
       }
+
+      onChangeFile(file);
 
       const uri = file?.uri;
       const fileName = uri?.split("ImagePicker/")?.[1];
@@ -444,71 +510,40 @@ function FileInput({
             overflow: "hidden",
           }}
         >
-          <Text style={{ width: 110 }} weight="700" size={14} color="#707070">
+          <Text
+            style={{ width: 110, flexShrink: 0 }}
+            weight="700"
+            size={14}
+            color="#707070"
+          >
             {label}
           </Text>
-          <View style={{ paddingVertical: 7 }}>
+          <View style={{ paddingVertical: 7, flex: 1 }}>
             <Text color="#707070" numberOfLines={1} size={13.5}>
-              {placeholder}
+              {fileName || placeholder}
             </Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
-      <Optional condition={helperText && !fileName}>
-        <View style={{ flexDirection: "row", gap: 4, flexWrap: "wrap" }}>
-          <Text color="#c1c1c1" size={13}>
-            {helperText}.
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.navigate("/profile-guideline")}
+      <View style={{ flexDirection: "row", gap: 4, flexWrap: "wrap" }}>
+        <Text color="#c1c1c1" size={13}>
+          {helperText}.
+        </Text>
+        <TouchableOpacity onPress={() => router.navigate("/profile-guideline")}>
+          <Text
+            style={{ textDecorationLine: "underline" }}
+            color="#c1c1c1"
+            size={13}
           >
-            <Text
-              style={{ textDecorationLine: "underline" }}
-              color="#c1c1c1"
-              size={13}
-            >
-              Example.
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Optional>
-      <Optional condition={fileName}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 16,
-            marginBottom: 8,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{ opacity: isLoading ? 0.4 : 1 }}
-              numberOfLines={1}
-              color="#707070"
-              size={12}
-            >
-              {fileName}
-            </Text>
-          </View>
-          <Optional condition={isLoading}>
-            <ActivityIndicator color="#6366F1" size="small" />
-          </Optional>
-          <Optional condition={isSuccess}>
-            <Image
-              style={{ width: 18, height: 18 }}
-              source={sent}
-              cachePolicy="memory-disk"
-            />
-          </Optional>
-        </View>
-      </Optional>
-      <Optional condition={errorMessage}>
+            Example.
+          </Text>
+        </TouchableOpacity>
+      </View>
+      {/* <Optional condition={errorMessage}>
         <Text numberOfLines={1} color="#f97316" size={12}>
           {errorMessage}
         </Text>
-      </Optional>
+      </Optional> */}
     </>
   );
 }

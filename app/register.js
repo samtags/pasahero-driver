@@ -7,6 +7,17 @@ import { useMMKVString } from "react-native-mmkv";
 
 export default function Entry() {
   const [service] = useMMKVString("user.service");
+  const params = useRouterParams();
+
+  const status = params?.status;
+  const platform = handleGetPlatformByService(service);
+
+  let title = "Profile";
+  if (platform) title = `${platform} Profile`;
+
+  if (!status || status === "DRAFT") {
+    title = `Register ${platform} Profile`;
+  }
 
   return (
     <>
@@ -14,7 +25,7 @@ export default function Entry() {
         options={{
           headerTitle: () => (
             <Text size={19} weight="bold" color="#353579">
-              Register {handleGetPlatformByService(service)} Profile
+              {title}
             </Text>
           ),
           headerTintColor: "#757477",

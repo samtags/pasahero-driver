@@ -22,6 +22,7 @@ import getDistance from "@/src/services/util/haversine/getDistance";
 import Text from "@/src/components/text";
 import { styles } from "@/src/screens/trips/components/trip";
 import getColorByService from "@/src/services/util/colors/getColorByService";
+import getDriverProfile from "@/src/services/api/getDriverProfile";
 
 export default memo(function Preview({
   id,
@@ -156,6 +157,12 @@ export default memo(function Preview({
       }
 
       if (errorCode === "PROFILE_DECLINED") {
+        const profile_id = storage.getString("user.profile_id");
+        getDriverProfile(profile_id) //
+          .then((profile) => {
+            if (profile) router.setParams("/register", profile);
+          });
+
         return Alert.alert(
           "Oops!",
           "There's a problem with your profile. Please check it and make sure all the information are correct.",
@@ -164,8 +171,13 @@ export default memo(function Preview({
               text: "OK",
               onPress: () => {
                 onClose();
-                // todo: redirect to registration
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: storage.getString("user.profile_id"),
+                    status: "DECLINED",
+                  },
+                });
               },
             },
           ]
