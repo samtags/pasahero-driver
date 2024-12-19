@@ -9,8 +9,7 @@ import {
   ToastAndroid,
   Alert,
 } from "react-native";
-import { Image } from "expo-image";
-import { useRef, useEffect, useState, use } from "react";
+import { useRef, useEffect, useState } from "react";
 import Text from "@/src/components/text";
 import { useUser } from "@clerk/clerk-expo";
 import { router, useLocalSearchParams, Link } from "expo-router";
@@ -21,7 +20,6 @@ import log from "@/src/services/log";
 import storage from "@react-native-firebase/storage";
 import Optional from "@/src/components/optional";
 import store from "@/src/services/storage";
-import { sent } from "@/src/services/images/remote";
 import { useRouterParams } from "@/src/services/router";
 import submitRegistration from "@/src/services/api/registerProfile";
 import updateProfile from "@/src/services/api/updateProfile";
@@ -271,6 +269,7 @@ export default function RegisterProfile() {
 
         <Profile
           showRadioButton={false}
+          brand={preview?.vehicle_make}
           firstName={preview?.first_name}
           lastName={preview?.last_name}
           mobile_number={preview?.mobile_number}

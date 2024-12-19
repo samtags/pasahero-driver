@@ -6,6 +6,7 @@ import Text from "@/src/components/text";
 import * as controller from "@/src/services/controller";
 import createProfile from "@/src/services/api/createProfile";
 import storage from "@/src/services/storage";
+import router from "@/src/services/router";
 
 const options = [
   { label: "Angkas", value: "angkas" },
@@ -31,6 +32,14 @@ export default function Registration({ onClose = () => {} }) {
       controller.handlePress();
       storage.set("user.service", selected.value);
       storage.set("user.profile_id", response.id);
+      router.navigate({
+        pathname: "/register",
+        params: {
+          id: response.id,
+          status: "DRAFT",
+          service: selected.value,
+        },
+      });
     } else {
       Alert.alert("Unable to create profile.", "Please try again later.", [
         {
