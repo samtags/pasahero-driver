@@ -19,6 +19,7 @@ import getDriverProfile from "@/src/services/api/getDriverProfile";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 import { handleSetStatus } from "@/src/services/controller";
 import useOnFocus from "@/src/services/hooks/useOnFocus";
+import JSON from "@/src/services/json";
 
 let timeout;
 export default function Trips() {
@@ -341,6 +342,27 @@ export default function Trips() {
       setTrip(tripSnapshot);
     }
   }, [tripSnapshot]);
+
+  useOnUpdate(() => {
+    if (trip?.status) {
+      switch (trip?.status) {
+        case "PASSENGER_CANCELED":
+          setTrip();
+
+          storage.delete("__tmp_trip.request");
+          storage.delete("__tmp_trip.active");
+
+          Alert.alert(
+            "Trip Canceled",
+            "The trip has been canceled by the passenger."
+          );
+          break;
+
+        default:
+          break;
+      }
+    }
+  }, [trip?.status]);
 
   const estimate_preview =
     trip?.fare?.[trip?.service]?.estimate_preview ||
