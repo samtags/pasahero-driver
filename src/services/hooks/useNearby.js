@@ -35,7 +35,6 @@ export default function useNearby() {
 
         // remove all that already possibly timeout
         const now = moment();
-        console.log({ tmp });
         tmp = tmp.filter((trip) => {
           const expiration = moment(trip.created_at).add(2, "minutes");
 

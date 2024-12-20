@@ -164,7 +164,6 @@ export default function useController() {
 
       const profile_id = storage.getString("user.profile_id");
       getDriverProfile(profile_id).then((profile) => {
-        console.log("🚀 ~ getDriverProfile ~ profile:", profile);
         if (profile.status === "DECLINED") {
           setError("PROFILE_DECLINED");
         }

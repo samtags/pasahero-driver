@@ -38,7 +38,7 @@ export default function Trips() {
   const refuse = useRejectTrip(trip?.id);
 
   useOnFocus(() => {
-    console.log("Getting incoming trip request");
+    console.debug("Getting incoming trip request");
     getIncomingTripRequest();
   });
 
