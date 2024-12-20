@@ -25,7 +25,7 @@ class SocketManager {
       this.callback = callback;
     }
 
-    this.ws = new WebSocket(`ws://socket.pasahero.app?topic=${this.topic}`);
+    this.ws = new WebSocket(`wss://socket.pasahero.app?topic=${this.topic}`);
 
     // Handle open event
     this.ws.onopen = () => {
