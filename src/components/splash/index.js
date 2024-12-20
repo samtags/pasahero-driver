@@ -1,6 +1,6 @@
 import { Dimensions, View } from "react-native";
 import LottieView from "lottie-react-native";
-import Text from "../text";
+import Text from "@/src/components/text";
 
 export default function SplashScreen() {
   return (
@@ -23,7 +23,7 @@ export default function SplashScreen() {
           width: 220,
           height: 220,
         }}
-        source={require("../../assets/json/autocomplete-preloader.json")}
+        source={require("@/src/assets/json/autocomplete-preloader.json")}
       />
 
       <View style={{ position: "absolute" }}>
