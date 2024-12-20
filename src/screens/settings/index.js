@@ -63,6 +63,11 @@ export default function SettingsScreen() {
           <Link onPress={handleSignInViaGoogle}>Sign In</Link>
         </SignedOut>
       </ScrollView>
+      <View style={{ padding: 16 }}>
+        <Text size={12} color="#CFCFCF" textAlign="right">
+          v1.1.0
+        </Text>
+      </View>
     </View>
   );
 }

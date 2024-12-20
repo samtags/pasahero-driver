@@ -6,9 +6,14 @@ export default async function getTransactions() {
 
   console.debug("Received get transactions request");
 
-  const response = await axios.get(
-    `https://driver.pasahero.app/wallet/transactions?driver_id=${id}`
-  );
+  try {
+    const response = await axios.get(
+      `https://driver.pasahero.app/wallet/transactions?driver_id=${id}`
+    );
 
-  return response.data || [];
+    return response.data || [];
+  } catch (error) {
+    console.error("Error fetching transactions", error);
+    return [];
+  }
 }

@@ -4,6 +4,8 @@ import { SignedOut, SignedIn, useOAuth, useAuth } from "@clerk/clerk-expo";
 import log from "@/src/services/log";
 import handleResetUser from "@/src/services/util/account/handleResetUser";
 import router from "@/src/services/router";
+import { resetTransactions } from "@/src/services/queries/useTransactions";
+import { resetWallet } from "@/src/services/queries/useWallet";
 
 export default function Account() {
   const { signOut } = useAuth();
@@ -28,6 +30,8 @@ export default function Account() {
   const handleSignOut = () => {
     signOut();
     handleResetUser();
+    resetTransactions();
+    resetWallet();
   };
 
   return (
