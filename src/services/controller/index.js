@@ -15,6 +15,7 @@ import { transform } from "@/src/services/background/location";
 import router from "@/src/services/router";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 import getDriverProfile from "@/src/services/api/getDriverProfile";
+import { gb } from "@/src/services/growthbook";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
@@ -136,8 +137,9 @@ export default function useController() {
       });
 
       getWallet().then((wallet) => {
-        // todo: configure it in growthbook
-        if (wallet.balance <= -50) {
+        const threshold = gb.getFeatureValue("dass-driver-wallet-threshold", -50); // prettier-ignore
+
+        if (wallet.balance <= threshold) {
           setError("NO_BALANCE");
           handleSetStatus("INACTIVE");
         }
