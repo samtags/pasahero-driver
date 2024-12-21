@@ -4,7 +4,6 @@ import {
   TextInput,
   ScrollView,
   TouchableWithoutFeedback,
-  ActivityIndicator,
   TouchableOpacity,
   ToastAndroid,
   Alert,
@@ -12,7 +11,7 @@ import {
 import { useRef, useEffect, useState } from "react";
 import Text from "@/src/components/text";
 import { useUser } from "@clerk/clerk-expo";
-import { router, useLocalSearchParams, Link } from "expo-router";
+import { useLocalSearchParams, Link } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import Cta from "@/src/components/cta";
@@ -23,10 +22,13 @@ import store from "@/src/services/storage";
 import { useRouterParams } from "@/src/services/router";
 import submitRegistration from "@/src/services/api/registerProfile";
 import updateProfile from "@/src/services/api/updateProfile";
-import { useMMKVString } from "react-native-mmkv";
+import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 import getColorByService from "@/src/services/util/colors/getColorByService";
 import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 import { Profile } from "../profile";
+import Select from "@/src/components/select";
+import axios from "axios";
+import router from "@/src/services/router";
 
 export default function RegisterProfile() {
   const { user } = useUser();
@@ -36,6 +38,8 @@ export default function RegisterProfile() {
   const [service] = useMMKVString("user.service");
   const platform = handleGetPlatformByService(service);
   const [file, setFile] = useState();
+  const [showSurveySelect, setShowSurveySelect] = useState(false);
+  const hideSurvey = Boolean(useMMKVBoolean("user.hide_profile_survey")?.[0]);
 
   const [preview, setPreview] = useProfilePreview({
     first_name: params?.first_name,
@@ -46,6 +50,12 @@ export default function RegisterProfile() {
     vehicle_plate_number: params?.vehicle_plate_number,
     image_url: params?.image_url,
     vehicle_color: params?.vehicle_color,
+    survey: null,
+  });
+
+  const hasUnInitializedValue = Object.keys(preview).some((key) => {
+    if (key === "survey" && hideSurvey === true) return false;
+    return Boolean(preview[key]) === false;
   });
 
   function handleRetriggerProfiles() {
@@ -53,9 +63,14 @@ export default function RegisterProfile() {
   }
 
   const { isPending, mutate: handleSubmit } = useMutation({
-    mutationFn: () => submitRegistration(params?.id),
+    mutationFn: () => {
+      if (preview?.survey) submitSurvey(preview?.survey);
+      return submitRegistration(params?.id);
+    },
     onSuccess: () => {
       handleRetriggerProfiles();
+      store.set("user.hide_profile_survey", true);
+      console.debug("Hiding profile survey to the next time.");
       Alert.alert(
         "Profile submitted!",
         "Please wait for a few minutes while we review your profile.",
@@ -63,7 +78,8 @@ export default function RegisterProfile() {
           {
             text: "OK",
             onPress: () => {
-              router.navigate("/");
+              router.back();
+
               setTimeout(() => {
                 ToastAndroid.show(
                   "Your profile is now being reviewed",
@@ -85,9 +101,37 @@ export default function RegisterProfile() {
     };
   }, []);
 
-  function handleSumbitProfile() {
-    const hasUnInitializedValue = Object.keys(preview).some(
-      (key) => Boolean(preview[key]) === false
+  function handleSumbitProfile(resubmit = false) {
+    if (resubmit === false) {
+      if (params.status === "PENDING") {
+        Alert.alert(
+          "Profile is already in review",
+          "Resubmitting profile will cause the ongoing review to be canceled. Are you sure you want to resubmit?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Resubmit",
+              onPress: () => {
+                handleSumbitProfile(true);
+              },
+            },
+          ]
+        );
+        return;
+      }
+    }
+
+    const hasUnInitializedValue = Object.keys(preview).some((key) => {
+      if (key === "survey" && hideSurvey === true) return false;
+      return Boolean(preview[key]) === false;
+    });
+
+    console.log(
+      "🚀 ~ handleSumbitProfile ~ hasUnInitializedValue:",
+      hasUnInitializedValue
     );
 
     if (hasUnInitializedValue) {
@@ -103,6 +147,10 @@ export default function RegisterProfile() {
   let ctaLabel = "Submit to Accept Trips";
 
   if (params.status === "DECLINED") {
+    ctaLabel = "Resubmit Profile";
+  }
+
+  if (params.status === "PENDING") {
     ctaLabel = "Resubmit Profile";
   }
 
@@ -141,7 +189,7 @@ export default function RegisterProfile() {
 
         <Optional condition={params.status === "DRAFT"}>
           <TouchableOpacity
-            onPress={() => router.navigate("/profile-guideline")}
+            onPress={() => router.navigate({ pathname: "/profile-guideline" })}
             style={{
               backgroundColor: "#f3f4f6",
               padding: 16,
@@ -281,6 +329,71 @@ export default function RegisterProfile() {
 
         <View style={{ marginTop: 24 }} />
 
+        <Optional condition={hideSurvey === false}>
+          <View style={styles.header}>
+            <Text size={18} weight="700" color="#1B1B1B">
+              Quick Survey
+            </Text>
+          </View>
+
+          <View style={{ marginTop: 8 }} />
+          <Text weight="700" size={14} color="#707070">
+            Where did you hear about us?
+          </Text>
+
+          <TouchableOpacity onPress={() => setShowSurveySelect(true)}>
+            <View
+              style={{
+                marginTop: 16,
+                backgroundColor: "#EFEFF0",
+                paddingHorizontal: 16,
+                paddingVertical: 20,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                overflow: "hidden",
+              }}
+            >
+              <Text color="#707070" size={14}>
+                {preview?.survey?.label || "Select where did you hear from us"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{ flexDirection: "row", marginTop: 8 }}>
+            <Text color="#c1c1c1" size={13}>
+              Press the input box to select
+            </Text>
+          </View>
+
+          <Optional condition={preview?.survey?.value === "Others"}>
+            <View
+              style={{
+                marginTop: 16,
+                backgroundColor: "#EFEFF0",
+                paddingHorizontal: 16,
+                paddingVertical: 20,
+                borderRadius: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                overflow: "hidden",
+              }}
+            >
+              <TextInput
+                autoFocus
+                numberOfLines={1}
+                maxLength={280}
+                placeholder="Enter your answer"
+                style={{ fontFamily: "Lato-Regular", flex: 1 }}
+              />
+            </View>
+            <View style={{ flexDirection: "row", marginTop: 8 }}>
+              <Text color="#c1c1c1" size={13}>
+                Type here where you heard about us
+              </Text>
+            </View>
+          </Optional>
+        </Optional>
+
         <View style={{ marginTop: 180 }} />
 
         <Text
@@ -308,12 +421,32 @@ export default function RegisterProfile() {
         <Cta
           disabled={isPending}
           onPress={handleSumbitProfile}
-          style={{ opacity: isPending ? 0.5 : 1 }}
+          style={{ opacity: isPending || hasUnInitializedValue ? 0.5 : 1 }}
           color={getColorByService(service)}
         >
           {ctaLabel}
         </Cta>
       </ScrollView>
+      <Optional condition={showSurveySelect}>
+        <Select
+          options={[
+            { label: "Social Media", value: "Social Media" },
+            { label: "Blog", value: "Blog" },
+            { label: "Flyers", value: "Flyers" },
+            { label: "Peer Rider Referral", value: "Peer Rider Referral" },
+            { label: "Customer Testimonials", value: "Customer Testimonials" },
+            { label: "Others", value: "Others" },
+          ]}
+          handleSelect={(selected) => {
+            setPreview("survey", selected);
+            setShowSurveySelect(false);
+          }}
+          onClose={() => setShowSurveySelect(false)}
+          closeText="Close"
+          confirmText="Confirm"
+          label=""
+        />
+      </Optional>
     </View>
   );
 }
@@ -528,7 +661,9 @@ function FileInput({
         <Text color="#c1c1c1" size={13}>
           {helperText}.
         </Text>
-        <TouchableOpacity onPress={() => router.navigate("/profile-guideline")}>
+        <TouchableOpacity
+          onPress={() => router.replace({ pathname: "/profile-guideline" })}
+        >
           <Text
             style={{ textDecorationLine: "underline" }}
             color="#c1c1c1"
@@ -572,3 +707,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+function submitSurvey(data) {
+  console.debug("Submitting survey", data);
+  if (!data) return;
+  axios
+    .post(
+      "https://app.nocodb.com/api/v2/tables/mt6nckkevdx9fca/records",
+      {
+        Medium: data?.value,
+        Email: store.getString("user.email"),
+      },
+      {
+        headers: {
+          "xc-token": "pUgoMx8PbT4N8j6ddNYZfhV_0-rAZylgaa0pioUB",
+        },
+      }
+    )
+    .then((response) => {
+      console.debug("Survey submitted", response);
+    })
+    .catch((error) => {
+      console.debug("Error submitting survey", error);
+    });
+}

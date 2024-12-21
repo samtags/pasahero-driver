@@ -33,6 +33,7 @@ export default function ProfileScreen() {
             firstName={profile.first_name}
             lastName={profile.last_name}
             img={profile.image_url}
+            status={profile.status}
             showRadioButton
             onPress={() => {
               if (["DRAFT", "PENDING", "DECLINED"]?.includes(profile?.status)) {
@@ -61,12 +62,25 @@ export function Profile({
   img,
   showRadioButton,
   onPress = () => {},
+  status,
 }) {
+  let statusLabel = "";
+
+  if (status === "DRAFT") {
+    statusLabel = "— Not yet registered";
+  } else if (status === "PENDING") {
+    statusLabel = "— In review";
+  } else if (status === "DECLINED") {
+    statusLabel = "— Declined";
+  } else if (status === "ACCEPTED") {
+    statusLabel = "— Registered (Not yet verified)";
+  }
+
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={{ gap: 8 }}>
         <Text size={18} weight="bold">
-          {platform}
+          {platform} {statusLabel}
         </Text>
         <View style={styles.row}>
           <View
