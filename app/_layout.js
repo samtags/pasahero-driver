@@ -23,6 +23,7 @@ import useSupply from "@/src/services/background/supply";
 import useLocation from "@/src/services/background/location";
 import useSubscribeToIncomingTrip from "@/src/services/trip/incoming";
 import { useMMKVString } from "react-native-mmkv";
+import usePushNotification from "@/src/services/notification/usePushNotification";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -57,6 +58,7 @@ export default function Layout() {
   useWarmUpBrowser();
   useStorageLifecycle();
   useSubscribeToIncomingTrip();
+  usePushNotification();
 
   useFonts({
     "Lato-Thin": require("../assets/fonts/Lato/Lato-Thin.ttf"),

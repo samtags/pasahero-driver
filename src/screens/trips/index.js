@@ -133,6 +133,10 @@ export default function Trips() {
       }
 
       if (errorCode === "ACCEPT_LIMIT_EXCEEDED") {
+        const profile_id = storage.getString("user.profile_id");
+        getDriverProfile(profile_id).then((profile) => {
+          if (profile) router.setParams("/register", profile);
+        });
         return Alert.alert(
           "Accept Limit Exceeded",
           "Submit a proof of profile to accept more trips.",
@@ -140,8 +144,13 @@ export default function Trips() {
             {
               text: "OK",
               onPress: () => {
-                // todo: redirect to update profile
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: profile_id,
+                    status: "ACCEPTED",
+                  },
+                });
                 reset();
               },
             },
@@ -150,6 +159,11 @@ export default function Trips() {
       }
 
       if (errorCode === "PROFILE_INVALID") {
+        const profile_id = storage.getString("user.profile_id");
+        getDriverProfile(profile_id).then((profile) => {
+          if (profile) router.setParams("/register", profile);
+        });
+
         return Alert.alert(
           "Data Missing",
           "Some information is needed for us to show details to the passengers. Please provide the necessary data.",
@@ -157,8 +171,13 @@ export default function Trips() {
             {
               text: "OK",
               onPress: () => {
-                // todo: redirect to registration
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: profile_id,
+                    status: "ACCEPTED",
+                  },
+                });
                 refuse?.send();
                 reset();
               },
@@ -386,7 +405,11 @@ export default function Trips() {
         />
       </Optional>
 
-      <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Tabs
+        tripStatus={trip?.status}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
 
       <Optional condition={activeTab === "MAIN" && Boolean(trip)}>
         <Trip

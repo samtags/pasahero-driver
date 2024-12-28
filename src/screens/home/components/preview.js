@@ -119,6 +119,11 @@ export default memo(function Preview({
       }
 
       if (errorCode === "ACCEPT_LIMIT_EXCEEDED") {
+        const profile_id = storage.getString("user.profile_id");
+        getDriverProfile(profile_id).then((profile) => {
+          if (profile) router.setParams("/register", profile);
+        });
+
         return Alert.alert(
           "Accept Limit Exceeded",
           "Submit a proof of profile to accept more trips.",
@@ -127,8 +132,13 @@ export default memo(function Preview({
               text: "OK",
               onPress: () => {
                 onClose();
-                // todo: redirect to update profile
-                router.navigate({ pathname: "/(tabs)/settings" });
+                router.navigate({
+                  pathname: "/register",
+                  params: {
+                    id: profile_id,
+                    status: "ACCEPTED",
+                  },
+                });
               },
             },
           ]

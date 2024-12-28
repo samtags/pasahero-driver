@@ -1,15 +1,25 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text as RNText,
+} from "react-native";
 import Text from "@/src/components/text";
-import storage from "@/src/services/storage";
 import getColorByService from "@/src/services/util/colors/getColorByService";
 import { useMMKVString } from "react-native-mmkv";
 
-export default function Tabs({ activeTab = "MAIN", setActiveTab }) {
+export default function Tabs({ activeTab = "MAIN", setActiveTab, tripStatus }) {
   const [status] = useMMKVString("controller.status");
   const [service] = useMMKVString("user.service");
   let color = "#6366F1";
 
   if (status === "ACTIVE") color = getColorByService(service);
+
+  let mainTabLabel = "Request";
+
+  if (tripStatus && tripStatus !== "REQUESTED") {
+    mainTabLabel = "Active";
+  }
 
   return (
     <View style={styles.tabsContainer}>
@@ -21,8 +31,7 @@ export default function Tabs({ activeTab = "MAIN", setActiveTab }) {
           style={[styles.tab, activeTab === "MAIN" && styles.activeTab(color)]}
         >
           <Text weight={activeTab === "MAIN" ? "700" : undefined}>
-            Request
-            {/* Current */}
+            {mainTabLabel}
           </Text>
         </View>
       </TouchableOpacity>
@@ -71,6 +80,7 @@ const styles = StyleSheet.create({
   tab: {
     paddingVertical: 16,
     alignItems: "center",
+    justifyContent: "center",
   },
   activeTab: (color) => ({
     borderBottomWidth: 3.5,

@@ -46,12 +46,6 @@ export default function Update() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
-
       <StatusBar />
 
       <View

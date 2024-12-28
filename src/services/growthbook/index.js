@@ -10,6 +10,7 @@ export const gb = new GrowthBook({
   enableDevMode: true,
   subscribeToChanges: true,
   streaming: true,
+  debug: process.env.NODE_ENV === "development",
   environment: process.env.NODE_ENV,
   attributes: {
     service: "com.pasahero.driver",

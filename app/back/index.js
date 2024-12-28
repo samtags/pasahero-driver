@@ -9,8 +9,8 @@ import Update from "@/src/screens/update";
 export default function App() {
   const [location] = useMMKVString("location.current");
   const [updateAvailable] = useMMKVBoolean("app.updateAvailable");
-  const isMaintenance = useFeatureIsOn("php-show-maintenance", false);
-  const showForceUpdate = useFeatureIsOn("php-show-force-update", false);
+  const isMaintenance = useFeatureIsOn("phd-show-maintenance", false);
+  const showForceUpdate = useFeatureIsOn("phd-show-force-update", false);
 
   if (!location) return <GettingStarted />;
 

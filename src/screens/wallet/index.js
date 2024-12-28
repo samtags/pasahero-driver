@@ -12,11 +12,14 @@ import Optional from "@/src/components/optional";
 import useOnFocus from "@/src/services/hooks/useOnFocus";
 import useTransactions from "@/src/services/queries/useTransactions";
 import moment from "moment";
+import { useFeatureValue } from "@growthbook/growthbook-react";
+import amount from "@/src/services/util/amount";
 
 export default function WalletScreen() {
   const { data: wallet, refetch: getWallet } = useWallets();
   const { data: topups, refetch: getTopups } = useTopups();
   const { data: transactions, refetch: getTransactions } = useTransactions();
+  const limit = useFeatureValue("dass-driver-wallet-threshold", 0);
 
   useOnFocus(() => {
     getWallet();
@@ -89,7 +92,7 @@ export default function WalletScreen() {
       </View>
       <View style={{ flexShrink: 0, padding: 16, gap: 24 }}>
         <Text textAlign="center" size={18} color="#707070">
-          Your balance limit is ₱-50.00
+          Your balance limit is {amount.format(limit || 0)}
         </Text>
         <Cta onPress={handleTopup} color="#6366F1" textColor="#fff">
           Top-up Now

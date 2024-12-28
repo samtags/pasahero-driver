@@ -1,1 +1,1 @@
-export { handleIncomingCall } from "./handleIncomingCall";
+export { default as handleApproved } from "./handleApproved";

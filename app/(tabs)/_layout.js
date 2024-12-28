@@ -1,11 +1,21 @@
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useIncomingRequest } from "@/src/screens/trips";
-import { useMMKVObject } from "react-native-mmkv";
+import { useMMKVObject, useMMKVBoolean } from "react-native-mmkv";
+import Maintenance from "@/src/screens/maintenance";
+import Update from "@/src/screens/update";
+import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 export default function TabLayout() {
   const request = useIncomingRequest();
   const [activeTrip] = useMMKVObject("__tmp_trip.active");
+
+  const isMaintenance = useFeatureIsOn("phd-show-maintenance", false);
+  const showForceUpdate = useFeatureIsOn("phd-show-force-update", false);
+  const [updateAvailable] = useMMKVBoolean("app.updateAvailable");
+
+  if (isMaintenance) return <Maintenance />;
+  if (showForceUpdate || updateAvailable) return <Update />;
 
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "#363F59" }}>
