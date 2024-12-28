@@ -15,8 +15,17 @@ export default function usePushNotification() {
       (response) => {
         console.debug("User tap on push notification.", response);
 
+        const interaction =
+          response?.notification?.request?.content?.data?.interaction;
+
+        if (interaction === "handler") {
+          const method =
+            response?.notification?.request?.content?.data?.handler;
+          handler?.[method]?.(JSON.parse(response?.notification?.request?.content?.data?.extras, {}), response); // prettier-ignore
+        }
+
         const notificationRoute =
-          response.notification.request.content?.data?.route;
+          response?.notification?.request?.content?.data?.route;
 
         if (notificationRoute) {
           const params =
@@ -65,6 +74,26 @@ export default function usePushNotification() {
     const onForegroundMessageSubscription = messaging().onMessage(
       async (remoteMessage) => {
         console.debug("Incoming push notification", remoteMessage);
+
+        const payload = remoteMessage?.data;
+        console.debug("Push notification payload", payload);
+
+        const interaction = payload?.interaction;
+
+        if (interaction === "handler") {
+          const method = payload?.handler;
+
+          const notification = {
+            body: remoteMessage.notification.body,
+            title: remoteMessage.notification.title,
+            messageId: remoteMessage.messageId,
+            topic: remoteMessage.from,
+            sentTime: remoteMessage.sentTime,
+            ttl: remoteMessage.ttl,
+          };
+
+          handler?.[method]?.(JSON.parse(payload?.extras), notification);
+        }
       }
     );
 

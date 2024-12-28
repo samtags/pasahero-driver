@@ -2,7 +2,7 @@ import { Platform, ToastAndroid, Vibration } from "react-native";
 // import { handleInvalidateGetProfiles } from "@/src/services/queries/useGetProfiles";
 import localPushNotification from "@/src/services/notification/localPushNotification";
 
-export default function handleApproved(data) {
+export default function handleApproved(data, notification) {
   // show notification
   localPushNotification({
     title: data.notification.title,
