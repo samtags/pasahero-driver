@@ -116,6 +116,7 @@ export default function Trip() {
         last_name: trip?.last_name,
         image_url: trip?.image_url,
         service: trip?.service,
+        passenger_id: trip?.passenger_id,
       },
     });
   }
