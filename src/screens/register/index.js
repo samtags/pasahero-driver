@@ -103,8 +103,27 @@ export default function RegisterProfile() {
 
   function handleSumbitProfile(resubmit = false) {
     if (resubmit === false) {
+      if (params.status === "APPROVED") {
+        return Alert.alert(
+          "Profile is already in verified",
+          "Resubmitting profile will cause your profile to be verified again. While in review, you cannot accept any trip request. Are you sure you want to resubmit?",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Resubmit",
+              onPress: () => {
+                handleSumbitProfile(true);
+              },
+            },
+          ]
+        );
+      }
+
       if (params.status === "PENDING") {
-        Alert.alert(
+        return Alert.alert(
           "Profile is already in review",
           "Resubmitting profile will cause the ongoing review to be canceled. Are you sure you want to resubmit?",
           [
@@ -120,7 +139,6 @@ export default function RegisterProfile() {
             },
           ]
         );
-        return;
       }
     }
 
@@ -151,6 +169,10 @@ export default function RegisterProfile() {
   }
 
   if (params.status === "PENDING") {
+    ctaLabel = "Resubmit Profile";
+  }
+
+  if (params.status === "APPROVED") {
     ctaLabel = "Resubmit Profile";
   }
 

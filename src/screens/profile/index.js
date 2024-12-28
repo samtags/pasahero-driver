@@ -36,7 +36,11 @@ export default function ProfileScreen() {
             status={profile.status}
             showRadioButton
             onPress={() => {
-              if (["DRAFT", "PENDING", "DECLINED"]?.includes(profile?.status)) {
+              if (
+                ["DRAFT", "PENDING", "DECLINED", "APPROVED"]?.includes(
+                  profile?.status
+                )
+              ) {
                 router.navigate({
                   pathname: "/register",
                   params: profile,

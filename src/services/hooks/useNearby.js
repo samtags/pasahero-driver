@@ -51,4 +51,5 @@ export default function useNearby() {
   };
 }
 
+// implementation inside the hook
 export var removeTrip = () => {};
