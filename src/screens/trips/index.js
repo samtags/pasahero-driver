@@ -379,6 +379,23 @@ export default function Trips() {
           );
           break;
 
+        case "DONE":
+          Alert.alert(
+            "Nakarating ka na!",
+            "Tapos na ang iyong trip. Mag online ulit para maka receive ng bagong trip.",
+            [
+              {
+                text: "OK",
+                style: "default",
+                onPress: () => {
+                  setTrip();
+                  storage.delete("__tmp_trip.active");
+                  router.navigate({ pathname: "/" });
+                },
+              },
+            ]
+          );
+
         default:
           break;
       }
