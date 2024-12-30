@@ -3,6 +3,7 @@ import * as TaskManager from "expo-task-manager";
 import { useMMKVBoolean } from "react-native-mmkv";
 import sendLocation from "@/src/services/api/sendLocation";
 import * as Location from "expo-location";
+import storage from "@/src/services/storage";
 
 TaskManager.defineTask("background-location-task", background);
 
