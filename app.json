@@ -3,15 +3,10 @@
     "name": "PasaHero Driver",
     "slug": "pasahero",
     "scheme": "com.pasahero.driver",
-    "version": "7",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon-ph.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-ph.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.pasahero.driver",
@@ -22,7 +17,7 @@
       "package": "com.pasahero.driver",
       "googleServicesFile": "./android/app/google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Pasahero-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
