@@ -303,6 +303,15 @@ export default function Trips() {
     });
   }
 
+  function handleCall() {
+    router.navigate({
+      pathname: "/dial",
+      params: {
+        roomId: trip?.passenger_id,
+      },
+    });
+  }
+
   function handlePressPickup() {
     Linking.openURL(
       `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`
@@ -445,6 +454,7 @@ export default function Trips() {
           isExpiring={isExpiring}
           setTrip={setTrip}
           handleMessage={handleMessage}
+          handleCall={handleCall}
           handlePressDropoff={handlePressDropoff}
           handlePressPickup={handlePressPickup}
         />

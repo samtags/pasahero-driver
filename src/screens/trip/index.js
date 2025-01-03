@@ -123,7 +123,7 @@ export default function Trip() {
 
   function handleCallDriver() {
     router.navigate({
-      pathname: "/call/dial",
+      pathname: "/dial",
       params: {
         roomId: trip?.driver_id,
       },

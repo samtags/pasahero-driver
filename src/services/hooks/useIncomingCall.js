@@ -1,11 +1,12 @@
-import { useRouter } from "expo-router";
-import db from "../firebase/db";
+import db from "@/src/services/firebase/db";
 import { useEffect } from "react";
-import storage from "../storage";
-import log from "../log";
+import storage from "@/src/services/storage";
+import log from "@/src/services/log";
+import { useMMKVString } from "react-native-mmkv";
+import router from "@/src/services/router";
 
-export default function useIncomingCall(userId) {
-  const router = useRouter();
+export default function useIncomingCall() {
+  const [userId] = useMMKVString("user.id");
 
   useEffect(() => {
     const ref = db.collection("rooms").doc(userId);
@@ -28,7 +29,7 @@ export default function useIncomingCall(userId) {
 
               await ref.update({ status: "RINGING" });
               router.navigate({
-                pathname: "/call/ring",
+                pathname: "/ring",
                 params: {
                   roomId: userId,
                   sessionId,

@@ -24,6 +24,7 @@ import useLocation from "@/src/services/background/location";
 import useSubscribeToIncomingTrip from "@/src/services/trip/incoming";
 import { useMMKVString } from "react-native-mmkv";
 import usePushNotification from "@/src/services/notification/usePushNotification";
+import useIncomingCall from "@/src/services/hooks/useIncomingCall";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -46,7 +47,7 @@ const queryClient = new QueryClient({});
 UNSAFE_registerProperty("__queryClient__", queryClient);
 
 export default function Layout() {
-  const isSignedIn = useMMKVString("user.id");
+  const [isSignedIn] = useMMKVString("user.id");
 
   useWillEffect(() => {
     // check for codepush updates
@@ -59,6 +60,7 @@ export default function Layout() {
   useStorageLifecycle();
   useSubscribeToIncomingTrip();
   usePushNotification();
+  useIncomingCall();
 
   useFonts({
     "Lato-Thin": require("../assets/fonts/Lato/Lato-Thin.ttf"),

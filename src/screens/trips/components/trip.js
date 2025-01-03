@@ -47,6 +47,7 @@ export default memo(function Trip({
   handleTake = () => {},
   handleRefuse = () => {},
   handleMessage = () => {},
+  handleCall = () => {},
   handlePressPickup = () => {},
   handlePressDropoff = () => {},
 }) {
@@ -87,12 +88,11 @@ export default memo(function Trip({
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                disabled
+                onPress={handleCall}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 16,
-                  opacity: 0.5,
                 }}
               >
                 <Image source={call} style={{ width: 32, height: 32 }} />

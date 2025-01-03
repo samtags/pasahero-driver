@@ -6,15 +6,14 @@ import {
   RTCIceCandidate,
   RTCSessionDescription,
 } from "react-native-webrtc";
-import db from "../firebase/db";
+import db from "@/src/services/firebase/db";
 import InCallManager from "react-native-incall-manager";
-import uuidv4 from "../util/uuidv4";
+import uuidv4 from "@/src/services/util/uuidv4";
 import moment from "moment";
-import RNCallKeep from "react-native-callkeep";
 import { Alert, Linking } from "react-native";
-import { router } from "expo-router";
-import log from "../log";
+import log from "@/src/services/log";
 import { useFeatureValue } from "@growthbook/growthbook-react";
+import router from "@/src/services/router";
 
 export default function useDial(roomId) {
   const timeoutRef = useRef();
@@ -80,16 +79,6 @@ export default function useDial(roomId) {
 
       const roomRef = await db.collection("rooms").doc(roomId);
       const callerCandidatesCollection = roomRef.collection("callerCandidates");
-
-      await RNCallKeep.setup({
-        android: {
-          selfManaged: false,
-          alertTitle: "Allow incoming calls?",
-          alertDescription:
-            "This permission is require to receive incoming call from the passengers.",
-          okButton: "Allow",
-        },
-      });
 
       // create stream
       const userStream = await mediaDevices
