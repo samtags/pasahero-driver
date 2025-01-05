@@ -14,6 +14,7 @@ import { Alert, Linking } from "react-native";
 import log from "@/src/services/log";
 import { useFeatureValue } from "@growthbook/growthbook-react";
 import router from "@/src/services/router";
+import axios from "axios";
 
 export default function useDial(roomId) {
   const timeoutRef = useRef();
@@ -137,6 +138,7 @@ export default function useDial(roomId) {
 
       const roomWithOffer = { offer };
       await roomRef.update(roomWithOffer);
+      sendNotification(roomId);
 
       subscriptions.push(
         roomRef.onSnapshot(async (snapshot) => {
@@ -377,4 +379,9 @@ export async function handleUpdateRoomStatus(roomId, status) {
   if (!terminalStatuses.includes(room.status)) {
     await roomRef.update({ status });
   }
+}
+
+function sendNotification(id) {
+  console.debug("Sending notification to the passenger", { id });
+  axios.get(`https://driver.pasahero.app/call?id=${id}`);
 }
