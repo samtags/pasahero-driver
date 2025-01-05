@@ -273,6 +273,20 @@ export default function Trip() {
   if (trip?.service === "mc-taxi") driverIcon = motorJoyRideIcon;
   if (trip?.service === "move-it") driverIcon = motorMoveItIcon;
 
+  let farePreview = "-";
+
+  if (trip?.fare) {
+    const service = trip?.service;
+
+    if (service) {
+      farePreview = `Php ${trip?.fare?.[service]?.estimate_preview}`;
+    } else {
+      farePreview = `Php ${trip?.fare?.estimate_preview}`;
+    }
+  }
+
+  console.log("🚀 ~ Trip ~ farePreview:", farePreview);
+
   return (
     <>
       <BackButton />
@@ -509,7 +523,7 @@ export default function Trip() {
               />
 
               <FareDetails
-                estimatePreview={trip?.fare?.estimate_preview}
+                estimatePreview={farePreview}
                 showCancelOption={["REQUESTED", "FOUND"].includes(trip?.status)}
                 serviceCharge={trip?.passenger_service_charge}
                 isCanceling={isCanceling}
