@@ -481,7 +481,7 @@ function ArrivedCta({ id, setTrip }) {
         color={color}
         onPress={mutate}
       >
-        Simulan ang Biyahe
+        Papunta na sa Drop-off
       </Cta>
     </>
   );
