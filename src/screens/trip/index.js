@@ -1088,8 +1088,9 @@ function FareDetails({
         </Text>
       </View>
       <Text color="#707070" size={14}>
-        This estimation is based on price regulated by LTFB. Estimated fare may
-        vary in the actual trip in the application you chose.
+        This estimation is based on fare structure established by Motorcycle
+        Technical Working Group. Fare may vary in the actual trip in the
+        platform you are using.
       </Text>
       <Optional condition={showCancelOption}>
         <Cta

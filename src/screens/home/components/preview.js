@@ -382,10 +382,11 @@ export default memo(function Preview({
             </Text>
             <View>
               <Text textAlign="center" size={13} color="#707070">
-                Estimation is based on fare structure set by LTFRB.
+                Estimation is based on fare structure established by Motorcycle
+                Technical Working Group.
               </Text>
               <Text textAlign="center" size={13} color="#707070">
-                Estimated fare may vary in the actual trip in the application.
+                Fare may vary in the actual trip in the platform you are using.
               </Text>
             </View>
           </ScrollView>

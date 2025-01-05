@@ -399,6 +399,7 @@ export default function Trips() {
                 onPress: () => {
                   setTrip();
                   storage.delete("__tmp_trip.active");
+                  storage.delete("__tmp_trip.request");
                   router.navigate({ pathname: "/" });
                 },
               },
