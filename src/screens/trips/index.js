@@ -65,6 +65,7 @@ export default function Trips() {
 
       clearTimeout(timeout);
       setIsExpiring(false);
+      storage.delete("__tmp_trip.active");
       storage.delete("__tmp_trip.request");
 
       let _trip;
@@ -363,15 +364,17 @@ export default function Trips() {
   }, [activeTrip]);
 
   useOnUpdate(() => {
-    if (tripSnapshot?.id) {
-      console.debug("Updating trip state from snapshot", {
-        tripSnapshot,
-        trip,
-      });
+    if (tripSnapshot?.id && trip?.id) {
+      if (tripSnapshot?.id === trip?.id) {
+        console.debug("Updating trip state from snapshot", {
+          tripSnapshot,
+          trip,
+        });
 
-      setTrip(tripSnapshot);
+        setTrip(tripSnapshot);
+      }
     }
-  }, [tripSnapshot]);
+  }, [tripSnapshot, trip]);
 
   useOnUpdate(() => {
     function reset() {
@@ -384,6 +387,9 @@ export default function Trips() {
     if (trip?.status) {
       switch (trip?.status) {
         case "DRIVER_CANCELED":
+          reset();
+          break;
+
         case "PASSENGER_CANCELED":
           reset();
 
