@@ -3,7 +3,7 @@
     "name": "PasaHero Driver",
     "slug": "pasahero",
     "scheme": "com.pasahero.driver",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon-ph.png",
     "userInterfaceStyle": "light",

@@ -11,7 +11,7 @@ const ctx = {
   debug: true,
   applicationInfo: {
     name: "com.passenger.pasahero",
-    version: "1.1.0",
+    version: "1.1.1",
   },
 };
 
