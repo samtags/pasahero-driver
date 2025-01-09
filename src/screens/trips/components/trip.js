@@ -129,7 +129,7 @@ export default memo(function Trip({
                 cachePolicy="memory-disk"
               />
             </TouchableOpacity>
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={handlePressPickup}>
               <View style={{ gap: 4, flex: 1 }}>
                 <Text weight="700" size={18} color="#1B1B1B">
                   {first_point?.short_address}
@@ -149,7 +149,7 @@ export default memo(function Trip({
                 cachePolicy="memory-disk"
               />
             </TouchableOpacity>
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={handlePressDropoff}>
               <View style={{ gap: 4, flex: 1 }}>
                 <Text weight="700" size={18} color="#1B1B1B">
                   {last_point?.short_address}
