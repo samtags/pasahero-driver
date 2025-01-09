@@ -374,13 +374,18 @@ export default function Trips() {
   }, [tripSnapshot]);
 
   useOnUpdate(() => {
+    function reset() {
+      setTrip();
+
+      storage.delete("__tmp_trip.request");
+      storage.delete("__tmp_trip.active");
+    }
+
     if (trip?.status) {
       switch (trip?.status) {
+        case "DRIVER_CANCELED":
         case "PASSENGER_CANCELED":
-          setTrip();
-
-          storage.delete("__tmp_trip.request");
-          storage.delete("__tmp_trip.active");
+          reset();
 
           Alert.alert(
             "Trip Canceled",
@@ -397,9 +402,7 @@ export default function Trips() {
                 text: "OK",
                 style: "default",
                 onPress: () => {
-                  setTrip();
-                  storage.delete("__tmp_trip.active");
-                  storage.delete("__tmp_trip.request");
+                  reset();
                   router.navigate({ pathname: "/" });
                 },
               },
