@@ -133,6 +133,9 @@ export default function useController() {
 
           const trip = trips[0];
           storage.set("__tmp_trip.active", JSON.stringify(trip));
+          setTimeout(() => {
+            return router.navigate({ pathname: "/(tabs)/trips" });
+          }, 750);
         }
       });
 
