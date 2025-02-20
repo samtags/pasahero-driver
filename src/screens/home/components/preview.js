@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
+  Linking,
 } from "react-native";
 import Cta from "@/src/components/cta";
 import { useTakeTrip } from "../../trips";
@@ -236,6 +237,18 @@ export default memo(function Preview({
     }
   }
 
+  function handlePressPickup() {
+    Linking.openURL(
+      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`
+    );
+  }
+
+  function handlePressDropoff() {
+    Linking.openURL(
+      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`
+    );
+  }
+
   const service = storage.getString("user.service");
   const color = getColorByService(service);
 
@@ -280,15 +293,13 @@ export default memo(function Preview({
               </View>
             </View>
 
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <TouchableOpacity>
+            <TouchableOpacity onPress={handlePressPickup}>
+              <View style={{ flexDirection: "row", gap: 12 }}>
                 <Image
                   source={first}
                   style={{ width: 40, height: 40 }}
                   cachePolicy="memory-disk"
                 />
-              </TouchableOpacity>
-              <TouchableWithoutFeedback>
                 <View style={{ gap: 4, flex: 1 }}>
                   <Text weight="700" size={18} color="#1B1B1B">
                     {trip?.first_point?.short_address}
@@ -297,18 +308,16 @@ export default memo(function Preview({
                     {trip?.first_point?.long_address}
                   </Text>
                 </View>
-              </TouchableWithoutFeedback>
-            </View>
+              </View>
+            </TouchableOpacity>
 
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <TouchableOpacity>
+            <TouchableOpacity onPress={handlePressDropoff}>
+              <View style={{ flexDirection: "row", gap: 12 }}>
                 <Image
                   source={last}
                   style={{ width: 40, height: 40 }}
                   cachePolicy="memory-disk"
                 />
-              </TouchableOpacity>
-              <TouchableWithoutFeedback>
                 <View style={{ gap: 4, flex: 1 }}>
                   <Text weight="700" size={18} color="#1B1B1B">
                     {trip?.last_point?.short_address}
@@ -317,8 +326,8 @@ export default memo(function Preview({
                     {trip?.last_point?.long_address}
                   </Text>
                 </View>
-              </TouchableWithoutFeedback>
-            </View>
+              </View>
+            </TouchableOpacity>
 
             <View style={{ gap: 7 }}>
               <Text size={18} weight="700" color="#707070">
