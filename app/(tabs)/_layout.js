@@ -12,6 +12,7 @@ export default function TabLayout() {
 
   const isMaintenance = useFeatureIsOn("phd-show-maintenance", false);
   const showForceUpdate = useFeatureIsOn("phd-show-force-update", false);
+  const showWallet = useFeatureIsOn("phd-show-wallet", false);
   const [updateAvailable] = useMMKVBoolean("app.updateAvailable");
 
   if (isMaintenance) return <Maintenance />;
@@ -52,6 +53,7 @@ export default function TabLayout() {
             <Ionicons size={24} name="layers-outline" color={color} />
           ),
           lazy: false,
+          href: showWallet ? undefined : null,
         }}
       />
       <Tabs.Screen
