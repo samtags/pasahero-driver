@@ -1,6 +1,5 @@
 import { Linking, Platform, TouchableOpacity, View } from "react-native";
 import Text from "../../components/text";
-import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFeatureValue } from "@growthbook/growthbook-react";
 import storage from "../../services/storage";
