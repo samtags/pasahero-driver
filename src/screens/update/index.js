@@ -7,8 +7,8 @@ import * as Updates from "expo-updates";
 import log from "../../services/log";
 
 export default function Update() {
-  const googlePlayUrl = useFeatureValue("php-google-play-url", "");
-  const appStoreUrl = useFeatureValue("php-app-store-url", "");
+  const googlePlayUrl = useFeatureValue("phd-google-play-url", "");
+  const appStoreUrl = useFeatureValue("phd-app-store-url", "");
 
   let url = googlePlayUrl;
 
