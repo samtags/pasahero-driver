@@ -441,12 +441,6 @@ export default function Trips() {
         />
       </Optional>
 
-      <Tabs
-        tripStatus={trip?.status}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-
       <Optional condition={activeTab === "MAIN" && Boolean(trip)}>
         <Trip
           id={trip?.id}
