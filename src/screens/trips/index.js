@@ -32,7 +32,6 @@ export default function Trips() {
 
   const [trip, setTrip] = useState(null);
   const [isExpiring, setIsExpiring] = useState(false);
-  const [activeTab, setActiveTab] = useState("MAIN"); // MAIN, NEARBY, HISTORY
 
   const take = useTakeTrip(trip?.id);
   const refuse = useRejectTrip(trip?.id);
@@ -427,11 +426,7 @@ export default function Trips() {
 
   return (
     <View style={styles.container}>
-      <Optional
-        condition={
-          isExpiring && activeTab === "MAIN" && trip?.status === "REQUESTED"
-        }
-      >
+      <Optional condition={isExpiring && trip?.status === "REQUESTED"}>
         <MotiView
           from={{ width: "40%", height: 4 }}
           animate={{ width: 0 }}
@@ -441,7 +436,7 @@ export default function Trips() {
         />
       </Optional>
 
-      <Optional condition={activeTab === "MAIN" && Boolean(trip)}>
+      <Optional condition={Boolean(trip)}>
         <Trip
           id={trip?.id}
           first_point={trip?.first_point}
