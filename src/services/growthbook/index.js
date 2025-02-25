@@ -14,7 +14,7 @@ export const gb = new GrowthBook({
   environment: process.env.NODE_ENV,
   attributes: {
     service: "com.pasahero.driver",
-    version: "1.1.1",
+    version: "1.1.2",
   },
   // Only required for A/B testing
   // Called every time a user is put into an experiment
