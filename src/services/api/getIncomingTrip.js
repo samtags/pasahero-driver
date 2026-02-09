@@ -6,7 +6,9 @@ export default async function getIncomingTrip() {
   const id = storage.getString("user.id");
 
   const response = await axios
-    .get(`https://driver.pasahero.app/trip-incoming?id=${id}`)
+    .get(
+      `https://driver-93954675246.asia-southeast1.run.app/trip-incoming?id=${id}`,
+    )
     .catch(() => {
       return { data: undefined };
     });

@@ -4,8 +4,8 @@ export default async function startTrip(id) {
   console.debug("Received start trip request for trip id:", id);
   try {
     const response = await axios.post(
-      "https://driver.pasahero.app/trip-start",
-      { id }
+      "https://driver-93954675246.asia-southeast1.run.app/trip-start",
+      { id },
     );
 
     console.debug("Successfully received start trip request for trip id:", id, response); // prettier-ignore

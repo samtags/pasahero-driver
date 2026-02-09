@@ -10,7 +10,7 @@ export default async function findTrips(location, service) {
   });
 
   const response = await axios
-    .get("https://driver.pasahero.app/find-trips", {
+    .get("https://driver-93954675246.asia-southeast1.run.app/find-trips", {
       params: {
         service,
         driver_id,

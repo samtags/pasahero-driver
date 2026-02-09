@@ -7,7 +7,7 @@ export default async function rejectTripRequest(id) {
 
   const config = {
     method: "delete",
-    url: "https://driver.pasahero.app/take-trip",
+    url: "https://driver-93954675246.asia-southeast1.run.app/take-trip",
     headers: { "Content-Type": "application/json" },
     data: JSON.stringify({ id, driver_id }),
   };

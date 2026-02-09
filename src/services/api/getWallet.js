@@ -7,7 +7,7 @@ export default async function getWallet() {
   const id = storage.getString("user.id");
 
   const response = await axios.get(
-    `https://driver.pasahero.app/wallet?driver_id=${id}`
+    `https://driver-93954675246.asia-southeast1.run.app/wallet?driver_id=${id}`,
   );
 
   console.debug("Wallet request response.", response);

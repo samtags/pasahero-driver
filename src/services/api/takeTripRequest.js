@@ -7,11 +7,14 @@ export default async function takeTripRequest(id) {
   console.debug("Received take trip request", { id, driver_id, profile_id });
 
   try {
-    await axios.post("https://driver.pasahero.app/take-trip", {
-      id,
-      driver_id,
-      profile_id,
-    });
+    await axios.post(
+      "https://driver-93954675246.asia-southeast1.run.app/take-trip",
+      {
+        id,
+        driver_id,
+        profile_id,
+      },
+    );
 
     console.debug("Taken trip request success!", { id });
   } catch (error) {

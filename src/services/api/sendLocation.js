@@ -9,8 +9,8 @@ export default async function sendLocation(location) {
   location.controller = storage.getString("controller.status");
 
   const response = await axios.post(
-    "https://driver.pasahero.app/location",
-    location
+    "https://driver-93954675246.asia-southeast1.run.app/location",
+    location,
   );
 
   if (response.status === 200) {

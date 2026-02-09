@@ -145,7 +145,7 @@ export default function useDial(roomId) {
           const data = snapshot.data();
           if (!peerConnection.currentRemoteDescription && data?.answer) {
             const rtcSessionDescription = new RTCSessionDescription(
-              data?.answer
+              data?.answer,
             );
             await peerConnection.setRemoteDescription(rtcSessionDescription);
             remoteDescriptionReady = true;
@@ -161,7 +161,7 @@ export default function useDial(roomId) {
           if (data?.rejected) {
             handleCallRejected();
           }
-        })
+        }),
       );
 
       subscriptions.push(
@@ -178,7 +178,7 @@ export default function useDial(roomId) {
               }
             }
           });
-        })
+        }),
       );
 
       peerConnectionRef.current = peerConnection;
@@ -383,5 +383,5 @@ export async function handleUpdateRoomStatus(roomId, status) {
 
 function sendNotification(id) {
   console.debug("Sending notification to the passenger", { id });
-  axios.get(`https://driver.pasahero.app/call?id=${id}`);
+  axios.get(`https://driver-93954675246.asia-southeast1.run.app/call?id=${id}`);
 }

@@ -6,12 +6,12 @@ export default async function undoFindTrips() {
   const driver_id = storage.getString("user.id");
 
   const response = await axios.delete(
-    "https://driver.pasahero.app/find-trips",
+    "https://driver-93954675246.asia-southeast1.run.app/find-trips",
     {
       params: {
         driver_id,
       },
-    }
+    },
   );
 
   if (response.status === 200) {

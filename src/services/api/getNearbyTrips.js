@@ -3,7 +3,7 @@ import storage from "@/src/services/storage";
 
 export default async function getNearbyTrips(latitude, longitude) {
   const service = storage.getString("user.service") || "angkas";
-  const url = `https://driver.pasahero.app/trip-nearby?latitude=${latitude}&longitude=${longitude}&service=${service}`;
+  const url = `https://driver-93954675246.asia-southeast1.run.app/trip-nearby?latitude=${latitude}&longitude=${longitude}&service=${service}`;
 
   console.debug("Received request to get nearby trips", {url, service, longitude, latitude}); // prettier-ignore
 

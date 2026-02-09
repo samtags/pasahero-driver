@@ -8,7 +8,7 @@ export default async function getTransactions() {
 
   try {
     const response = await axios.get(
-      `https://driver.pasahero.app/wallet/transactions?driver_id=${id}`
+      `https://driver-93954675246.asia-southeast1.run.app/wallet/transactions?driver_id=${id}`,
     );
 
     return response.data || [];

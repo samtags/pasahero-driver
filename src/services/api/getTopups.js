@@ -12,7 +12,7 @@ export default async function getTopup() {
   }
 
   const response = await axios.get(
-    `https://driver.pasahero.app/wallet/top-up?driver_id=${id}`
+    `https://driver-93954675246.asia-southeast1.run.app/wallet/top-up?driver_id=${id}`,
   );
 
   return response.data || [];

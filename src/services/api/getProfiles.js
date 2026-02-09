@@ -7,7 +7,7 @@ export default async function getProfiles() {
   if (!id) return [];
 
   const response = await axios.get(
-    `https://driver.pasahero.app/profiles?id=${id}`
+    `https://driver-93954675246.asia-southeast1.run.app/profiles?id=${id}`,
   );
 
   return response?.data || [];

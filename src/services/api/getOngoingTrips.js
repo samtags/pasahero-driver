@@ -6,7 +6,8 @@ export default async function getOngoingTrips() {
   const id = storage.getString("user.id");
 
   const response = await axios.get(
-    "https://driver.pasahero.app/ongoing-trips?driver_id=" + id
+    "https://driver-93954675246.asia-southeast1.run.app/ongoing-trips?driver_id=" +
+      id,
   );
 
   console.debug("Ongoing trip request response.", response);

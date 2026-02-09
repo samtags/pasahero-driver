@@ -4,8 +4,8 @@ export default async function driverArrived(id) {
   console.debug("Received driver arrived request for trip id:", id);
   try {
     const response = await axios.post(
-      "https://driver.pasahero.app/trip-driver-arrived",
-      { id }
+      "https://driver-93954675246.asia-southeast1.run.app/trip-driver-arrived",
+      { id },
     );
 
     console.debug("Successfully received driver arrived request for trip id:", id, response); // prettier-ignore

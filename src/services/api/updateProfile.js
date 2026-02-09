@@ -30,7 +30,7 @@ export default async function updateProfile(id, data) {
 
   payload.id = id;
 
-  const request = await axios.patch("https://driver.pasahero.app/profiles", payload); // prettier-ignore
+  const request = await axios.patch("https://driver-93954675246.asia-southeast1.run.app/profiles", payload); // prettier-ignore
 
   if (request.status === 204) {
     console.debug("Profile updated successfully.", id, payload);

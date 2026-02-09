@@ -4,8 +4,8 @@ export default async function cancelTrip(id) {
   console.debug("Received cancel trip request for trip:", id);
   try {
     const response = await axios.post(
-      "https://driver.pasahero.app/trip-cancel",
-      { id }
+      "https://driver-93954675246.asia-southeast1.run.app/trip-cancel",
+      { id },
     );
 
     console.debug("Successfully received cancel trip request for trip:", id, response); // prettier-ignore
