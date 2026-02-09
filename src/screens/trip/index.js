@@ -96,7 +96,7 @@ export default function Trip() {
   const [showFeedback, setShowFeedback] = useState(false);
 
   const isCoordinatesReady = Boolean(
-    trip?.first_point?.longitude && trip?.first_point?.latitude
+    trip?.first_point?.longitude && trip?.first_point?.latitude,
   );
 
   const nearbyDriverIds = [];
@@ -303,8 +303,8 @@ export default function Trip() {
           style={[styles.map, { opacity: isMapInitialized ? 1 : 0 }]}
           // styleURL="mapbox://styles/mapbox/streets-v12"
           // styleURL="mapbox://styles/mapbox/outdoors-v12"
-          // styleURL="mapbox://styles/mapbox/light-v11"
-          styleURL="mapbox://styles/mapbox/streets-v12"
+          // styleURL="mapbox://styles/mapbox/streets-v12"
+          styleURL="mapbox://styles/mapbox/light-v11"
           logoPosition={{ top: -100, left: 0 }}
           attributionEnabled={false}
           regionDidChangeDebounceTime={1000}
@@ -322,7 +322,8 @@ export default function Trip() {
               <Mapbox.Camera
                 animationMode="none"
                 zoomLevel={12.76}
-                pitch={45}
+                // pitch={45}
+                pitch={0}
                 centerCoordinate={[
                   DEFAULT_LOCATION.longitude,
                   DEFAULT_LOCATION.latitude,
@@ -335,7 +336,8 @@ export default function Trip() {
               ref={cameraRef}
               animationMode="none"
               zoomLevel={16.75}
-              pitch={45}
+              // pitch={45}
+              pitch={0}
               centerCoordinate={initialCoordinates}
             />
             <Optional condition={screen === "REQUESTED"}>
@@ -875,7 +877,7 @@ function StartedPreview({
                   style: "destructive",
                   onPress: handleArriveAtDestination,
                 },
-              ]
+              ],
             );
           }}
           color="transparent"
@@ -1327,7 +1329,7 @@ function handleChangePickupReference(coordinates) {
       ...(coordinates || {}),
       shortAddress: coordinates?.short_address,
       longAddress: coordinates?.long_address,
-    })
+    }),
   );
 }
 
@@ -1492,7 +1494,8 @@ function DoneMap({ destination }) {
 
       {location && (
         <Mapbox.Camera
-          pitch={45}
+          // pitch={45}
+          pitch={0}
           centerCoordinate={[destination?.longitude, destination?.latitude]}
           zoomLevel={17}
         />
@@ -1572,7 +1575,8 @@ function ArrivedMap({ driver_id, pickup }) {
           followHeading={location.heading}
           heading={location.heading}
           zoomLevel={17}
-          pitch={45}
+          // pitch={45}
+          pitch={0}
         />
       )}
     </Mapbox.ShapeSource>
@@ -1600,7 +1604,7 @@ function Route({ id, location, service, setEta, destinationMarker }) {
         driverLocation?.latitude,
         driverLocation?.longitude,
         location?.latitude,
-        location?.longitude
+        location?.longitude,
       );
 
       // show route if distance is greater than 0.3 km (300 meters)
@@ -1613,7 +1617,7 @@ function Route({ id, location, service, setEta, destinationMarker }) {
         setOrigin(
           turf.point([data.location?.longitude, data.location?.latitude], {
             rotation: data.location?.heading,
-          })
+          }),
         );
 
         setLineString();
@@ -1652,12 +1656,13 @@ function Route({ id, location, service, setEta, destinationMarker }) {
             followHeading={origin?.properties?.rotation}
             heading={origin?.properties?.rotation}
             zoomLevel={17}
-            pitch={45}
+            // pitch={45}
+            pitch={0}
           />
         }
         condition={boundingBox}
       >
-        <Mapbox.Camera pitch={45} animationMode="flyTo" bounds={boundingBox} />
+        <Mapbox.Camera pitch={0} animationMode="flyTo" bounds={boundingBox} />
       </Optional>
 
       <Mapbox.ShapeSource id="route" shape={featureCollection}>

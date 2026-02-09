@@ -45,8 +45,8 @@ export default function GettingStarted() {
         <Mapbox.MapView
           scaleBarEnabled={false}
           style={styles.map}
-          styleURL="mapbox://styles/mapbox/streets-v12"
-          // styleURL="mapbox://styles/mapbox/light-v11"
+          // styleURL="mapbox://styles/mapbox/streets-v12"
+          styleURL="mapbox://styles/mapbox/light-v11"
           logoPosition={{ top: -100, left: 0 }}
           attributionEnabled={false}
         >

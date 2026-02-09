@@ -79,7 +79,7 @@ export default function Home() {
     controller.clearError();
 
     const canAsk = storage.getBoolean(
-      "settings.location.foreground.canAskAgain"
+      "settings.location.foreground.canAskAgain",
     );
 
     if (canAsk === false) {
@@ -163,14 +163,16 @@ export default function Home() {
         style={[styles.map, { opacity: isMapInitialized ? 1 : 0 }]}
         logoPosition={{ top: -100, left: 0 }}
         attributionEnabled={false}
-        styleURL="mapbox://styles/mapbox/streets-v12"
+        styleURL="mapbox://styles/mapbox/light-v11"
+        // styleURL="mapbox://styles/mapbox/streets-v12"
       >
         <Mapbox.Camera
           centerCoordinate={[location.longitude, location.latitude]}
           followHeading={location.heading}
           heading={location.heading}
           key="static-camera"
-          pitch={40}
+          pitch={0}
+          // pitch={40}
           ref={cameraRef}
           zoomLevel={15}
         />
