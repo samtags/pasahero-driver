@@ -60,7 +60,7 @@ export default memo(function Trip({
     location?.latitude,
     location?.longitude,
     first_point?.latitude,
-    first_point?.longitude
+    first_point?.longitude,
   );
 
   const isLoading = isTaking || isRefusing;
@@ -391,7 +391,7 @@ function FoundCta({ color, id, setTrip }) {
     onError() {
       Alert.alert(
         "Hindi makapagpatuloy",
-        "Maaring subukang ulit. Kung kinakailangan, mangyaring makipag-ugnayan sa aming support team."
+        "Maaring subukang ulit. Kung kinakailangan, mangyaring makipag-ugnayan sa aming support team.",
       );
     },
   });
@@ -419,7 +419,7 @@ function FoundCta({ color, id, setTrip }) {
           style: "default",
           onPress: cancel,
         },
-      ]
+      ],
     );
   }
 

@@ -23,7 +23,7 @@ export default async function createTrip(payload) {
     log.debug("Initiating find nearby drivers.", payload);
 
     const res = await axios.post(
-      "https://passenger.pasahero.app/trip-request",
+      "https://passenger-93954675246.asia-southeast1.run.app/trip-request",
       {
         passenger_id, // changed
         first_point,
@@ -34,7 +34,7 @@ export default async function createTrip(payload) {
         notes,
         payment_method,
         will_add_tip,
-      }
+      },
     );
 
     log.debug("Successfully created trip request.", { res });

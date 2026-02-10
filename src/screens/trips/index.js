@@ -31,6 +31,12 @@ export default function Trips() {
   const tripSnapshot = useTrip(activeTrip?.id, undefined);
 
   const [trip, setTrip] = useState(null);
+  const tripRef = useRef(null);
+
+  useEffect(() => {
+    tripRef.current = trip;
+  }, [trip]);
+
   const [isExpiring, setIsExpiring] = useState(false);
 
   const take = useTakeTrip(trip?.id);
@@ -44,8 +50,39 @@ export default function Trips() {
   useOnTripTimeoutWarning(trip?.id, handleOnTripTimeoutWarning);
   useOnTripTimeout(trip?.id, handleOnTripTimeout);
 
+  function setTripHandler(incoming) {
+    if (incoming === null) return setTrip(null);
+    if (incoming === undefined) return setTrip(undefined);
+
+    let incomingTrip = incoming;
+
+    if (typeof incomingTrip === "function") {
+      incomingTrip = incomingTrip(tripRef.current);
+    }
+
+    // add validations here
+    // if incoming trip is less status than the active trip then do not update
+
+    // prettier-ignore
+    const statusByOrder = ["REQUESTED", "FOUND", "ARRIVED", "STARTED", "PASSENGER_CANCELED", "DRIVER_CANCELED", "REQUEST_TIMEOUT", "DONE"]
+
+    setTrip((previousTrip) => {
+      const prevStatus = previousTrip?.status;
+      const incomingStatus = incomingTrip?.status;
+
+      const previousStatusIndex = statusByOrder.indexOf(prevStatus);
+      const incomingStatusIndex = statusByOrder.indexOf(incomingStatus);
+
+      if (incomingStatusIndex >= previousStatusIndex) {
+        return incomingTrip;
+      }
+
+      return previousTrip;
+    });
+  }
+
   function reset() {
-    setTrip(null);
+    setTripHandler(null);
     setIsExpiring(false);
     storage.delete("__tmp_trip.request");
     clearTimeout(timeout);
@@ -68,7 +105,7 @@ export default function Trips() {
       storage.delete("__tmp_trip.request");
 
       let _trip;
-      setTrip((prev) => {
+      setTripHandler((prev) => {
         _trip = { ...prev, status: "FOUND" };
 
         setActiveTrip(_trip);
@@ -91,7 +128,7 @@ export default function Trips() {
                 reset();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -112,7 +149,7 @@ export default function Trips() {
                 });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -128,7 +165,7 @@ export default function Trips() {
                 reset();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -154,7 +191,7 @@ export default function Trips() {
                 reset();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -182,7 +219,7 @@ export default function Trips() {
                 reset();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -212,14 +249,14 @@ export default function Trips() {
                 reset();
               },
             },
-          ]
+          ],
         );
       }
 
       if (errorCode === "PROFILE_PENDING") {
         return Alert.alert(
           "Profile in Review",
-          "Your profile is currently being reviewed. We will notify you in a few minutes."
+          "Your profile is currently being reviewed. We will notify you in a few minutes.",
         );
       }
 
@@ -241,14 +278,14 @@ export default function Trips() {
                 });
               },
             },
-          ]
+          ],
         );
       }
 
       if (errorCode === "WAITING_ACKNOWLEDGEMENT") {
         return Alert.alert(
           "Please try again later",
-          "We're sorry, but this trip has already been requested to another driver."
+          "We're sorry, but this trip has already been requested to another driver.",
         );
       }
     }
@@ -272,7 +309,7 @@ export default function Trips() {
           style: "default",
           onPress: () => router.navigate({ pathname: "/" }),
         },
-      ]
+      ],
     );
 
     alreadyPromptedTimeout.current = true;
@@ -314,13 +351,13 @@ export default function Trips() {
 
   function handlePressPickup() {
     Linking.openURL(
-      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`
+      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`,
     );
   }
 
   function handlePressDropoff() {
     Linking.openURL(
-      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`
+      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`,
     );
   }
 
@@ -332,7 +369,8 @@ export default function Trips() {
     if (tripRequest && !trip && tripRequest.status === "REQUESTED") {
       console.debug("Rehydrating trip details by router params update");
 
-      setTrip(tripRequest);
+      console.log("on set Trip: 3");
+      setTripHandler(tripRequest);
       // set state
       storage.set("__tmp_trip.request", JSON.stringify(tripRequest));
       alreadyPromptedTimeout.current = false;
@@ -358,7 +396,7 @@ export default function Trips() {
   useEffect(() => {
     if (activeTrip?.id) {
       console.debug("Updating from active trip.");
-      setTrip(activeTrip);
+      setTripHandler(activeTrip);
     }
   }, [activeTrip]);
 
@@ -370,14 +408,16 @@ export default function Trips() {
           trip,
         });
 
-        setTrip(tripSnapshot);
+        console.log("on set Trip: 5");
+        setTripHandler(tripSnapshot);
       }
     }
   }, [tripSnapshot, trip]);
 
   useOnUpdate(() => {
     function reset() {
-      setTrip();
+      console.log("on set Trip: 6");
+      setTripHandler();
 
       storage.delete("__tmp_trip.request");
       storage.delete("__tmp_trip.active");
@@ -394,7 +434,7 @@ export default function Trips() {
 
           Alert.alert(
             "Trip Canceled",
-            "The trip has been canceled by the passenger."
+            "The trip has been canceled by the passenger.",
           );
           break;
 
@@ -411,7 +451,7 @@ export default function Trips() {
                   router.navigate({ pathname: "/" });
                 },
               },
-            ]
+            ],
           );
 
         default:
@@ -451,7 +491,7 @@ export default function Trips() {
           handleTake={handleAccept}
           handleRefuse={handleRefuse}
           isExpiring={isExpiring}
-          setTrip={setTrip}
+          setTrip={setTripHandler}
           handleMessage={handleMessage}
           handleCall={handleCall}
           handlePressDropoff={handlePressDropoff}

@@ -6,12 +6,12 @@ import axios from "axios";
  */
 export default async function getCoordinatesByPlaceId(place_id) {
   const result = await axios.get(
-    "https://passenger.pasahero.app/locations/search",
+    "https://passenger-93954675246.asia-southeast1.run.app/locations/search",
     {
       params: {
         id: place_id,
       },
-    }
+    },
   );
 
   return result.data;

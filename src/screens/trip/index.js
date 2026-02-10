@@ -69,6 +69,7 @@ export default function Trip() {
 
   const params = useRouterParams();
   const trip = useTrip(params?.id, params);
+  console.log("🚀 ~ Trip ~ trip:", trip);
 
   const [tripDraft] = useMMKVString("trip.draft");
   const draft = JSON.parse(tripDraft ?? "{}");

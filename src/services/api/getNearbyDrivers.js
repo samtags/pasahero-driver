@@ -4,7 +4,7 @@ import log from "@/src/services/log";
 export default async function getNearbyDrivers(latitude, longitude) {
   const services = ["mc-taxi", "angkas", "moto-taxi"];
 
-  let url = `https://passenger.pasahero.app/nearby-drivers?coordinates=${latitude},${longitude}`;
+  let url = `https://passenger-93954675246.asia-southeast1.run.app/nearby-drivers?coordinates=${latitude},${longitude}`;
   services.forEach((service) => {
     url += `&services=${service}`;
   });

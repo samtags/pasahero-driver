@@ -3,7 +3,7 @@ import * as Polyline from "@mapbox/polyline";
 
 export default async function getTrack(origin, destination) {
   const response = await axios.get(
-    `https://passenger.pasahero.app/locations/route?origin=${origin}&destination=${destination}`
+    `https://passenger-93954675246.asia-southeast1.run.app/locations/route?origin=${origin}&destination=${destination}`,
   );
 
   let coordinates = [];

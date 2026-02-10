@@ -1,5 +1,5 @@
 import JSON from "@/src/services/json";
-import client from "@/src/services/aptly/client";
+import { client } from "@/src/services/aptly/client";
 
 class SocketManager {
   connected = false;
@@ -92,9 +92,17 @@ class SocketManager {
 }
 
 export default function subscribe(topic, callback) {
-  // const channel = client.realtime.channel(topic);
-  // return channel.stream((message, metadata) => {
-  //   if (metadata?.replay) return;
-  //   callback(message);
-  // });
+  if (topic.includes("undefined")) {
+    console.log("Invalid topic, skipping subscription", topic);
+    return () => {};
+  }
+
+  const channel = client.realtime.channel(topic);
+
+  console.log("Subscribing to topic", topic);
+
+  return channel.stream((message, metadata) => {
+    if (metadata?.replay) return;
+    callback(message);
+  });
 }
