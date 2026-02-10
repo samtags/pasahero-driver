@@ -15,6 +15,11 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
+"@aptly-sdk/brook@^0.0.33":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@aptly-sdk/brook/-/brook-0.0.33.tgz#952ad99b969a7093018c7d41eff1fa0eb3a4d3fc"
+  integrity sha512-XQ+5J0Cz/e2m7+96vR/azJkfLdypTbsPeHhASM+4bu83WLp+W2jtGqW9la5JsAJt36DQhCmH/efQqwvV+8QSbA==
+
 "@babel/code-frame@7.10.4", "@babel/code-frame@~7.10.4":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.4.tgz#168da1a36e90da68ae8d49c0f1b48c7c6249213a"

@@ -1,4 +1,5 @@
 import JSON from "@/src/services/json";
+import client from "@/src/services/aptly/client";
 
 class SocketManager {
   connected = false;
@@ -46,7 +47,7 @@ class SocketManager {
         "Socket encountered error:",
         error.message,
         "Closing socket for topic",
-        this.topic
+        this.topic,
       );
       this.ws.close();
     };
@@ -64,7 +65,7 @@ class SocketManager {
 
       if (this.closed) {
         console.debug(
-          "Socket is closed by user, no reconnection will be attempted."
+          "Socket is closed by user, no reconnection will be attempted.",
         );
         return;
       }
@@ -91,6 +92,9 @@ class SocketManager {
 }
 
 export default function subscribe(topic, callback) {
-  const socket = new SocketManager(topic);
-  return socket.connect(callback);
+  // const channel = client.realtime.channel(topic);
+  // return channel.stream((message, metadata) => {
+  //   if (metadata?.replay) return;
+  //   callback(message);
+  // });
 }

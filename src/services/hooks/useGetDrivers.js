@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import getNearbyDrivers from "@/src/services/api/getNearbyDrivers";
 import storage from "@/src/services/storage";
 import { useMMKVString } from "react-native-mmkv";

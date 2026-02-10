@@ -25,6 +25,8 @@ import useSubscribeToIncomingTrip from "@/src/services/trip/incoming";
 import { useMMKVString } from "react-native-mmkv";
 import usePushNotification from "@/src/services/notification/usePushNotification";
 import useIncomingCall from "@/src/services/hooks/useIncomingCall";
+import { BrookProvider } from "@aptly-sdk/brook/react";
+import { client } from "@/src/services/aptly/client";
 
 // Ignore log notification by message
 LogBox.ignoreLogs(["Warning: ..."]);
@@ -46,7 +48,15 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient({});
 UNSAFE_registerProperty("__queryClient__", queryClient);
 
-export default function Layout() {
+export default function App() {
+  return (
+    <BrookProvider config={client}>
+      <Layout />
+    </BrookProvider>
+  );
+}
+
+export function Layout() {
   const [isSignedIn] = useMMKVString("user.id");
 
   useWillEffect(() => {

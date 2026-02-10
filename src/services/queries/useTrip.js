@@ -43,7 +43,7 @@ export default function useTrip(id, defaultValue) {
 
     return () => {
       console.debug("Unsubscribing trip");
-      unsubscribe();
+      unsubscribe?.();
     };
   }, [id]);
 
