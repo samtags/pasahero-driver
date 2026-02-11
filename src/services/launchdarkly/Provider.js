@@ -11,13 +11,13 @@ const ctx = {
   debug: true,
   applicationInfo: {
     name: "com.passenger.pasahero",
-    version: "1.1.2",
+    version: "1.1.3",
   },
 };
 
 const client = new ReactNativeLDClient(
   process.env.EXPO_PUBLIC_LD_KEY,
-  AutoEnvAttributes.Enabled
+  AutoEnvAttributes.Enabled,
 );
 
 const LaunchdarklyProvider = ({ children }) => {
