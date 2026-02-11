@@ -83,12 +83,12 @@ export default function RegisterProfile() {
               setTimeout(() => {
                 ToastAndroid.show(
                   "Your profile is now being reviewed",
-                  ToastAndroid.LONG
+                  ToastAndroid.LONG,
                 );
               }, 500);
             },
           },
-        ]
+        ],
       );
     },
     onError: () =>
@@ -103,24 +103,28 @@ export default function RegisterProfile() {
 
   function handleSumbitProfile(resubmit = false) {
     if (resubmit === false) {
-      if (params.status === "APPROVED") {
-        return Alert.alert(
-          "Profile is already in verified",
-          "Resubmitting profile will cause your profile to be verified again. While in review, you cannot accept any trip request. Are you sure you want to resubmit?",
-          [
-            {
-              text: "Cancel",
-              style: "cancel",
-            },
-            {
-              text: "Resubmit",
-              onPress: () => {
-                handleSumbitProfile(true);
-              },
-            },
-          ]
-        );
+      if (params.status === "ACCEPTED") {
+        //
       }
+
+      // if (params.status === "APPROVED") {
+      //   return Alert.alert(
+      //     "Profile is already in verified",
+      //     "Resubmitting profile will cause your profile to be verified again. While in review, you cannot accept any trip request. Are you sure you want to resubmit?",
+      //     [
+      //       {
+      //         text: "Cancel",
+      //         style: "cancel",
+      //       },
+      //       {
+      //         text: "Resubmit",
+      //         onPress: () => {
+      //           handleSumbitProfile(true);
+      //         },
+      //       },
+      //     ],
+      //   );
+      // }
 
       if (params.status === "PENDING") {
         return Alert.alert(
@@ -137,7 +141,7 @@ export default function RegisterProfile() {
                 handleSumbitProfile(true);
               },
             },
-          ]
+          ],
         );
       }
     }
@@ -149,7 +153,7 @@ export default function RegisterProfile() {
 
     console.log(
       "🚀 ~ handleSumbitProfile ~ hasUnInitializedValue:",
-      hasUnInitializedValue
+      hasUnInitializedValue,
     );
 
     if (hasUnInitializedValue) {
@@ -170,6 +174,10 @@ export default function RegisterProfile() {
 
   if (params.status === "PENDING") {
     ctaLabel = "Resubmit Profile";
+  }
+
+  if (params.status === "ACCEPTED") {
+    ctaLabel = "Apply for Verification";
   }
 
   if (params.status === "APPROVED") {
@@ -249,6 +257,7 @@ export default function RegisterProfile() {
             defaultValue={params?.vehicle_make}
             onBlur={(value) => setPreview("vehicle_make", value)}
             helperText="Example: Honda, Yamaha, Suzuki, etc."
+            disabled={params.status === "ACCEPTED"}
           />
 
           <ProfileInput
@@ -258,6 +267,7 @@ export default function RegisterProfile() {
             defaultValue={params?.vehicle_model}
             onBlur={(value) => setPreview("vehicle_model", value)}
             helperText="Example: Click 125i, Aerox 155, ADV160, etc."
+            disabled={params.status === "ACCEPTED"}
           />
 
           <ProfileInput
@@ -267,6 +277,7 @@ export default function RegisterProfile() {
             defaultValue={params?.vehicle_color}
             helperText="Vehicle color in OR/CR"
             onBlur={(value) => setPreview("vehicle_color", value)}
+            disabled={params.status === "ACCEPTED"}
           />
 
           <ProfileInput
@@ -276,6 +287,7 @@ export default function RegisterProfile() {
             defaultValue={params?.vehicle_plate_number}
             onBlur={(value) => setPreview("vehicle_plate_number", value)}
             helperText="Example: CBA3141, ABC123, etc."
+            disabled={params.status === "ACCEPTED"}
           />
         </View>
 
@@ -295,6 +307,7 @@ export default function RegisterProfile() {
           placeholder="Enter your first name"
           defaultValue={params?.first_name}
           onBlur={(value) => setPreview("first_name", value)}
+          disabled={params.status === "ACCEPTED"}
         />
         <View style={{ marginTop: 24 }} />
 
@@ -304,6 +317,7 @@ export default function RegisterProfile() {
           placeholder="Enter your last name"
           defaultValue={params?.last_name}
           onBlur={(value) => setPreview("last_name", value)}
+          disabled={params.status === "ACCEPTED"}
         />
 
         <View style={{ marginTop: 24 }} />
@@ -317,15 +331,17 @@ export default function RegisterProfile() {
             onBlur={(value) => setPreview("mobile_number", value)}
             maxLength={11}
             helperText="Example: 09123456789 (Not visible to passengers)"
+            disabled={params.status === "ACCEPTED"}
           />
 
           <FileInput
             name="image_url"
             label="Driver Photo"
-            placeholder={preview?.image_url || "Select a photo"}
+            placeholder={preview?.image_url || "Press here to select"}
             helperText={`Photo wearing your ${platform} gears`}
             onChange={(value) => setPreview("image_url", value)}
             onChangeFile={setFile}
+            disabled={params.status === "ACCEPTED"}
           />
         </View>
 
@@ -440,14 +456,16 @@ export default function RegisterProfile() {
           </Link>
           .
         </Text>
-        <Cta
-          disabled={isPending}
-          onPress={handleSumbitProfile}
-          style={{ opacity: isPending || hasUnInitializedValue ? 0.5 : 1 }}
-          color={getColorByService(service)}
-        >
-          {ctaLabel}
-        </Cta>
+        <Optional condition={params.status !== "ACCEPTED"}>
+          <Cta
+            disabled={isPending}
+            onPress={handleSumbitProfile}
+            style={{ opacity: isPending || hasUnInitializedValue ? 0.5 : 1 }}
+            color={getColorByService(service)}
+          >
+            {ctaLabel}
+          </Cta>
+        </Optional>
       </ScrollView>
       <Optional condition={showSurveySelect}>
         <Select
@@ -571,6 +589,7 @@ function FileInput({
   onChange,
   helperText,
   onChangeFile = () => {},
+  disabled = false,
 }) {
   const params = useLocalSearchParams();
   const key = `profiles.${params?.id}.${name}`;
@@ -589,6 +608,8 @@ function FileInput({
   }, []);
 
   async function handleOnPress() {
+    if (disabled) return;
+
     setErrorMessage("");
     setIsLoading(true);
     setIsSuccess(false);
@@ -744,7 +765,7 @@ function submitSurvey(data) {
         headers: {
           "xc-token": "pUgoMx8PbT4N8j6ddNYZfhV_0-rAZylgaa0pioUB",
         },
-      }
+      },
     )
     .then((response) => {
       console.debug("Survey submitted", response);

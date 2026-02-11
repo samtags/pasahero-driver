@@ -1,16 +1,21 @@
+import Optional from "@/src/components/optional";
 import Text from "@/src/components/text";
 import useOnFocus from "@/src/services/hooks/useOnFocus";
 import useProfiles from "@/src/services/hooks/useProfiles";
-import { radioOff, radioOn } from "@/src/services/images/remote";
+import { profileEmpty, radioOff, radioOn } from "@/src/services/images/remote";
 import router from "@/src/services/router";
 import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 import { Image } from "expo-image";
+import { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
+import Registration from "../home/components/registration";
 
 export default function ProfileScreen() {
   const [activeProfileId] = useMMKVString("user.profile_id");
   const { data: profiles = [], refetch } = useProfiles();
+
+  const [showRegistration, setShowRegistration] = useState(false);
 
   useOnFocus(() => {
     refetch();
@@ -18,9 +23,51 @@ export default function ProfileScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ padding: 16 }}>
-        <Text color="#707070">Press to review your profile.</Text>
-      </View>
+      <Optional condition={profiles?.length}>
+        <View style={{ padding: 16 }}>
+          <Text color="#707070">Press to review your profile.</Text>
+        </View>
+      </Optional>
+
+      <Optional
+        condition={profiles?.length === 0 && showRegistration === false}
+      >
+        <TouchableOpacity
+          onPress={() => setShowRegistration(true)}
+          style={{ padding: 24 }}
+        >
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              opacity: 0.8,
+              marginBottom: 24,
+            }}
+          >
+            <Image source={profileEmpty} style={{ width: 100, height: 100 }} />
+          </View>
+
+          <Text textAlign="center" size={18}>
+            No profiles yet
+          </Text>
+          <Text textAlign="center" size={18}>
+            You need profile to accept trips
+          </Text>
+
+          <Text
+            textAlign="center"
+            style={{ marginTop: 24, textDecorationLine: "underline" }}
+          >
+            Create Here
+          </Text>
+        </TouchableOpacity>
+      </Optional>
+
+      <Optional condition={showRegistration}>
+        <Registration onClose={() => setShowRegistration(false)} />
+      </Optional>
+
       <View style={{ padding: 16 }}>
         {profiles?.map((profile) => (
           <Profile
@@ -36,16 +83,21 @@ export default function ProfileScreen() {
             status={profile.status}
             showRadioButton
             onPress={() => {
-              if (
-                ["DRAFT", "PENDING", "DECLINED", "APPROVED"]?.includes(
-                  profile?.status
-                )
-              ) {
-                router.navigate({
-                  pathname: "/register",
-                  params: profile,
-                });
-              }
+              router.navigate({
+                pathname: "/register",
+                params: profile,
+              });
+
+              // if (
+              //   ["DRAFT", "PENDING", "DECLINED", "APPROVED"]?.includes(
+              //     profile?.status,
+              //   )
+              // ) {
+              //   router.navigate({
+              //     pathname: "/register",
+              //     params: profile,
+              //   });
+              // }
             }}
           />
         ))}

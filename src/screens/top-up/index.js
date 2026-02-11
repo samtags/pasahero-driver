@@ -69,7 +69,7 @@ export default function TopUpScreen() {
       console.debug("No words found in image");
       Alert.alert(
         "Invalid proof",
-        `Unable to read the screenshot you selected. Please make sure you are selecting ${provider} transaction screenshot. If the issue persists, please contact us.`
+        `Unable to read the screenshot you selected. Please make sure you are selecting ${provider} transaction screenshot. If the issue persists, please contact us.`,
       );
       setFile();
       setAmount();
@@ -85,14 +85,16 @@ export default function TopUpScreen() {
     setIsLoading(false);
 
     const result = res.data?.choices?.[0]?.message?.function_call?.arguments;
+    console.log("🚀 ~ handleOnPress ~ result:", result);
     const extract = JSON.parse(result, {});
+    console.log("🚀 ~ handleOnPress ~ extract:", extract);
 
     if (extract.amount) setAmount(String(extract.amount));
     if (extract.reference) setReference(extract.reference);
     else {
       Alert.alert(
         "No reference found",
-        `Unable to extract the reference number from the screenshot you selected. Please make sure you are reference number is visible on the screenshot. If the issue persists, please contact us.`
+        `Unable to extract the reference number from the screenshot you selected. Please make sure you are reference number is visible on the screenshot. If the issue persists, please contact us.`,
       );
     }
   }
@@ -101,7 +103,7 @@ export default function TopUpScreen() {
     if (!file) {
       return Alert.alert(
         "Unable to find screenshot",
-        "Please select a screenshot and try again."
+        "Please select a screenshot and try again.",
       );
     }
     setIsLoading(true);
@@ -144,7 +146,7 @@ export default function TopUpScreen() {
               console.debug("Unable to top-up", err);
               Alert.alert(
                 "Try again later.",
-                "Unable to submit top up request at this time. If the problem persists, please contact us."
+                "Unable to submit top up request at this time. If the problem persists, please contact us.",
               );
             });
         })
@@ -152,7 +154,7 @@ export default function TopUpScreen() {
           console.debug("Unable to upload image", err);
           Alert.alert(
             "Unable to upload.",
-            "There is wrong with the image you selected. Please try again."
+            "There is wrong with the image you selected. Please try again.",
           );
           reject();
         });

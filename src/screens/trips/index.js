@@ -496,6 +496,7 @@ export default function Trips() {
           handleCall={handleCall}
           handlePressDropoff={handlePressDropoff}
           handlePressPickup={handlePressPickup}
+          serviceCharge={trip?.driver_service_charge}
         />
       </Optional>
     </View>

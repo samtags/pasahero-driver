@@ -58,7 +58,7 @@ export default function WalletScreen() {
           </View>
         </Optional>
         <Text size={18} color="#707070" textAlign="center">
-          Available Balance
+          Account Balance
         </Text>
         <Text weight="bold" size={36} color="#3F3D56" textAlign="center">
           {amt.format(wallet?.balance || 0)}
@@ -91,11 +91,16 @@ export default function WalletScreen() {
         </ScrollView>
       </View>
       <View style={{ flexShrink: 0, padding: 16, gap: 24 }}>
-        <Text textAlign="center" size={18} color="#707070">
-          Your balance limit is {amount.format(limit || 0)}
-        </Text>
+        <View>
+          <Text size={18} color="#707070">
+            Limit: {amount.format(limit || 0)}
+          </Text>
+          <Text size={14}>
+            You can continue accepting trips until you hit this balance limit
+          </Text>
+        </View>
         <Cta onPress={handleTopup} color="#6366F1" textColor="#fff">
-          Top-up Now
+          Top-up
         </Cta>
       </View>
     </View>

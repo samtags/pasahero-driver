@@ -50,6 +50,7 @@ export default memo(function Trip({
   handleCall = () => {},
   handlePressPickup = () => {},
   handlePressDropoff = () => {},
+  serviceCharge = 0,
 }) {
   useRenderCounter("Trip");
   const location = JSON.parse(storage.getString("user.location"));
@@ -205,7 +206,7 @@ export default memo(function Trip({
                 P 10.00
               </Text>
               <Text size={18} weight="700" color="#fff">
-                P 0.00
+                P {Number(serviceCharge).toFixed(2)}
               </Text>
             </View>
           </View>

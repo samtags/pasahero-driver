@@ -24,6 +24,7 @@ import Text from "@/src/components/text";
 import { styles } from "@/src/screens/trips/components/trip";
 import getColorByService from "@/src/services/util/colors/getColorByService";
 import getDriverProfile from "@/src/services/api/getDriverProfile";
+import { useFeatureValue } from "@growthbook/growthbook-react";
 
 export default memo(function Preview({
   id,
@@ -31,6 +32,7 @@ export default memo(function Preview({
   onRegister = () => {},
 }) {
   const take = useTakeTrip(id);
+  const serviceCharge = useFeatureValue("dass-driver-service-fee");
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
@@ -43,7 +45,7 @@ export default memo(function Preview({
     location?.latitude,
     location?.longitude,
     trip?.first_point?.latitude,
-    trip?.first_point?.longitude
+    trip?.first_point?.longitude,
   );
 
   async function handleTake() {
@@ -73,7 +75,7 @@ export default memo(function Preview({
                 router.navigate({ pathname: "/(tabs)/wallet" });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -99,7 +101,7 @@ export default memo(function Preview({
                 router.navigate({ pathname: "/(tabs)/trips" });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -115,7 +117,7 @@ export default memo(function Preview({
                 onClose();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -142,7 +144,7 @@ export default memo(function Preview({
                 });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -163,7 +165,7 @@ export default memo(function Preview({
                 });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -191,7 +193,7 @@ export default memo(function Preview({
                 });
               },
             },
-          ]
+          ],
         );
       }
 
@@ -206,7 +208,7 @@ export default memo(function Preview({
                 onClose();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -222,7 +224,7 @@ export default memo(function Preview({
                 onRegister();
               },
             },
-          ]
+          ],
         );
       }
 
@@ -231,7 +233,7 @@ export default memo(function Preview({
 
         return Alert.alert(
           "Please try again later",
-          "We're sorry, but this trip has already been requested to another driver."
+          "We're sorry, but this trip has already been requested to another driver.",
         );
       }
     }
@@ -239,13 +241,13 @@ export default memo(function Preview({
 
   function handlePressPickup() {
     Linking.openURL(
-      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`
+      `https://waze.com/ul?ll=${trip.first_point.latitude},${trip.first_point.longitude}&navigate=yes`,
     );
   }
 
   function handlePressDropoff() {
     Linking.openURL(
-      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`
+      `https://waze.com/ul?ll=${trip.last_point.latitude},${trip.last_point.longitude}&navigate=yes`,
     );
   }
 
@@ -373,7 +375,7 @@ export default memo(function Preview({
                   P 10.00
                 </Text>
                 <Text size={18} weight="700" color="#fff">
-                  P 0.00
+                  P {serviceCharge}.00
                 </Text>
               </View>
             </View>
