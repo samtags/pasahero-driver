@@ -30,7 +30,7 @@ export default function Provider({ children }) {
   useEffect(() => {
     // Configure GrowthBook to use the eventsource library
     setPolyfills({
-      EventSource: require("rn-eventsource"),
+      EventSource: require("react-native-sse"),
     });
 
     gb.init({

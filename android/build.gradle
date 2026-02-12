@@ -6,7 +6,7 @@ buildscript {
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '35')
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.25'
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '2.1.20'
 
         ndkVersion = "28.1.13356709"
     }
@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         classpath('com.google.gms:google-services:4.4.1')
-        classpath('com.android.tools.build:gradle:8.5.1')
+        classpath('com.android.tools.build:gradle:8.11.0')
         classpath('com.facebook.react:react-native-gradle-plugin')
         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
         classpath('com.google.firebase:firebase-crashlytics-gradle:3.0.2')
@@ -47,5 +47,26 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+    }
+
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.facebook.react:react-native"))
+                .using(project(":ReactAndroid"))
+                .because("Force react-native dependencies to resolve to the local ReactAndroid source build.")
+            substitute(module("com.facebook.react:react-android"))
+                .using(project(":ReactAndroid"))
+                .because("Build ReactAndroid from source for 16 KB page size support.")
+            substitute(module("com.facebook.react:hermes-android"))
+                .using(project(":ReactAndroid:hermes-engine"))
+                .because("Build Hermes from source for 16 KB page size support.")
+        }
+    }
+}
+
+gradle.projectsEvaluated {
+    def appPreRelease = tasks.findByPath(":app:preReleaseBuild")
+    if (appPreRelease != null) {
+        appPreRelease.dependsOn(":ReactAndroid:build", ":ReactAndroid:hermes-engine:build")
     }
 }

@@ -3,6 +3,16 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+AAB_PATH="$ROOT_DIR/android/app/build/outputs/bundle/release/app-release.aab"
+TEMP_DIR=""
+
+cleanup() {
+  if [[ -n "$TEMP_DIR" && -d "$TEMP_DIR" ]]; then
+    rm -rf "$TEMP_DIR"
+  fi
+}
+trap cleanup EXIT
+
 resolve_readelf() {
   if command -v readelf >/dev/null 2>&1; then
     echo "readelf"
@@ -37,9 +47,15 @@ declare -a SEARCH_PATHS=()
 if [[ $# -gt 0 ]]; then
   SEARCH_PATHS=("$@")
 else
-  SEARCH_PATHS+=("$ROOT_DIR/android/app/build/intermediates/merged_native_libs/release/out/lib")
-  SEARCH_PATHS+=("$ROOT_DIR/android/app/build/outputs/bundle/release")
-  SEARCH_PATHS+=("$ROOT_DIR/android/app/build/outputs/apk/release")
+  if [[ -f "$AAB_PATH" ]]; then
+    TEMP_DIR="$(mktemp -d)"
+    unzip -qq "$AAB_PATH" -d "$TEMP_DIR"
+    SEARCH_PATHS+=("$TEMP_DIR/base/lib")
+  else
+    SEARCH_PATHS+=("$ROOT_DIR/android/app/build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
+    SEARCH_PATHS+=("$ROOT_DIR/android/app/build/outputs/bundle/release")
+    SEARCH_PATHS+=("$ROOT_DIR/android/app/build/outputs/apk/release")
+  fi
 fi
 
 declare -a SO_FILES=()

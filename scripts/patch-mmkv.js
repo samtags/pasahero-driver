@@ -3,6 +3,11 @@ const path = require('path');
 
 const projectRoot = path.resolve(__dirname, '..');
 const mmkvRoot = path.join(projectRoot, 'node_modules', 'react-native-mmkv');
+const mmkvCmake = path.join(
+  mmkvRoot,
+  'android',
+  'CMakeLists.txt'
+);
 const expoModulesCoreCmake = path.join(
   projectRoot,
   'node_modules',
@@ -34,6 +39,19 @@ const targetPath = path.join(
   'android',
   'src',
   'main',
+  'java',
+  'com',
+  'mrousavy',
+  'mmkv',
+  'NativeMmkvPlatformContextSpec.java'
+);
+const generatedSpecPath = path.join(
+  mmkvRoot,
+  'android',
+  'build',
+  'generated',
+  'source',
+  'codegen',
   'java',
   'com',
   'mrousavy',
@@ -84,12 +102,33 @@ public abstract class NativeMmkvPlatformContextSpec extends ReactContextBaseJava
 `;
 
 if (hasMmkv) {
-  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-  const current = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, 'utf8') : '';
-  if (current !== content) {
-    fs.writeFileSync(targetPath, content, 'utf8');
-    // eslint-disable-next-line no-console
-    console.log('[patch-mmkv] Wrote fallback NativeMmkvPlatformContextSpec.java');
+  if (fs.existsSync(generatedSpecPath)) {
+    if (fs.existsSync(targetPath)) {
+      fs.unlinkSync(targetPath);
+      // eslint-disable-next-line no-console
+      console.log('[patch-mmkv] Removed fallback NativeMmkvPlatformContextSpec.java (codegen present)');
+    }
+  } else {
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    const current = fs.existsSync(targetPath) ? fs.readFileSync(targetPath, 'utf8') : '';
+    if (current !== content) {
+      fs.writeFileSync(targetPath, content, 'utf8');
+      // eslint-disable-next-line no-console
+      console.log('[patch-mmkv] Wrote fallback NativeMmkvPlatformContextSpec.java');
+    }
+  }
+
+  if (fs.existsSync(mmkvCmake)) {
+    const mmkvCmakeContents = fs.readFileSync(mmkvCmake, 'utf8');
+    const mmkvCmakeUpdated = mmkvCmakeContents.replace(
+      /set\(CMAKE_CXX_STANDARD\s+17\)/,
+      'set(CMAKE_CXX_STANDARD 20)'
+    );
+    if (mmkvCmakeUpdated !== mmkvCmakeContents) {
+      fs.writeFileSync(mmkvCmake, mmkvCmakeUpdated, 'utf8');
+      // eslint-disable-next-line no-console
+      console.log('[patch-mmkv] Updated react-native-mmkv CMake to C++20');
+    }
   }
 }
 
@@ -97,7 +136,7 @@ if (hasExpoModulesCore) {
   const cmakeContents = fs.readFileSync(expoModulesCoreCmake, 'utf8');
   let updated = cmakeContents.replace(
     /set\\(CMAKE_CXX_STANDARD\\s+20\\)/,
-    'set(CMAKE_CXX_STANDARD 17)'
+    'set(CMAKE_CXX_STANDARD 20)'
   );
   if (!updated.includes('-DFOLLY_HAS_STRING_VIEW=0')) {
     updated = updated.replace(

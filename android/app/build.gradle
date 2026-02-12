@@ -99,7 +99,8 @@ android {
         externalNativeBuild {
             cmake {
                 // Passes optional arguments to CMake.
-                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                        "-DCMAKE_CXX_STANDARD=20"
             }
         }
     }
@@ -173,8 +174,6 @@ android {
 }
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
-    implementation("com.facebook.react:react-android")
     implementation('androidx.core:core-splashscreen:1.0.0-beta02')
 
     // Import the Firebase BoM
@@ -200,7 +199,6 @@ dependencies {
     }
 
     if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }
