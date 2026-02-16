@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 /**
  *
@@ -11,7 +11,7 @@ export default async function getGrabCoordinatesByPlaceId(place_id) {
       params: {
         place_id,
       },
-    }
+    },
   );
 
   return response.data;

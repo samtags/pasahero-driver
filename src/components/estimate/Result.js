@@ -1,11 +1,23 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Text from "../../components/text";
 import { Image } from "expo-image";
-import { Skeleton } from "moti/skeleton";
 import {
   checkBoxChecked,
   checkBoxUnchecked,
 } from "../../services/images/remote";
+
+function SkeletonBlock({ width, height, radius = 4 }) {
+  return (
+    <View
+      style={{
+        width,
+        height,
+        borderRadius: radius === "round" ? 9999 : radius,
+        backgroundColor: "#E5E7EB",
+      }}
+    />
+  );
+}
 
 /**
  *
@@ -26,14 +38,14 @@ export default function EstimateItem({
     return (
       <View style={styles.container}>
         <View style={styles.contentRow}>
-          <Skeleton radius="round" width={24} height={24} colorMode="light" />
+          <SkeletonBlock radius="round" width={24} height={24} />
           <View style={{ gap: 4 }}>
-            <Skeleton width={140} height={14} colorMode="light" />
-            <Skeleton width={95} height={10} colorMode="light" />
+            <SkeletonBlock width={140} height={14} />
+            <SkeletonBlock width={95} height={10} />
           </View>
         </View>
         <View style={styles.checkboxContainer}>
-          <Skeleton radius={2} width={15} height={15} colorMode="light" />
+          <SkeletonBlock radius={2} width={15} height={15} />
         </View>
       </View>
     );

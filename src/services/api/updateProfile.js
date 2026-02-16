@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function updateProfile(id, data) {
   console.debug("Received update profile request.", id, data);

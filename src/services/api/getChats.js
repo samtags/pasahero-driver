@@ -1,5 +1,5 @@
-import axios from "axios";
-import log from "../log";
+import axios from "@/src/services/axios";
+import log from "@/src/services/log";
 
 export default async function getChats(trip_id) {
   log.debug("Retrieving chat messages for trip", { trip_id });

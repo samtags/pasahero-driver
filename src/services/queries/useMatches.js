@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@clerk/clerk-expo";
 import getQueryClient from ".";
 import storage from "../storage";
-import log from "../log";
+import log from "@/src/services/log";
 
 /**
  *

@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import log from "../log";
+import log from "@/src/services/log";
 
 // this is immediate an immediate notification
 export default function localPushNotification({ title, body, data = {} }) {

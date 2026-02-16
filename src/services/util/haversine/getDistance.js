@@ -1,4 +1,4 @@
-import log from "../../log";
+import log from "@/src/services/log";
 
 const GLOBE_RADIUS = 6371;
 
@@ -6,14 +6,14 @@ export default function getDistance(
   latitude0,
   longitude0,
   latitude1,
-  longitude1
+  longitude1,
 ) {
   let isValid = Boolean(Array.from(arguments).every((arg) => Boolean(arg)));
 
   if (isValid === false) {
     log.debug(
       "Unable to get distance between coordinates. Due to invalid coordinates.",
-      { latitude0, longitude0, latitude1, longitude1 }
+      { latitude0, longitude0, latitude1, longitude1 },
     );
     return 0;
   }

@@ -49,24 +49,30 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 
-    configurations.all {
-        resolutionStrategy.dependencySubstitution {
-            substitute(module("com.facebook.react:react-native"))
-                .using(project(":ReactAndroid"))
-                .because("Force react-native dependencies to resolve to the local ReactAndroid source build.")
-            substitute(module("com.facebook.react:react-android"))
-                .using(project(":ReactAndroid"))
-                .because("Build ReactAndroid from source for 16 KB page size support.")
-            substitute(module("com.facebook.react:hermes-android"))
-                .using(project(":ReactAndroid:hermes-engine"))
-                .because("Build Hermes from source for 16 KB page size support.")
+    def useRnSourceBuild = (findProperty("useRnSourceBuild") ?: System.getenv("USE_RN_SOURCE_BUILD") ?: "false").toBoolean()
+    if (useRnSourceBuild) {
+        configurations.all {
+            resolutionStrategy.dependencySubstitution {
+                substitute(module("com.facebook.react:react-native"))
+                    .using(project(":ReactAndroid"))
+                    .because("Force react-native dependencies to resolve to the local ReactAndroid source build.")
+                substitute(module("com.facebook.react:react-android"))
+                    .using(project(":ReactAndroid"))
+                    .because("Build ReactAndroid from source for 16 KB page size support.")
+                substitute(module("com.facebook.react:hermes-android"))
+                    .using(project(":ReactAndroid:hermes-engine"))
+                    .because("Build Hermes from source for 16 KB page size support.")
+            }
         }
     }
 }
 
 gradle.projectsEvaluated {
-    def appPreRelease = tasks.findByPath(":app:preReleaseBuild")
-    if (appPreRelease != null) {
-        appPreRelease.dependsOn(":ReactAndroid:build", ":ReactAndroid:hermes-engine:build")
+    def useRnSourceBuild = (findProperty("useRnSourceBuild") ?: System.getenv("USE_RN_SOURCE_BUILD") ?: "false").toBoolean()
+    if (useRnSourceBuild) {
+        def appPreRelease = tasks.findByPath(":app:preReleaseBuild")
+        if (appPreRelease != null) {
+            appPreRelease.dependsOn(":ReactAndroid:build", ":ReactAndroid:hermes-engine:build")
+        }
     }
 }

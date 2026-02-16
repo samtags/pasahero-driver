@@ -1,4 +1,4 @@
-import log from "../log";
+import log from "@/src/services/log";
 
 export const UNSAFE_registerProperty = (key, value) => {
   if (global[key]) {

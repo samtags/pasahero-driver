@@ -1,14 +1,49 @@
-# 16 KB Page Size Upgrade TODO
+# Pasahero Driver
 
-- [ ] Create a backup commit or branch for the current state.
-- [ ] Upgrade Expo SDK to 53 (or 54 if you want latest).
-- [ ] Update all `expo-*` packages to match the chosen SDK.
-- [ ] Rebuild release (`./android/gradlew -p android bundleRelease`).
-- [ ] Run `scripts/check-16k.sh`.
-- [ ] If RN/Hermes libs still fail, ensure the Expo SDK bump actually pulled RN 0.79+.
-- [ ] Upgrade `@rnmapbox/maps` to a version that uses `*-ndk27` artifacts.
-- [ ] Rebuild release and run `scripts/check-16k.sh`.
-- [ ] Upgrade native modules: `react-native-reanimated`, `react-native-screens`, `react-native-webrtc`, and any other native SDKs to versions compatible with the new Expo/RN.
-- [ ] Rebuild release and run `scripts/check-16k.sh` again.
-- [ ] If any `.so` still fails, run `scripts/map-native-libs.sh` to map it back to its dependency.
-- [ ] Bump or replace that dependency, then re‑check until all libs pass.
+## Android Release Smoke Test
+
+Build a release APK:
+
+```bash
+./android/gradlew -p android assembleRelease
+```
+
+Install and launch from CLI:
+
+```bash
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+adb shell am start -n com.pasahero.driver/.MainActivity
+```
+
+## Debug Splash-Then-Close on Release APK
+
+Use this workflow to catch native startup crashes after dependency changes.
+
+```bash
+adb logcat -c
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+adb shell am force-stop com.pasahero.driver
+adb shell am start -n com.pasahero.driver/.MainActivity
+adb logcat -b crash -d
+```
+
+Optional process/foreground check:
+
+```bash
+adb shell pidof com.pasahero.driver
+adb shell dumpsys activity activities | rg "ResumedActivity|topResumedActivity|com\\.pasahero\\.driver"
+```
+
+## Recommended Dependency-Change Workflow
+
+When installing/updating native packages:
+
+```bash
+yarn install
+yarn verify:native-patches
+./android/gradlew -p android assembleRelease
+adb logcat -c
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+adb shell am start -n com.pasahero.driver/.MainActivity
+adb logcat -b crash -d
+```

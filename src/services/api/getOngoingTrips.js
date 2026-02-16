@@ -1,5 +1,5 @@
 import storage from "@/src/services/storage";
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function getOngoingTrips() {
   console.debug("Received request to get ongoing trips.");

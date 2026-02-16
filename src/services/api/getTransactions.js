@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 import storage from "@/src/services/storage";
 
 export default async function getTransactions() {

@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, View } from "react-native";
 import Text from "../../components/text";
 import Cta from "../../components/cta";
 import { useRouter, useSegments } from "expo-router";
-import log from "../log";
+import log from "@/src/services/log";
 import supabase from "../supabase";
 import storage from "../storage";
 import { TransitPoints } from "../../screens/match/[id]";
@@ -123,7 +123,7 @@ function useRequestTimeoutTripListener(callback) {
                 log.debug("Received request timeout match event", data);
                 callback(data);
               }
-            }
+            },
           )
           .subscribe();
 

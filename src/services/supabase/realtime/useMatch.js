@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import log from "../../log";
+import log from "@/src/services/log";
 import subscribe from "../subscribe";
 import supabase from "../index";
 
@@ -51,7 +51,7 @@ async function handleGetMatch(id) {
   const { data, error } = await supabase
     .from("matches")
     .select(
-      "id, driver_id, status, first_point, last_point, services, estimatePreview, driver_id, service_charge, profile_id, platform"
+      "id, driver_id, status, first_point, last_point, services, estimatePreview, driver_id, service_charge, profile_id, platform",
     )
     .eq("id", id)
     .single();

@@ -1,4 +1,4 @@
-import log from "../log";
+import log from "@/src/services/log";
 import supabase from "../supabase";
 
 export default async function initializeWallet(id) {

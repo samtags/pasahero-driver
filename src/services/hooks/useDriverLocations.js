@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import log from "../log";
+import log from "@/src/services/log";
 import supabase from "../supabase";
 import useOnUpdate from "./useOnUpdate";
 

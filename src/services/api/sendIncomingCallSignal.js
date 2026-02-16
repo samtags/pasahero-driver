@@ -1,5 +1,5 @@
-import axios from "axios";
-import log from "../log";
+import axios from "@/src/services/axios";
+import log from "@/src/services/log";
 
 /**
  *
@@ -31,7 +31,7 @@ export default async function sendIncomingCallSignal({
           roomId,
         },
       }),
-    }
+    },
   );
 }
 

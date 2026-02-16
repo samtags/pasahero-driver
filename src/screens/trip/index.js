@@ -1,7 +1,6 @@
 import Mapbox from "@rnmapbox/maps";
 import { useEffect, useRef, useState } from "react";
 import { useMMKVString } from "react-native-mmkv";
-import { Skeleton } from "moti/skeleton";
 import { Image } from "expo-image";
 import { useFeatureIsOn } from "@growthbook/growthbook-react";
 import * as Linking from "expo-linking";
@@ -63,6 +62,19 @@ const DEFAULT_LOCATION = {
   longitude: 121.0106671,
 };
 
+function SkeletonBlock({ width, height, radius = 4 }) {
+  return (
+    <View
+      style={{
+        width,
+        height,
+        borderRadius: radius === "round" ? 9999 : radius,
+        backgroundColor: "#E5E7EB",
+      }}
+    />
+  );
+}
+
 export default function Trip() {
   const scrollRef = useRef();
   const cameraRef = useRef();
@@ -86,7 +98,7 @@ export default function Trip() {
 
   const { isPending: isCanceling, mutateAsync: handleCancel } = useMutation({
     mutationFn: () => cancelMatchRequest({ id: trip?.id }),
-    onSuccess: () => router.replace({ pathname: "/" }),
+    onSuccess: () => router.replace({ pathname: "/(tabs)" }),
   });
 
   const initialCoordinates = [
@@ -141,7 +153,7 @@ export default function Trip() {
     console.debug(feedback);
     setShowFeedback(false);
 
-    router.replace({ pathname: "/" });
+    router.replace({ pathname: "/(tabs)" });
   }
 
   function highlightPreview() {
@@ -154,7 +166,7 @@ export default function Trip() {
       Alert.alert("Unable to find driver", "Please try again later.", [
         {
           text: "OK",
-          onPress: () => router.replace({ pathname: "/" }),
+          onPress: () => router.replace({ pathname: "/(tabs)" }),
         },
       ]);
       throw new Error(500);
@@ -217,11 +229,11 @@ export default function Trip() {
   }
 
   function handleCancelFromCancelationPrompt() {
-    router.replace({ pathname: "/" });
+    router.replace({ pathname: "/(tabs)" });
   }
 
   function handleCancelFromRequestTimeoutPrompt() {
-    router.replace({ pathname: "/" });
+    router.replace({ pathname: "/(tabs)" });
     // todo: refetch get matches query
   }
 
@@ -971,10 +983,10 @@ function DriverInfo({
           <View style={{ gap: 4, flex: 1 }}>
             <Optional condition={isLoading}>
               <View style={{ flexDirection: "row", gap: 8 }}>
-                <Skeleton height={14} width={50} colorMode="light" />
-                <Skeleton height={14} width={75} colorMode="light" />
+                <SkeletonBlock height={14} width={50} />
+                <SkeletonBlock height={14} width={75} />
               </View>
-              <Skeleton height={10} width={75} colorMode="light" />
+              <SkeletonBlock height={10} width={75} />
             </Optional>
             <Optional condition={isLoading === false}>
               <Text numberOfLines={1} color="#363F59" size={18} weight="900">

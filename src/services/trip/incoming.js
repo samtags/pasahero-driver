@@ -20,6 +20,7 @@ export default function useSubscribeToIncomingTrip() {
         if (data.extras) {
           handlePlayIncomingTripSound();
 
+          console.log("Here 6");
           handleSetStatus("INACTIVE");
 
           storage.set("__tmp_trip.request", JSON.stringify(data.extras));

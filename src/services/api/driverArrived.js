@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function driverArrived(id) {
   console.debug("Received driver arrived request for trip id:", id);

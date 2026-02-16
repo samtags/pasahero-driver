@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 import Const from "expo-constants";
 
 const key = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;

@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, View } from "react-native";
 import Text from "../../components/text";
 import Cta from "../../components/cta";
 import { useRouter, useSegments } from "expo-router";
-import log from "../log";
+import log from "@/src/services/log";
 import supabase from "../supabase";
 import storage from "../storage";
 import useGetDriverProfile from "../queries/useGetDriverProfile";
@@ -128,7 +128,7 @@ function useIncomingMessage(callback) {
           (payload) => {
             log.debug("Incoming message", payload.new);
             callback(payload?.new);
-          }
+          },
         )
         .subscribe();
 

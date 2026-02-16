@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import getMatchById from "../api/getMatchById";
-import log from "../log";
+import log from "@/src/services/log";
 import useWatchDriverLocation from "./useDriverLocations";
 import getDirections from "../api/getDirections";
 import * as Polyline from "@mapbox/polyline";
@@ -97,7 +97,7 @@ export default function useDriverAssignedRoute({ match_id }) {
           setError("NO_DIRECTION_FOUND");
           log.warn(
             "No direction found. No route is displayed upon driver assigned.",
-            { match_id, match, _first, _last, origin, destination }
+            { match_id, match, _first, _last, origin, destination },
           );
         }
       } else {
@@ -105,14 +105,14 @@ export default function useDriverAssignedRoute({ match_id }) {
         setError("NO_INITIAL_DRIVER_LOCATION");
         log.warn(
           "Unable to get pickup location or initial driver location. No route is displayed upon driver assigned.",
-          { match_id, match, _first, _last }
+          { match_id, match, _first, _last },
         );
       }
     } else {
       setError("NO_MATCH_FOUND");
       setIsError(true);
       log.warn(
-        "Unable to get match by id. No route is displayed upon driver assigned."
+        "Unable to get match by id. No route is displayed upon driver assigned.",
       );
     }
 
@@ -189,7 +189,7 @@ export default function useDriverAssignedRoute({ match_id }) {
           "Match is not available. Unable to draw route based on the incoming location.",
           {
             matchRef: matchRef.current,
-          }
+          },
         );
       }
 
@@ -204,7 +204,7 @@ export default function useDriverAssignedRoute({ match_id }) {
         previousLocation.latitude,
         previousLocation.longitude,
         item.latitude,
-        item.longitude
+        item.longitude,
       );
     });
 
@@ -219,7 +219,7 @@ export default function useDriverAssignedRoute({ match_id }) {
       previousLocation.latitude,
       previousLocation.longitude,
       incomingLocation.latitude,
-      incomingLocation.longitude
+      incomingLocation.longitude,
     );
 
     log.debug("Got distance between previousLocation and incomingLocation", { distance, previousLocation, incomingLocation, }); // prettier-ignore

@@ -14,7 +14,7 @@ import { Alert, Linking } from "react-native";
 import log from "@/src/services/log";
 import { useFeatureValue } from "@growthbook/growthbook-react";
 import router from "@/src/services/router";
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default function useDial(roomId) {
   const timeoutRef = useRef();

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function getEstimate({ service, origin, destination }) {
   try {

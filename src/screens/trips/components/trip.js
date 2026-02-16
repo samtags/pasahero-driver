@@ -402,7 +402,7 @@ function FoundCta({ color, id, setTrip }) {
     onSuccess() {
       setTrip();
       storage.delete("__tmp_trip.active");
-      router.navigate({ pathname: "/" });
+      router.navigate({ pathname: "/(tabs)" });
     },
   });
 

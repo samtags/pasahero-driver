@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 import * as Polyline from "@mapbox/polyline";
 
 export default async function getTrack(origin, destination) {

@@ -39,11 +39,13 @@ useExpoModules()
 
 include ':app'
 
-// Build ReactAndroid + Hermes from source for 16 KB page size support.
-include(":ReactAndroid")
-project(":ReactAndroid").projectDir = new File(rootDir, "../node_modules/react-native/ReactAndroid")
-include(":ReactAndroid:hermes-engine")
-project(":ReactAndroid:hermes-engine").projectDir = new File(rootDir, "../node_modules/react-native/ReactAndroid/hermes-engine")
-
+def useRnSourceBuild = (gradle.startParameter.projectProperties.get("useRnSourceBuild") ?: System.getenv("USE_RN_SOURCE_BUILD") ?: "false").toBoolean()
+if (useRnSourceBuild) {
+  // Optional: build ReactAndroid + Hermes from source for 16 KB page size support.
+  include(":ReactAndroid")
+  project(":ReactAndroid").projectDir = new File(rootDir, "../node_modules/react-native/ReactAndroid")
+  include(":ReactAndroid:hermes-engine")
+  project(":ReactAndroid:hermes-engine").projectDir = new File(rootDir, "../node_modules/react-native/ReactAndroid/hermes-engine")
+}
 
 includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())

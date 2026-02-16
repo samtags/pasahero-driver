@@ -1,5 +1,5 @@
 import supabase from "../supabase";
-import log from "../log";
+import log from "@/src/services/log";
 
 /**
  *

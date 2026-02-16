@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 /**
  *
@@ -11,6 +11,6 @@ export default async function grabAutoComplete(q) {
       params: {
         q,
       },
-    }
+    },
   );
 }

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function startTrip(id) {
   console.debug("Received start trip request for trip id:", id);

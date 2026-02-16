@@ -1,5 +1,5 @@
 import supabase from ".";
-import log from "../log";
+import log from "@/src/services/log";
 
 export default function subscribe(table, id, callback) {
   const channel = supabase
@@ -15,7 +15,7 @@ export default function subscribe(table, id, callback) {
       (payload) => {
         log.debug("Record update detected", { data: payload.new, table, id });
         callback(payload.new);
-      }
+      },
     )
     .subscribe();
 

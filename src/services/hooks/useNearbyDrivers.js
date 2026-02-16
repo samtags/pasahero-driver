@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import getNearbyDrivers from "../api/getNearbyDrivers";
 import supabase from "../supabase";
-import log from "../log";
+import log from "@/src/services/log";
 import storage from "../storage";
 
 /**

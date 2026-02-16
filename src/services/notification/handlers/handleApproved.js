@@ -3,6 +3,9 @@ import { Platform, ToastAndroid, Vibration } from "react-native";
 import localPushNotification from "@/src/services/notification/localPushNotification";
 
 export default function handleApproved(data, notification) {
+  if (!data) return;
+  if (Object.keys(data).length === 0) return;
+
   // show notification
   localPushNotification({
     title: data.notification.title,

@@ -1,5 +1,5 @@
-import axios from "axios";
-import log from "../log";
+import axios from "@/src/services/axios";
+import log from "@/src/services/log";
 
 /**
  * @param {string} origin "12.9722,77.5961"
@@ -19,7 +19,7 @@ export default async function getDirections(origin, destination) {
         mode: "driving",
         units: "metric",
       },
-    }
+    },
   );
 
   return response?.data;

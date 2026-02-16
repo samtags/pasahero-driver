@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import getMatchById from "../api/getMatchById";
-import log from "../log";
+import log from "@/src/services/log";
 import useWatchDriverLocation from "./useDriverLocations";
 import getDirections from "../api/getDirections";
 import * as Polyline from "@mapbox/polyline";
@@ -55,7 +55,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
       setError("NO_MATCH_FOUND");
       setIsError(true);
       log.warn(
-        "Unable to get match by id. No route is displayed upon driver assigned."
+        "Unable to get match by id. No route is displayed upon driver assigned.",
       );
 
       return undefined;
@@ -86,7 +86,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
       setError("NO_INITIAL_DRIVER_LOCATION");
       log.warn(
         "Unable to get pickup location or initial driver location. No route is displayed upon driver assigned.",
-        { match_id, match, destination, origin }
+        { match_id, match, destination, origin },
       );
       return undefined;
     }
@@ -115,7 +115,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
       setError("NO_DIRECTION_FOUND");
       log.warn(
         "No direction found. No route is displayed upon driver assigned.",
-        { match_id, pickup, dropoff }
+        { match_id, pickup, dropoff },
       );
 
       return undefined;
@@ -150,7 +150,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
 
     if (!match) {
       log.warn(
-        "Unable to get match data. Unable to subscribe to driver location."
+        "Unable to get match data. Unable to subscribe to driver location.",
       );
     }
 
@@ -262,7 +262,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
 
     log.debug(
       "Off route by distance calculated.",
-      { isOffRouteByDistance, d1, d2, d3, d4, P, N, I, L, adjacent, overall } // prettier-ignore
+      { isOffRouteByDistance, d1, d2, d3, d4, P, N, I, L, adjacent, overall }, // prettier-ignore
     );
 
     // todo: check if off route by angle is applicable
@@ -370,7 +370,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
 
     const isOffRoute = handleIdentifyOffRoute(
       previousLocation,
-      incomingLocation
+      incomingLocation,
     );
     if (isOffRoute) {
       const distance = handleGetDistance(incomingLocation, last);
@@ -381,7 +381,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
         return;
       } else {
         log.debug(
-          "No need to recalculate coordinate driver is near the last point."
+          "No need to recalculate coordinate driver is near the last point.",
         );
       }
     }
@@ -394,7 +394,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
         previousLocation.latitude,
         previousLocation.longitude,
         item.latitude,
-        item.longitude
+        item.longitude,
       );
     });
 
@@ -409,7 +409,7 @@ export default function useDriverToPickUpRouteProcedure({ match_id }) {
       previousLocation.latitude,
       previousLocation.longitude,
       incomingLocation.latitude,
-      incomingLocation.longitude
+      incomingLocation.longitude,
     );
 
     log.debug("Got distance between previousLocation and incomingLocation", { distance, previousLocation, incomingLocation, }); // prettier-ignore
@@ -490,7 +490,7 @@ function handleCalculateAngle(p1, p2, p3) {
 
   // 4. Get the angle using Law of Cosines -> acos(A/C): Output is in radians
   const angleRad = Math.acos(
-    (v12 * v12 + v23 * v23 - v31 * v31) / (2 * v12 * v23)
+    (v12 * v12 + v23 * v23 - v31 * v31) / (2 * v12 * v23),
   );
 
   // 5. Convert the radians to degrees: radians * (180 / pi)
@@ -506,7 +506,7 @@ export function handleGetDistance(coor1, coor2) {
     coor1?.latitude,
     coor1?.longitude,
     coor2?.latitude,
-    coor2?.longitude
+    coor2?.longitude,
   );
 }
 

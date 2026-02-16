@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as Images from "./remote";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
-import log from "../log";
+import log from "@/src/services/log";
 
 export default function ImagePreRenderer() {
   const ref = useRef(new Set(Object.keys(Images)));

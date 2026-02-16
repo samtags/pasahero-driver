@@ -1,6 +1,6 @@
 import * as Updates from "expo-updates";
 import storage from "../storage";
-import log from "../log";
+import log from "@/src/services/log";
 
 export default async function onFetchUpdateAsync() {
   log.debug("Checking for updates.");

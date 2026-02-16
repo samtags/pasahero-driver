@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function OcrGpt(content) {
   console.debug("Received Optical character recognition for GTP request.");
@@ -35,7 +35,7 @@ export default async function OcrGpt(content) {
         Authorization:
           "Bearer REDACTED",
       },
-    }
+    },
   );
 
   return response;

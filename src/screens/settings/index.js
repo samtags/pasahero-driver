@@ -14,11 +14,12 @@ export default function SettingsScreen() {
 
   const handleSignOut = () => {
     signOut();
+    console.log("Here 7");
     handleSetStatus("INACTIVE");
     storage.delete("__tmp_trip.request");
     storage.delete("__tmp_trip.active");
     handleResetUser();
-    router.navigate({ pathname: "/" });
+    router.navigate({ pathname: "/(tabs)" });
   };
 
   return (
@@ -65,7 +66,7 @@ export default function SettingsScreen() {
       </ScrollView>
       <View style={{ padding: 16 }}>
         <Text size={12} color="#CFCFCF" textAlign="right">
-          v1.1.7
+          v1.1.8
         </Text>
       </View>
     </View>

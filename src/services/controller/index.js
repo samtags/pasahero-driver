@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMMKVString } from "react-native-mmkv";
 import storage from "@/src/services/storage";
 import { handleSignInViaGoogle } from "@/src/services/auth/useOAuth";
@@ -38,7 +38,8 @@ export default function useController() {
   });
 
   const handlePressButton = async () => {
-    console.debug("Controller button pressed.");
+    const status = storage.getString("controller.status");
+    console.debug("Controller button pressed. Button is currently in status:", status); // prettier-ignore
 
     setError("");
 
@@ -71,7 +72,6 @@ export default function useController() {
 
       if (agreeToAskPermission === false) {
         setError("BACKGROUND_LOCATION_DENIED");
-        setIsLoading(false);
         return;
       }
 
@@ -81,7 +81,6 @@ export default function useController() {
 
       if (backgroundPermissionStatus === false) {
         setError("BACKGROUND_LOCATION_DENIED");
-        setIsLoading(false);
         return;
       }
     }
@@ -105,6 +104,7 @@ export default function useController() {
     const currentStatus = storage.getString("controller.status");
 
     if (currentStatus === "ACTIVE") {
+      console.log("Here 1");
       handleSetStatus("INACTIVE");
     } else {
       const tripRequest = storage.getString("__tmp_trip.request");
@@ -113,7 +113,7 @@ export default function useController() {
         const trip = JSON.parse(tripRequest);
         if (trip.status !== "REQUESTED") {
           console.debug(
-            "User incoming trip status is not requested. Deleting the request."
+            "User incoming trip status is not requested. Deleting the request.",
           );
           return storage.delete("__tmp_trip.request");
         }
@@ -122,6 +122,7 @@ export default function useController() {
         return router.navigate({ pathname: "/(tabs)/trips" });
       }
 
+      console.log("Active 1");
       handleSetStatus("ACTIVE");
       clearInterval(createSupplyInterval);
       createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
@@ -129,6 +130,7 @@ export default function useController() {
       getOngoingTrips().then((trips) => {
         if (trips.length > 0) {
           setError("ONGOING_TRIP");
+          console.log("Here 2");
           handleSetStatus("INACTIVE");
 
           const trip = trips[0];
@@ -144,12 +146,14 @@ export default function useController() {
 
         if (wallet.balance <= threshold) {
           setError("NO_BALANCE");
+          console.log("Here 3");
           handleSetStatus("INACTIVE");
         }
       });
 
       getProfiles().then((profiles) => {
         if (profiles?.length === 0) {
+          console.log("Here 4");
           handleSetStatus("INACTIVE");
           if (isFromAuth === false) {
             setError("NO_PROFILE");
@@ -163,8 +167,11 @@ export default function useController() {
       });
 
       getIncomingTrip().then((trip) => {
-        storage.set("__tmp_trip.request", JSON.stringify(trip));
-        handleSetStatus("INACTIVE");
+        if (trip) {
+          storage.set("__tmp_trip.request", JSON.stringify(trip));
+          console.log("Here 5");
+          handleSetStatus("INACTIVE");
+        }
       });
 
       const profile_id = storage.getString("user.profile_id");
@@ -222,7 +229,7 @@ async function handleShowLocationPermissionPrompt() {
             style: "destructive",
             onPress: () => resolve(true),
           },
-        ]
+        ],
       );
     }))();
 
@@ -246,7 +253,7 @@ async function handleShowBackgroundLocationPermissionPrompt() {
             style: "destructive",
             onPress: () => resolve(true),
           },
-        ]
+        ],
       );
     }))();
 

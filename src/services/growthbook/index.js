@@ -1,6 +1,6 @@
 import { GrowthBook, GrowthBookProvider } from "@growthbook/growthbook-react";
 import { useEffect } from "react";
-import log from "../log";
+import log from "@/src/services/log";
 import { setPolyfills } from "@growthbook/growthbook";
 
 // Create a GrowthBook instance
@@ -14,7 +14,7 @@ export const gb = new GrowthBook({
   environment: process.env.NODE_ENV,
   attributes: {
     service: "com.pasahero.driver",
-    version: "1.1.7",
+    version: "1.1.8",
   },
   // Only required for A/B testing
   // Called every time a user is put into an experiment
@@ -28,15 +28,14 @@ export const gb = new GrowthBook({
 
 export default function Provider({ children }) {
   useEffect(() => {
-    // Configure GrowthBook to use the eventsource library
-    setPolyfills({
-      EventSource: require("react-native-sse"),
-    });
+    setPolyfills({ EventSource: require("react-native-event-source") });
 
     gb.init({
       streaming: true,
       subscribeToChanges: true,
       timeout: 7000,
+    }).catch((error) => {
+      log.warn("GrowthBook init failed", { error });
     });
   }, []);
   return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;

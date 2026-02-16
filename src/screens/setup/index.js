@@ -67,7 +67,7 @@ export default function Setup() {
               }
             },
           },
-        ]
+        ],
       );
       return;
     }
@@ -85,7 +85,7 @@ export default function Setup() {
     if (!data) {
       Alert.alert(
         "Oops!",
-        "Unable to get your current location. Please try to use the search instead."
+        "Unable to get your current location. Please try to use the search instead.",
       );
       textInputRef?.current?.focus?.();
       return;
@@ -110,7 +110,7 @@ export default function Setup() {
     if (!place) {
       return Alert.alert(
         "Oops!",
-        "Unable to get location details to the current location. Please try to search again."
+        "Unable to get location details to the current location. Please try to search again.",
       );
     }
 
@@ -121,12 +121,12 @@ export default function Setup() {
         heading,
         longAddress,
         shortAddress,
-      })
+      }),
     );
 
     log.debug("Initial location set to current location.", { latitude, longitude, heading, longAddress, shortAddress }); // prettier-ignore
     setTimeout(() => {
-      router.navigate({ pathname: "/" });
+      router.navigate({ pathname: "/(tabs)" });
     }, 750);
   };
 
@@ -137,7 +137,7 @@ export default function Setup() {
       setIsGettingPlaceDetails(false);
       return Alert.alert(
         "Oops!",
-        "Unable to get location details to the selected location. Please try to search again."
+        "Unable to get location details to the selected location. Please try to search again.",
       );
     }
 
@@ -145,7 +145,7 @@ export default function Setup() {
       (error) => {
         log.warn("Unable to get location details.", { error });
         return undefined;
-      }
+      },
     );
 
     setIsGettingPlaceDetails(false);
@@ -153,7 +153,7 @@ export default function Setup() {
     if (!result || !result?.Geometry?.Point) {
       Alert.alert(
         "Oops!",
-        "Unable to get location details to the selected location. Please try to search again."
+        "Unable to get location details to the selected location. Please try to search again.",
       );
 
       return;
@@ -164,9 +164,9 @@ export default function Setup() {
     const longAddress = selected?.Text;
 
     setLocation(
-      JSON.stringify({ latitude, longitude, shortAddress, longAddress })
+      JSON.stringify({ latitude, longitude, shortAddress, longAddress }),
     );
-    router.navigate({ pathname: "/" });
+    router.navigate({ pathname: "/(tabs)" });
   };
 
   return (

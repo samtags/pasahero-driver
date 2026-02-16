@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function getTrips(passenger_id) {
   const response = await axios.get(

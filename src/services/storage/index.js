@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "development") {
 const log = {
   debug: function (message, payload = {}) {
     import("@/src/services/log").then(({ default: log }) => {
-      log.default.debug(message, payload);
+      log.debug(message, payload);
     });
   },
 };

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Alert, Linking } from "react-native";
-import { MotiView } from "moti";
+import Animated, {
+  cancelAnimation,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import Optional from "@/src/components/optional";
 import Trip from "./components/trip";
 import Tabs from "./components/tabs";
@@ -38,6 +44,7 @@ export default function Trips() {
   }, [trip]);
 
   const [isExpiring, setIsExpiring] = useState(false);
+  const timeoutProgress = useSharedValue(40);
 
   const take = useTakeTrip(trip?.id);
   const refuse = useRejectTrip(trip?.id);
@@ -49,6 +56,28 @@ export default function Trips() {
 
   useOnTripTimeoutWarning(trip?.id, handleOnTripTimeoutWarning);
   useOnTripTimeout(trip?.id, handleOnTripTimeout);
+
+  useEffect(() => {
+    if (!(isExpiring && trip?.status === "REQUESTED")) {
+      cancelAnimation(timeoutProgress);
+      timeoutProgress.value = 40;
+      return;
+    }
+
+    timeoutProgress.value = 40;
+    timeoutProgress.value = withTiming(0, { duration: 15_000 }, (finished) => {
+      if (finished) {
+        runOnJS(handleOnTripTimeoutByWarning)();
+      }
+    });
+  }, [isExpiring, trip?.status, timeoutProgress]);
+
+  const progressStyle = useAnimatedStyle(() => {
+    return {
+      width: `${timeoutProgress.value}%`,
+      height: 4,
+    };
+  });
 
   function setTripHandler(incoming) {
     if (incoming === null) return setTrip(null);
@@ -92,7 +121,7 @@ export default function Trips() {
   async function handleRefuse() {
     await refuse?.send();
     reset();
-    router.navigate({ pathname: "/" });
+    router.navigate({ pathname: "/(tabs)" });
   }
 
   async function handleAccept() {
@@ -307,7 +336,7 @@ export default function Trips() {
         {
           text: "Close",
           style: "default",
-          onPress: () => router.navigate({ pathname: "/" }),
+          onPress: () => router.navigate({ pathname: "/(tabs)" }),
         },
       ],
     );
@@ -448,7 +477,7 @@ export default function Trips() {
                 style: "default",
                 onPress: () => {
                   reset();
-                  router.navigate({ pathname: "/" });
+                  router.navigate({ pathname: "/(tabs)" });
                 },
               },
             ],
@@ -467,13 +496,7 @@ export default function Trips() {
   return (
     <View style={styles.container}>
       <Optional condition={isExpiring && trip?.status === "REQUESTED"}>
-        <MotiView
-          from={{ width: "40%", height: 4 }}
-          animate={{ width: 0 }}
-          transition={{ type: "timing", duration: 15_000 }}
-          style={styles.progressBar}
-          onDidAnimate={handleOnTripTimeoutByWarning}
-        />
+        <Animated.View style={[styles.progressBar, progressStyle]} />
       </Optional>
 
       <Optional condition={Boolean(trip)}>
@@ -660,7 +683,10 @@ function useOnTripTimeout(id, callback) {
 
 export function getIncomingTripRequest() {
   getIncomingTrip().then((trip) => {
-    storage.set("__tmp_trip.request", JSON.stringify(trip));
-    handleSetStatus("INACTIVE");
+    console.log("🚀 ~ getIncomingTripRequest ~ trip:", trip);
+    if (trip) {
+      storage.set("__tmp_trip.request", JSON.stringify(trip));
+      handleSetStatus("INACTIVE");
+    }
   });
 }

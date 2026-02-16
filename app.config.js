@@ -13,7 +13,7 @@ module.exports = ({ config }) => {
     updates: {
       url: "https://u.expo.dev/2edea32b-6502-426d-bbd6-bfbe43e700a5",
     },
-    runtimeVersion: "1.1.7",
+    runtimeVersion: "1.1.8",
     plugins: [
       "expo-font",
       "expo-router",
@@ -40,6 +40,7 @@ module.exports = ({ config }) => {
         "@rnmapbox/maps",
         {
           RNMapboxMapsDownloadToken: process.env.EXPO_PUBLIC_MAPBOX_KEY,
+          RNMAPBOX_MAPS_DOWNLOAD_TOKEN: process.env.EXPO_PUBLIC_MAPBOX_KEY,
         },
       ],
     ],

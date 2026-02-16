@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/src/services/axios";
 
 export default async function registerProfile(id) {
   console.debug("Received register profile request.", id);

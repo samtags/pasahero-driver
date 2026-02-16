@@ -8,13 +8,14 @@ import storage from "@/src/services/storage";
 TaskManager.defineTask("background-location-task", background);
 
 export default function useLocation() {
-  const foregroundPermission = useMMKVBoolean("settings.location.foreground.granted"); // prettier-ignore
-  const backgroundPermission = useMMKVBoolean("settings.location.background.granted"); // prettier-ignore
+  const [foregroundPermission] = useMMKVBoolean("settings.location.foreground.granted"); // prettier-ignore
+  const [backgroundPermission] = useMMKVBoolean("settings.location.background.granted"); // prettier-ignore
 
   useEffect(() => {
     let unsubscribe;
+    let cancelled = false;
 
-    if (foregroundPermission && backgroundPermission) {
+    if (foregroundPermission === true && backgroundPermission === true) {
       console.debug("Starting background location task.");
 
       Location.startLocationUpdatesAsync("background-location-task", {
@@ -27,26 +28,34 @@ export default function useLocation() {
           notificationTitle: "Location in use",
           notificationBody: "Showing real-time location to the passenger.",
         },
+      }).catch((error) => {
+        console.debug("Failed to start background location task.", { error });
       });
     }
 
-    if (foregroundPermission) {
+    if (foregroundPermission === true) {
       (async () => {
-        unsubscribe = await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.Balanced,
-            timeInterval: 5000, // Minimum time interval between updates (ms)
-            distanceInterval: 10, // Minimum distance between updates (meters)
-          },
-          (data) => {
-            console.debug("Received location update from watch position.", data); // prettier-ignore
-            save(transform(data));
-          }
-        );
+        try {
+          unsubscribe = await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Balanced,
+              timeInterval: 5000, // Minimum time interval between updates (ms)
+              distanceInterval: 10, // Minimum distance between updates (meters)
+            },
+            (data) => {
+              if (cancelled) return;
+              console.debug("Received location update from watch position.", data); // prettier-ignore
+              save(transform(data));
+            }
+          );
+        } catch (error) {
+          console.debug("Failed to start foreground watch position.", { error });
+        }
       })();
     }
 
     return () => {
+      cancelled = true;
       unsubscribe?.remove?.();
     };
   }, [foregroundPermission, backgroundPermission]);

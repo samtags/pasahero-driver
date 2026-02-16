@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import getQueryClient from ".";
 import storage from "../storage";
-import log from "../log";
+import log from "@/src/services/log";
 import { useMMKVString } from "react-native-mmkv";
 import getTrips from "../api/getTrips";
 

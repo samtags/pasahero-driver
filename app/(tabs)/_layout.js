@@ -12,7 +12,7 @@ export default function TabLayout() {
 
   const isMaintenance = useFeatureIsOn("phd-show-maintenance", false);
   const showForceUpdate = useFeatureIsOn("phd-show-force-update", false);
-  const showWallet = useFeatureIsOn("phd-show-wallet", false);
+  const showWallet = useFeatureIsOn("phd-enable-wallet", false);
   const [updateAvailable] = useMMKVBoolean("app.updateAvailable");
 
   if (isMaintenance) return <Maintenance />;

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import log from "../log";
+import log from "@/src/services/log";
 
 export default function useWillEffect(effect) {
   const isMountedRef = useRef(false);

@@ -27,7 +27,7 @@ import getColorByService from "@/src/services/util/colors/getColorByService";
 import handleGetPlatformByService from "@/src/services/util/trip/handleGetPlatformByService";
 import { Profile } from "../profile";
 import Select from "@/src/components/select";
-import axios from "axios";
+import axios from "@/src/services/axios";
 import router from "@/src/services/router";
 
 export default function RegisterProfile() {
