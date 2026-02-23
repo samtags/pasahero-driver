@@ -1,42 +1,48 @@
 import { GrowthBook, GrowthBookProvider } from "@growthbook/growthbook-react";
 import { useEffect } from "react";
-import log from "@/src/services/log";
 import { setPolyfills } from "@growthbook/growthbook";
+import EventSource from "react-native-sse";
+
+setPolyfills({ EventSource: EventSource });
 
 // Create a GrowthBook instance
 export const gb = new GrowthBook({
   apiHost: "https://cdn.growthbook.io",
   clientKey: process.env.EXPO_PUBLIC_GB_KEY,
-  enableDevMode: true,
+  backgroundSync: true,
   subscribeToChanges: true,
   streaming: true,
-  debug: process.env.NODE_ENV === "development",
+  environment: "production",
+  enableDevMode: true,
+  debug: true,
   environment: process.env.NODE_ENV,
   attributes: {
     service: "com.pasahero.driver",
     version: "1.1.8",
   },
-  // Only required for A/B testing
-  // Called every time a user is put into an experiment
-  trackingCallback: (experiment, result) => {
-    log.debug("Experiment Viewed", {
-      experimentId: experiment.key,
-      variationId: result.key,
-    });
-  },
 });
+
+const originalSetPayload = gb.setPayload.bind(gb);
+
+gb.setPayload = async (payload = {}) => {
+  return originalSetPayload({
+    ...payload,
+    features: payload.features ?? {},
+  });
+};
 
 export default function Provider({ children }) {
   useEffect(() => {
-    setPolyfills({ EventSource: require("react-native-event-source") });
+    (async () => {
+      const res = await gb.init({
+        streaming: true,
+        skipCache: true,
+        timeout: 7000,
+      });
 
-    gb.init({
-      streaming: true,
-      subscribeToChanges: true,
-      timeout: 7000,
-    }).catch((error) => {
-      log.warn("GrowthBook init failed", { error });
-    });
+      console.log("GB init result:", res);
+      r;
+    })();
   }, []);
   return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;
 }
