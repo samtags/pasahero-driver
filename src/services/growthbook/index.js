@@ -41,7 +41,6 @@ export default function Provider({ children }) {
       });
 
       console.log("GB init result:", res);
-      r;
     })();
   }, []);
   return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;
