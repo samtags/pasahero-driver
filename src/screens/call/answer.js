@@ -61,9 +61,13 @@ export default function JoinScreen() {
 
   useEffect(() => {
     const handleBackPress = () => true;
-    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-    return () =>
-      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackPress,
+    );
+
+    return () => subscription.remove();
+    // BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
   }, []);
 
   function handleEndCall() {

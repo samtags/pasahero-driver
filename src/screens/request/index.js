@@ -86,7 +86,7 @@ export default function Request() {
         CommonActions.reset({
           index: newRoutes.length - 1,
           routes: newRoutes,
-        })
+        }),
       );
     }
   }, []);
@@ -97,10 +97,14 @@ export default function Request() {
       return true;
     }
 
-    BackHandler.addEventListener("hardwareBackPress", handleBackButton);
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      handleBackButton,
+    );
 
     return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
+      subscription.remove();
+      // BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
   }, []);
 
@@ -112,7 +116,7 @@ export default function Request() {
         }
       }
     },
-    { user }
+    { user },
   );
 
   const { isPending, mutateAsync: handleRequestRide } = useMutation({
@@ -225,7 +229,7 @@ export default function Request() {
       .catch((err) => {
         Alert.alert(
           "Unable to proceed",
-          "There was an error while requesting a ride. Please try again later."
+          "There was an error while requesting a ride. Please try again later.",
         );
         log.error("Unable to proceed with request Ride", {
           error: err,

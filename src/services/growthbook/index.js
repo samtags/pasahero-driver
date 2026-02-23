@@ -12,7 +12,6 @@ export const gb = new GrowthBook({
   backgroundSync: true,
   subscribeToChanges: true,
   streaming: true,
-  environment: "production",
   enableDevMode: true,
   debug: true,
   environment: process.env.NODE_ENV,
