@@ -32,7 +32,7 @@ export default memo(function Preview({
   onRegister = () => {},
 }) {
   const take = useTakeTrip(id);
-  const serviceCharge = useFeatureValue("dass-driver-service-fee");
+  const serviceCharge = useFeatureValue("dass-driver-service-fee", 0);
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
@@ -375,7 +375,7 @@ export default memo(function Preview({
                   P 10.00
                 </Text>
                 <Text size={18} weight="700" color="#fff">
-                  P {serviceCharge}.00
+                  P {Number(serviceCharge).toFixed(2)}
                 </Text>
               </View>
             </View>
