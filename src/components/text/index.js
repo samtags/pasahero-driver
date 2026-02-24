@@ -16,7 +16,7 @@ export default function Text({
 }) {
   const defaultStyles = {
     fontSize: size,
-    lineHeight: size,
+    lineHeight: size * 1.125,
     color,
   };
 
