@@ -40,6 +40,7 @@ export default function RegisterProfile() {
   const [file, setFile] = useState();
   const [showSurveySelect, setShowSurveySelect] = useState(false);
   const hideSurvey = Boolean(useMMKVBoolean("user.hide_profile_survey")?.[0]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [preview, setPreview] = useProfilePreview({
     first_name: params?.first_name,
@@ -151,11 +152,6 @@ export default function RegisterProfile() {
       return Boolean(preview[key]) === false;
     });
 
-    console.log(
-      "🚀 ~ handleSumbitProfile ~ hasUnInitializedValue:",
-      hasUnInitializedValue,
-    );
-
     if (hasUnInitializedValue) {
       // scroll to top of the scroll view
       scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -183,6 +179,8 @@ export default function RegisterProfile() {
   if (params.status === "APPROVED") {
     ctaLabel = "Resubmit Profile";
   }
+
+  if (isUploading) ctaLabel = "Uploading Photo. Please wait...";
 
   return (
     <View style={styles.container}>
@@ -251,6 +249,7 @@ export default function RegisterProfile() {
 
         <View style={{ gap: 12 }}>
           <ProfileInput
+            required
             name="vehicle_make"
             label="Brand (Make)"
             placeholder="Enter Vehicle Make"
@@ -261,6 +260,7 @@ export default function RegisterProfile() {
           />
 
           <ProfileInput
+            required
             name="vehicle_model"
             label="Model"
             placeholder="Enter Vehicle Model"
@@ -271,6 +271,7 @@ export default function RegisterProfile() {
           />
 
           <ProfileInput
+            required
             name="vehicle_color"
             label="Color"
             placeholder="Enter Vehicle Color"
@@ -281,6 +282,7 @@ export default function RegisterProfile() {
           />
 
           <ProfileInput
+            required
             name="vehicle_plate_number"
             label="Plate Number"
             placeholder="Enter Plate Number"
@@ -302,6 +304,7 @@ export default function RegisterProfile() {
         <View style={{ marginTop: 24 }} />
 
         <ProfileInput
+          required
           name="first_name"
           label="First Name"
           placeholder="Enter your first name"
@@ -312,6 +315,7 @@ export default function RegisterProfile() {
         <View style={{ marginTop: 24 }} />
 
         <ProfileInput
+          required
           name="last_name"
           label="Last Name"
           placeholder="Enter your last name"
@@ -324,6 +328,7 @@ export default function RegisterProfile() {
 
         <View style={{ gap: 12 }}>
           <ProfileInput
+            required
             name="mobile_number"
             label="Mobile Number"
             placeholder="Enter your mobile number"
@@ -335,6 +340,7 @@ export default function RegisterProfile() {
           />
 
           <FileInput
+            required
             name="image_url"
             label="Driver Photo"
             placeholder={preview?.image_url || "Press here to select"}
@@ -342,6 +348,7 @@ export default function RegisterProfile() {
             onChange={(value) => setPreview("image_url", value)}
             onChangeFile={setFile}
             disabled={params.status === "ACCEPTED"}
+            onUpload={(status) => setIsUploading(status)}
           />
         </View>
 
@@ -457,14 +464,16 @@ export default function RegisterProfile() {
           .
         </Text>
         <Optional condition={params.status !== "ACCEPTED"}>
-          <Cta
-            disabled={isPending}
-            onPress={handleSumbitProfile}
-            style={{ opacity: isPending || hasUnInitializedValue ? 0.5 : 1 }}
-            color={getColorByService(service)}
-          >
-            {ctaLabel}
-          </Cta>
+          <View>
+            <Cta
+              disabled={isPending || isUploading}
+              onPress={handleSumbitProfile}
+              style={{ opacity: isPending || hasUnInitializedValue ? 0.5 : 1 }}
+              color={getColorByService(service)}
+            >
+              {ctaLabel}
+            </Cta>
+          </View>
         </Optional>
       </ScrollView>
       <Optional condition={showSurveySelect}>
@@ -516,6 +525,7 @@ function ProfileInput({
   defaultValue,
   helperText,
   maxLength,
+  required,
 }) {
   const params = useLocalSearchParams();
 
@@ -546,6 +556,9 @@ function ProfileInput({
         >
           <Text style={{ width: 110 }} weight="700" size={14} color="#707070">
             {label}
+            <Optional condition={required}>
+              <Text color="#EF4444">*</Text>
+            </Optional>
           </Text>
           <Optional
             condition={type === "text"}
@@ -583,6 +596,7 @@ function ProfileInput({
 }
 
 function FileInput({
+  required,
   label, //
   placeholder,
   name,
@@ -590,6 +604,7 @@ function FileInput({
   helperText,
   onChangeFile = () => {},
   disabled = false,
+  onUpload = (status) => {},
 }) {
   const params = useLocalSearchParams();
   const key = `profiles.${params?.id}.${name}`;
@@ -633,6 +648,7 @@ function FileInput({
       if (!file) {
         log.debug("No file selected");
         setErrorMessage("No image selected.");
+        onUpload(false);
         return;
       }
 
@@ -648,6 +664,7 @@ function FileInput({
       log.info("Uploading profile image", { name, uri, fileName, file, path }); // prettier-ignore
       const task = reference.putFile(uri);
 
+      onUpload(true);
       task
         .then(async () => {
           const url = await reference.getDownloadURL();
@@ -662,6 +679,9 @@ function FileInput({
           log.warn("Unable to upload profile image", { error: e, name, uri, fileName, file, path }); // prettier-ignore
           setFileName("");
           setErrorMessage("Unable to upload image.");
+        })
+        .finally(() => {
+          onUpload(false);
         });
     } else {
       // todo: handle camera permissions not granted
@@ -669,6 +689,7 @@ function FileInput({
     }
 
     setIsLoading(false);
+    onUpload(false);
   }
 
   return (
@@ -692,6 +713,9 @@ function FileInput({
             color="#707070"
           >
             {label}
+            <Optional condition={required}>
+              <Text color="#EF4444">*</Text>
+            </Optional>
           </Text>
           <View style={{ paddingVertical: 7, flex: 1 }}>
             <Text color="#707070" numberOfLines={1} size={13.5}>
@@ -730,6 +754,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flex: 1,
     height: "100%",
+    paddingBottom: 16,
   },
   driverContainer: {
     flexDirection: "row",
