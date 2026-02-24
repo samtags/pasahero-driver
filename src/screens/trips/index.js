@@ -11,7 +11,7 @@ import Optional from "@/src/components/optional";
 import Trip from "./components/trip";
 import Tabs from "./components/tabs";
 import router from "@/src/services/router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import takeTripRequest from "@/src/services/api/takeTripRequest";
 import rejectTripRequest from "@/src/services/api/rejectTripRequest";
 import subscribe from "@/src/services/realtime";
@@ -35,6 +35,7 @@ export default function Trips() {
   const [tripRequest] = useMMKVObject("__tmp_trip.request");
   const [activeTrip, setActiveTrip] = useMMKVObject("__tmp_trip.active");
   const tripSnapshot = useTrip(activeTrip?.id, undefined);
+  const queryClient = useQueryClient();
 
   const [trip, setTrip] = useState(null);
   const tripRef = useRef(null);
@@ -465,6 +466,8 @@ export default function Trips() {
             "Trip Canceled",
             "The trip has been canceled by the passenger.",
           );
+
+          queryClient.invalidateQueries(["getTransactions"]);
           break;
 
         case "DONE":
@@ -642,8 +645,13 @@ export function useIncomingRequest() {
 }
 
 export function useTakeTrip(id) {
+  const queryClient = useQueryClient();
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () => takeTripRequest(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["getTransactions"]);
+    },
   });
 
   return { send: mutateAsync, isPending };
