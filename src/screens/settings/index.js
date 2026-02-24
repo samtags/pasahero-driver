@@ -66,7 +66,7 @@ export default function SettingsScreen() {
       </ScrollView>
       <View style={{ padding: 16 }}>
         <Text size={12} color="#CFCFCF" textAlign="right">
-          v1.1.8
+          v1.1.9
         </Text>
       </View>
     </View>

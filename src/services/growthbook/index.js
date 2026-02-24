@@ -17,7 +17,7 @@ export const gb = new GrowthBook({
   environment: process.env.NODE_ENV,
   attributes: {
     service: "com.pasahero.driver",
-    version: "1.1.8",
+    version: "1.1.9",
   },
 });
 

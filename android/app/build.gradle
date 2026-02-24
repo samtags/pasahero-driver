@@ -93,8 +93,8 @@ android {
         applicationId 'com.pasahero.driver'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 18
-        versionName "1.1.8"
+        versionCode 19
+        versionName "1.1.9"
 
         // 16KB page size requires 64-bit only; exclude 32-bit ABIs.
         ndk {
