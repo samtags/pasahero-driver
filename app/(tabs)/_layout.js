@@ -32,9 +32,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="trips"
         options={{
-          title: "Jobs",
+          title: "Trips",
           tabBarIcon: ({ color }) => (
-            <Ionicons size={24} name="at-outline" color={color} />
+            <Ionicons size={24} name="file-tray-full-outline" color={color} />
           ),
           tabBarBadge: activeTrip || request ? 1 : undefined,
           tabBarBadgeStyle: {
