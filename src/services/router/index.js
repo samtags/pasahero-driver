@@ -48,6 +48,7 @@ export default {
   push,
   back,
   resetParams,
+  getScreen,
 };
 
 export function useRouterParams() {
@@ -117,4 +118,15 @@ function subscribe(key, callback) {
 function unsubscribe(key, callback) {
   console.debug("Unsubscribing from router params", key);
   listeners.get(key)?.delete(callback);
+}
+
+var getNavigationState = function () {};
+
+export function useScreen() {
+  const navigation = useNavigation();
+  getNavigationState = navigation.getState;
+}
+
+export function getScreen() {
+  return getNavigationState?.()?.routes?.[getNavigationState?.()?.index]?.name;
 }

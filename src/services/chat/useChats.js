@@ -16,6 +16,7 @@ export default function useChats(tripId, passengerId) {
   }
 
   function send(message) {
+    message = message.trim();
     const chat = new Chat(message, tripId, passengerId);
 
     addChat(chat);
@@ -79,5 +80,6 @@ export default function useChats(tripId, passengerId) {
   return {
     chats: chatsMap?.current?.map?.((_, value) => value),
     send,
+    refresh: () => toggleState((state) => !state),
   };
 }

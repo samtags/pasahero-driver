@@ -4,22 +4,26 @@ import { StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { useRef } from "react";
 import { send } from "@/src/services/images/remote";
-import { useRouterParams } from "@/src/services/router";
+import { useRouterParams, useScreen } from "@/src/services/router";
 import useChats from "@/src/services/chat/useChats";
 import Text from "@/src/components/text";
 import storage from "@/src/services/storage";
 import moment from "moment";
 import useRenderCounter from "@/src/services/hooks/useRenderCounter";
+import useOnFocus from "@/src/services/hooks/useOnFocus";
 
 export default function ChatScreen() {
   useRenderCounter("ChatScreen");
+
+  useScreen();
+
   const userId = storage.getString("user.id");
   const params = useRouterParams();
   const scrollViewRef = useRef();
   const refInput = useRef();
   const messageText = useRef();
 
-  const chats = useChats(params.id, params.passenger_id);
+  const chats = useChats(params?.id, params?.passenger_id);
 
   function handleScrollToBottom() {
     scrollViewRef?.current?.scrollToEnd?.();
@@ -36,6 +40,8 @@ export default function ChatScreen() {
     refInput.current.clear();
     messageText.current = "";
   }
+
+  useOnFocus(() => setTimeout(chats.refresh, 1000));
 
   return (
     <View style={styles.container}>
@@ -112,8 +118,10 @@ function SenderChat(props) {
 function ReceiverChat(props) {
   return (
     <View style={{ gap: 8 }}>
-      <View style={styles.receiverChat}>
-        <Text style={styles.message}>{props.message}</Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={styles.receiverChat}>
+          <Text style={styles.message}>{props.message}</Text>
+        </View>
       </View>
       <Text size={14} color="#6B7280">
         {moment(props.createdAt).fromNow()}
@@ -163,6 +171,7 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
     backgroundColor: "#6366F1",
     padding: 16,
+    paddingRight: 18,
     borderRadius: 29,
     borderBottomRightRadius: 0,
   },
