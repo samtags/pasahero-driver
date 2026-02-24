@@ -16,30 +16,36 @@ import router from "@/src/services/router";
 import getIncomingTrip from "@/src/services/api/getIncomingTrip";
 import getDriverProfile from "@/src/services/api/getDriverProfile";
 import { gb } from "@/src/services/growthbook";
+import log from "@/src/services/log";
+import { useFeatureIsOn } from "@growthbook/growthbook-react";
 
 export default function useController() {
   const [status = "INACTIVE"] = useMMKVString("controller.status"); // ACTIVE | INACTIVE
   const [error, setError] = useState(""); // NO_BALANCE, ONGOING_TRIP, LOCATION_DENIED, BACKGROUND_LOCATION_DENIED, NO_USER, NO_PROFILE
 
+  const noActiveUserValidationIsEnabled = useFeatureIsOn(
+    "phd-prevent-controller-to-active-when-no-user",
+  );
+
   // trigger the supply interval & get location on app start and status is cached as ACTIVE
   useWillEffect(() => {
     const status = storage.getString("controller.status");
     if (status === "ACTIVE") {
-      console.debug("Controller is Active");
+      log.debug("Controller is Active");
 
-      console.debug("Triggering supply interval.");
+      log.debug("Triggering supply interval.");
       clearInterval(createSupplyInterval);
       createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
 
       // update user location
-      console.debug("Updating user location.");
+      log.debug("Updating user location.");
       handleSetUserLocation();
     }
   });
 
   const handlePressButton = async () => {
     const status = storage.getString("controller.status");
-    console.debug("Controller button pressed. Button is currently in status:", status); // prettier-ignore
+    log.debug("Controller button pressed. Button is currently in status:", status); // prettier-ignore
 
     setError("");
 
@@ -92,7 +98,7 @@ export default function useController() {
       isFromAuth = true;
       const isSignedIn = await handleSignInViaGoogle();
       if (!isSignedIn) {
-        console.debug("User not signed in.");
+        log.debug("User not signed in.");
         setError("NO_USER");
         return;
       }
@@ -104,7 +110,7 @@ export default function useController() {
     const currentStatus = storage.getString("controller.status");
 
     if (currentStatus === "ACTIVE") {
-      console.log("Here 1");
+      log.debug("Here 1");
       handleSetStatus("INACTIVE");
     } else {
       const tripRequest = storage.getString("__tmp_trip.request");
@@ -112,17 +118,17 @@ export default function useController() {
       if (tripRequest) {
         const trip = JSON.parse(tripRequest);
         if (trip.status !== "REQUESTED") {
-          console.debug(
+          log.debug(
             "User incoming trip status is not requested. Deleting the request.",
           );
           return storage.delete("__tmp_trip.request");
         }
 
-        console.debug("User has trip request. Redirecting to trips instead.");
+        log.debug("User has trip request. Redirecting to trips instead.");
         return router.navigate({ pathname: "/(tabs)/trips" });
       }
 
-      console.log("Active 1");
+      log.debug("Active 1");
       handleSetStatus("ACTIVE");
       clearInterval(createSupplyInterval);
       createSupplyInterval = setInterval(supply.create, 1000 * 7); // every 7 seconds
@@ -130,7 +136,7 @@ export default function useController() {
       getOngoingTrips().then((trips) => {
         if (trips.length > 0) {
           setError("ONGOING_TRIP");
-          console.log("Here 2");
+          log.debug("Here 2");
           handleSetStatus("INACTIVE");
 
           const trip = trips[0];
@@ -146,14 +152,14 @@ export default function useController() {
 
         if (wallet.balance <= threshold) {
           setError("NO_BALANCE");
-          console.log("Here 3");
+          log.debug("Here 3");
           handleSetStatus("INACTIVE");
         }
       });
 
       getProfiles().then((profiles) => {
         if (profiles?.length === 0) {
-          console.log("Here 4");
+          log.debug("Here 4");
           handleSetStatus("INACTIVE");
           if (isFromAuth === false) {
             setError("NO_PROFILE");
@@ -169,7 +175,7 @@ export default function useController() {
       getIncomingTrip().then((trip) => {
         if (trip) {
           storage.set("__tmp_trip.request", JSON.stringify(trip));
-          console.log("Here 5");
+          log.debug("Here 5");
           handleSetStatus("INACTIVE");
         }
       });
@@ -190,7 +196,30 @@ export default function useController() {
       clearInterval(createSupplyInterval);
       undoFindTrips();
     }
-  }, [status]);
+
+    if (noActiveUserValidationIsEnabled) {
+      if (status === "ACTIVE") {
+        // check if there is an active user. Otherwise, set status to INACTIVE
+        const userId = storage.getString("user.id");
+
+        if (!userId) {
+          log.warn(
+            "There is no active user. Setting status to INACTIVE in a few seconds",
+          );
+
+          setTimeout(() => {
+            handleSetStatus("INACTIVE");
+
+            // redirect to settings screen
+            setTimeout(() => {
+              router.navigate({ pathname: "/(tabs)/settings" });
+              Alert.alert("No user found", "Please sign-in to continue.");
+            }, 1000);
+          }, 1000);
+        }
+      }
+    }
+  }, [status, noActiveUserValidationIsEnabled]);
 
   // expose method
   handlePress = handlePressButton;
@@ -209,7 +238,7 @@ var createSupplyInterval = null;
 export function handleSetStatus(status) {
   storage.set("controller.status", status);
 
-  console.debug("Status changed to", status);
+  log.debug("Status changed to", status);
 }
 
 async function handleShowLocationPermissionPrompt() {
@@ -285,13 +314,13 @@ export async function handleRequestBackgroundLocationPermission() {
 }
 
 function handleSetUserLocation() {
-  console.debug("Setting user location.");
+  log.debug("Setting user location.");
 
   // prettier-ignore
   Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation }) 
     .then((data) => {
-      console.debug("Received location", transform(data));
+      log.debug("Received location", transform(data));
       storage.set("user.location", JSON.stringify(transform(data)));
     })
-    .catch(err => console.debug("Error getting location", err));
+    .catch(err => log.debug("Error getting location", err));
 }
