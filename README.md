@@ -42,13 +42,13 @@ The PasaHero system was built so passengers no longer double-book across differe
 
 ## App features
 
-- See available drivers
-- Price Estimates
-- Fast trip matching
-- Free In-app call
-- Free In-app messaging
-- Real-time driver location
-- Share ongoing trip
+- More trip requests
+- Ride first, top-up later
+- Flat rate — Not commission based
+- Nearby passenger access
+- Free in-app calls
+- In-app messaging
+- Easy to register
 
 ## Supported Platform
 
