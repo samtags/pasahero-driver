@@ -32,8 +32,7 @@ export default async function OcrGpt(content) {
     },
     {
       headers: {
-        Authorization:
-          "Bearer REDACTED",
+        Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_API_KEY}`,
       },
     },
   );
